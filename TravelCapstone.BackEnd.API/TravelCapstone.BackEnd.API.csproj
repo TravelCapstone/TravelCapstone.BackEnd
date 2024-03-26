@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TravelCapstone.BackEnd.Application\TravelCapstone.BackEnd.Application.csproj" />
+    <ProjectReference Include="..\TravelCapstone.BackEnd.Domain\TravelCapstone.BackEnd.Domain.csproj" />
+    <ProjectReference Include="..\TravelCapstone.BackEnd.Infrastructure\TravelCapstone.BackEnd.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
