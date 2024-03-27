@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Configuration;
 using NetCore.QK.DbContext;
 using TravelCapstone.BackEnd.Domain.Models;
 
@@ -14,6 +15,19 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
 
     public TravelCapstoneDbContext(DbContextOptions options) : base(options)
     {
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        IConfiguration config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, true)
+            .Build();
+        string cs = config["ConnectionStrings:DB"];
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer(cs);
+        }
     }
 
     public DbSet<Account> Accounts { get; set; } = null!;

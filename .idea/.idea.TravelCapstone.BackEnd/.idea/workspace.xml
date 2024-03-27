@@ -9,45 +9,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e71fb8a2-e3ce-43ad-97fd-709657ec94ab" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IIdentityRoleRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IUserRoleRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IAccountService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IEmailService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IJwtService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/AccountService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/EmailService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/JwtService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/AppActionResult.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/ChangePasswordDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/ForgotPasswordDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/LoginRequestDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/SignUpRequestDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/TokenDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/UpdateAccountRequestDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Utils/BackEndLogger.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Utils/SD.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Utils/TemplateMappingHelper.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Utils/Utility.cs" afterDir="false" />
+    <list default="true" id="e71fb8a2-e3ce-43ad-97fd-709657ec94ab" name="Changes" comment="update nuget">
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Repositories/IdentityRoleRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Repositories/UserRoleRepository.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/MappingConfigurationInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/MappingConfigurationInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/AccountController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/AccountController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/LibraryInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/LibraryInstaller.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ServiceInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ServiceInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/TravelCapstone.BackEnd.API.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/TravelCapstone.BackEnd.API.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IAccountRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IAccountRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IRepository.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IUnitOfWork/IUnitOfWork.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/GenericBackendService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/GenericBackendService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/TravelCapstone.BackEnd.Application.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/TravelCapstone.BackEnd.Application.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/ConfigurationModel/VNPayConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/ConfigurationModel/VnPayConfiguration.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/PagedResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/PagedResult.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/TravelCapstone.BackEnd.Common.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/TravelCapstone.BackEnd.Common.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/AccountService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/AccountService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/AppActionResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/AppActionResult.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Data/TravelCapstoneDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Data/TravelCapstoneDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/IData/IDbContext.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/Account.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/Account.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/TravelCapstone.BackEnd.Domain.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/TravelCapstone.BackEnd.Domain.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Repositories/AccountRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Repositories/AccountRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Repositories/GenericRepository.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/UnitOfWork/UnitOfWork.cs" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +67,16 @@
     </option>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock://D:/workspace/github/TravelCapstone.BackEnd/TravelCapstone.BackEnd.API/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/aspnetcore/3b519aa7d1a1b66e1d329d694f814e1d8228dc8c/src/Mvc/Mvc.Core/src/Infrastructure/ActionMethodExecutor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/AsyncTaskMethodBuilderT.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Threading/ExecutionContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Threading/Tasks/TaskContinuation.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b4afdb2fdfab4615b88a101b04ea956b3600/11/3f45f1c1/GenericRepository`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b4afdb2fdfab4615b88a101b04ea956b3600/12/6df8aea1/IDbContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b4afdb2fdfab4615b88a101b04ea956b3600/7c/ba650d86/UnitOfWork.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b4afdb2fdfab4615b88a101b04ea956b3600/d2/0a9c92a0/IUnitOfWork.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b4afdb2fdfab4615b88a101b04ea956b3600/e2/6702e5cd/IRepository`1.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -222,7 +202,7 @@
       <workItem from="1711539915728" duration="1043000" />
       <workItem from="1711541005073" duration="643000" />
       <workItem from="1711544742793" duration="87000" />
-      <workItem from="1711545096592" duration="3658000" />
+      <workItem from="1711545096592" duration="6849000" />
     </task>
     <task id="LOCAL-00001" summary="commit">
       <option name="closed" value="true" />
@@ -312,7 +292,15 @@
       <option name="project" value="LOCAL" />
       <updated>1711539699656</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="update nuget">
+      <option name="closed" value="true" />
+      <created>1711549994655</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1711549994655</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -348,7 +336,40 @@
     <MESSAGE value="commit hub" />
     <MESSAGE value="build GenericRepository.cs" />
     <MESSAGE value="commit signalR" />
-    <option name="LAST_COMMIT_MESSAGE" value="commit signalR" />
+    <MESSAGE value="update nuget" />
+    <option name="LAST_COMMIT_MESSAGE" value="update nuget" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/AccountService.cs</url>
+          <line>103</line>
+          <properties documentPath="D:\workspace\github\TravelCapstone.BackEnd\TravelCapstone.BackEnd.Application\Services\AccountService.cs" initialLine="103" containingFunctionPresentation="Method 'CreateAccount'">
+            <startOffsets>
+              <option value="3948" />
+            </startOffsets>
+            <endOffsets>
+              <option value="4029" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Data/TravelCapstoneDbContext.cs</url>
+          <line>25</line>
+          <properties documentPath="D:\workspace\github\TravelCapstone.BackEnd\TravelCapstone.BackEnd.Domain\Data\TravelCapstoneDbContext.cs" initialLine="25" containingFunctionPresentation="Method 'OnConfiguring'">
+            <startOffsets>
+              <option value="820" />
+            </startOffsets>
+            <endOffsets>
+              <option value="863" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

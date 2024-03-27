@@ -24,6 +24,11 @@ public class AccountController : ControllerBase
     {
         return await _accountService.CreateAccount(request, false);
     }
+    [HttpGet("get-all")]
+    public async Task<AppActionResult> GetAllAccount(int pageIndex, int pageSize)
+    {
+        return await _accountService.GetAllAccount(pageIndex:pageIndex, pageSize:pageSize);
+    }
 
     [HttpPost("login")]
     public async Task<AppActionResult> Login(LoginRequestDto request)

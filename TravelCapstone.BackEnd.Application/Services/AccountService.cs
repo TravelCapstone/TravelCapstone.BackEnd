@@ -23,7 +23,6 @@ public class AccountService : GenericBackendService, IAccountService
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<Account> _userManager;
     private readonly IAccountRepository _accountRepository;
-    private readonly BackEndLogger _logger;
 
     public AccountService(
         IAccountRepository accountRepository,
@@ -31,8 +30,8 @@ public class AccountService : GenericBackendService, IAccountService
         UserManager<Account> userManager,
         RoleManager<IdentityRole> roleManager,
         SignInManager<Account> signInManager,
-        IServiceProvider serviceProvider,
-        BackEndLogger logger
+        IServiceProvider serviceProvider
+      
     ) : base(serviceProvider)
     {
         _accountRepository = accountRepository;
@@ -41,7 +40,6 @@ public class AccountService : GenericBackendService, IAccountService
         _roleManager = roleManager;
         _signInManager = signInManager;
         _tokenDto = new TokenDto();
-        _logger = logger;
     }
 
     public async Task<AppActionResult> Login(LoginRequestDto loginRequest)
@@ -65,7 +63,7 @@ public class AccountService : GenericBackendService, IAccountService
         catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
-            _logger.LogError(ex.Message, this);
+         
         }
 
         return result;
@@ -95,7 +93,7 @@ public class AccountService : GenericBackendService, IAccountService
         catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
-            _logger.LogError(ex.Message, this);
+         
         }
 
         return result;
@@ -133,7 +131,7 @@ public class AccountService : GenericBackendService, IAccountService
                     var resultCreateUser = await _userManager.CreateAsync(user, signUpRequest.Password);
                     if (resultCreateUser.Succeeded)
                     {
-                        result.Result.Data = user;
+                        result.Result = user;
                         if (!isGoogle)
                             emailService.SendEmail(user.Email, SD.SubjectMail.VERIFY_ACCOUNT,
                                 TemplateMappingHelper.GetTemplateOTPEmail(
@@ -154,7 +152,7 @@ public class AccountService : GenericBackendService, IAccountService
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
-                _logger.LogError(ex.Message, this);
+             
             }
 
             return result;
@@ -178,7 +176,7 @@ public class AccountService : GenericBackendService, IAccountService
                     account.FirstName = accountRequest.FirstName;
                     account.LastName = accountRequest.LastName;
                     account.PhoneNumber = accountRequest.PhoneNumber;
-                    result.Result.Data = await _accountRepository.Update(account);
+                    result.Result = await _accountRepository.Update(account);
                 }
 
                 await _unitOfWork.SaveChangesAsync();
@@ -187,7 +185,7 @@ public class AccountService : GenericBackendService, IAccountService
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
-                _logger.LogError(ex.Message, this);
+             
             }
 
             return result;
@@ -201,7 +199,7 @@ public class AccountService : GenericBackendService, IAccountService
         {
             var account = await _accountRepository.GetById(id);
             if (account == null) result = BuildAppActionResultError(result, $"The user with id {id} not found");
-            if (!BuildAppActionResultIsError(result)) result.Result.Data = account;
+            if (!BuildAppActionResultIsError(result)) result.Result = account;
         }
         catch (Exception ex)
         {
@@ -211,9 +209,12 @@ public class AccountService : GenericBackendService, IAccountService
         return result;
     }
 
-    public Task<AppActionResult> GetAllAccount(int pageIndex, int pageSize)
+    public async Task<AppActionResult> GetAllAccount(int pageIndex, int pageSize)
     {
-        throw new NotImplementedException();
+        var result = new AppActionResult();
+
+        result.Result = await _accountRepository.GetAllDataByExpression(null, pageIndex, pageSize: pageSize, null);
+        return result;
     }
 
 
@@ -245,7 +246,7 @@ public class AccountService : GenericBackendService, IAccountService
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
-                _logger.LogError(ex.Message, this);
+             
             }
 
             return result;
@@ -269,7 +270,7 @@ public class AccountService : GenericBackendService, IAccountService
                 if (!BuildAppActionResultIsError(result))
                 {
                     var jwtService = Resolve<IJwtService>();
-                    result.Result.Data = await jwtService.GetNewToken(refreshToken, userId);
+                    result.Result = await jwtService.GetNewToken(refreshToken, userId);
                 }
 
                 await _unitOfWork.SaveChangesAsync();
@@ -278,7 +279,7 @@ public class AccountService : GenericBackendService, IAccountService
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
-                _logger.LogError(ex.Message, this);
+             
             }
 
             return result;
@@ -316,7 +317,7 @@ public class AccountService : GenericBackendService, IAccountService
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
-                _logger.LogError(ex.Message, this);
+             
             }
 
             return result;
@@ -349,7 +350,7 @@ public class AccountService : GenericBackendService, IAccountService
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
-                _logger.LogError(ex.Message, this);
+             
             }
 
             return result;
@@ -370,7 +371,7 @@ public class AccountService : GenericBackendService, IAccountService
             {
                 var emailService = Resolve<IEmailService>();
                 var code = await GenerateVerifyCode(user.Email, true);
-                emailService.SendEmail(email, SD.SubjectMail.PASSCODE_FORGOT_PASSWORD,
+                emailService?.SendEmail(email, SD.SubjectMail.PASSCODE_FORGOT_PASSWORD,
                     TemplateMappingHelper.GetTemplateOTPEmail(TemplateMappingHelper.ContentEmailType.FORGOTPASSWORD,
                         code, user.FirstName));
             }
@@ -378,7 +379,7 @@ public class AccountService : GenericBackendService, IAccountService
         catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
-            _logger.LogError(ex.Message, this);
+         
         }
 
         return result;
@@ -406,7 +407,7 @@ public class AccountService : GenericBackendService, IAccountService
         catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
-            _logger.LogError(ex.Message, this);
+         
         }
 
         return result;
@@ -430,7 +431,7 @@ public class AccountService : GenericBackendService, IAccountService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, this);
+         
         }
 
         return code;
@@ -485,7 +486,7 @@ public class AccountService : GenericBackendService, IAccountService
                             }, true);
                     if (resultCreate != null && resultCreate.IsSuccess)
                     {
-                        var account = (Account)resultCreate.Result.Data;
+                        var account = (Account)resultCreate.Result;
                         result = await LoginDefault(userEmail, account);
                     }
                 }
@@ -496,7 +497,7 @@ public class AccountService : GenericBackendService, IAccountService
         catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
-            _logger.LogError(ex.Message, this);
+         
         }
 
         return result;
@@ -526,12 +527,12 @@ public class AccountService : GenericBackendService, IAccountService
 
             _tokenDto.Token = token;
             _tokenDto.RefreshToken = user.RefreshToken;
-            result.Result.Data = _tokenDto;
+            result.Result = _tokenDto;
             await _unitOfWork.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, this);
+         
         }
 
         return result;
@@ -569,7 +570,7 @@ public class AccountService : GenericBackendService, IAccountService
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
-                _logger.LogError(ex.Message, this);
+             
             }
 
             return result;
@@ -608,7 +609,7 @@ public class AccountService : GenericBackendService, IAccountService
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
-                _logger.LogError(ex.Message, this);
+             
             }
 
             return result;
