@@ -13,6 +13,6 @@ public class ServiceInstaller : IInstaller
     {
         services.AddScoped<IDbContext, TravelCapstoneDbContext>();
         services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
-        services.AddScoped<IUnitOfWork,UnitOfWork>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 }

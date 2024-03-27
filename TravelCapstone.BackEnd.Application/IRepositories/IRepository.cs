@@ -10,7 +10,8 @@ public interface IRepository<T> where T : class
 
     Task<T> GetById(object id);
 
-    Task<T?> GetByExpression(Expression<Func<T?, bool>> filter, params Expression<Func<T, object>>[]? includeProperties);
+    Task<T?> GetByExpression(Expression<Func<T?, bool>> filter,
+        params Expression<Func<T, object>>[]? includeProperties);
 
     Task<T> Insert(T entity);
 

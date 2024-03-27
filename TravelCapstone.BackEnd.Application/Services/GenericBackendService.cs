@@ -2,7 +2,7 @@
 
 public class GenericBackendService
 {
-    private IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public GenericBackendService(IServiceProvider serviceProvider)
     {

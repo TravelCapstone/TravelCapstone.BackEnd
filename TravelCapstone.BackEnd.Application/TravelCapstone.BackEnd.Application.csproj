@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TravelCapstone.BackEnd.Common\TravelCapstone.BackEnd.Common.csproj" />
-        <ProjectReference Include="..\TravelCapstone.BackEnd.Domain\TravelCapstone.BackEnd.Domain.csproj" />
+        <ProjectReference Include="..\TravelCapstone.BackEnd.Common\TravelCapstone.BackEnd.Common.csproj"/>
+        <ProjectReference Include="..\TravelCapstone.BackEnd.Domain\TravelCapstone.BackEnd.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="IServices\" />
+        <Folder Include="IServices\"/>
     </ItemGroup>
 
 </Project>

@@ -1,7 +1,6 @@
-﻿namespace TravelCapstone.BackEnd.Application.IUnitOfWork
+﻿namespace TravelCapstone.BackEnd.Application.IUnitOfWork;
+
+public interface IUnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        Task<int> SaveChangesAsync();
-    }
+    Task<int> SaveChangesAsync();
 }
