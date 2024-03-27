@@ -1,9 +1,5 @@
-﻿using TravelCapstone.BackEnd.Application.IRepositories;
-using TravelCapstone.BackEnd.Application.IUnitOfWork;
+﻿using NetCore.QK.DbContext;
 using TravelCapstone.BackEnd.Domain.Data;
-using TravelCapstone.BackEnd.Domain.IData;
-using TravelCapstone.BackEnd.Infrastructure.Repositories;
-using TravelCapstone.BackEnd.Infrastructure.UnitOfWork;
 
 namespace TravelCapstone.BackEnd.API.Installers;
 

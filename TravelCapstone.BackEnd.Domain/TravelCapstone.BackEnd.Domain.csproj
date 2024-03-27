@@ -21,6 +21,8 @@
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1"/>
 
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0"/>
+
+        <PackageReference Include="NetCore.QK.BackEndCore" Version="1.0.0"/>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
         <PackageReference Include="System.Text.Json" Version="6.0.8"/>
     </ItemGroup>

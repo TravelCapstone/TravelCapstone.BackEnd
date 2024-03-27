@@ -1,6 +1,6 @@
 ﻿namespace TravelCapstone.BackEnd.Common.ConfigurationModel;
 
-public class VNPayConfiguration
+public class VnPayConfiguration
 {
     public string? TmnCode { get; set; }
     public string? HashSecret { get; set; }

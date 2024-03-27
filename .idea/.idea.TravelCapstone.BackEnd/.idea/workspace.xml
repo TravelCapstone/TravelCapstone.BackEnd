@@ -9,7 +9,46 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e71fb8a2-e3ce-43ad-97fd-709657ec94ab" name="Changes" comment="" />
+    <list default="true" id="e71fb8a2-e3ce-43ad-97fd-709657ec94ab" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IIdentityRoleRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IUserRoleRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IAccountService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IEmailService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IJwtService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/AccountService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/EmailService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/JwtService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/AppActionResult.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/ChangePasswordDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/ForgotPasswordDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/LoginRequestDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/SignUpRequestDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/TokenDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/UpdateAccountRequestDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Utils/BackEndLogger.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Utils/SD.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Utils/TemplateMappingHelper.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Utils/Utility.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/MappingConfigurationInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/MappingConfigurationInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ServiceInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ServiceInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/TravelCapstone.BackEnd.API.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/TravelCapstone.BackEnd.API.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IAccountRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IAccountRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IRepository.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IUnitOfWork/IUnitOfWork.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/GenericBackendService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/GenericBackendService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/TravelCapstone.BackEnd.Application.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/TravelCapstone.BackEnd.Application.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/ConfigurationModel/VNPayConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/ConfigurationModel/VnPayConfiguration.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/PagedResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/PagedResult.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/TravelCapstone.BackEnd.Common.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/TravelCapstone.BackEnd.Common.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Data/TravelCapstoneDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Data/TravelCapstoneDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/IData/IDbContext.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/Account.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/Account.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/TravelCapstone.BackEnd.Domain.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/TravelCapstone.BackEnd.Domain.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Repositories/AccountRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Repositories/AccountRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Repositories/GenericRepository.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/UnitOfWork/UnitOfWork.cs" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -75,31 +114,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.TravelCapstone.BackEnd.API: http.executor&quot;: &quot;Run&quot;,
-    &quot;.NET Project.Unnamed.executor&quot;: &quot;Run&quot;,
-    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (1).executor&quot;: &quot;Run&quot;,
-    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (2).executor&quot;: &quot;Run&quot;,
-    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.TravelCapstone.BackEnd.API: http.executor": "Run",
+    ".NET Project.Unnamed.executor": "Run",
+    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (1).executor": "Run",
+    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (2).executor": "Run",
+    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "RiderNuGetOptionsPageId",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\duong\\AppData\\Local\\Symbols\\src&quot;
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache",
+      "C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache",
+      "C:\\Users\\duong\\AppData\\Local\\Symbols\\src"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.TravelCapstone.BackEnd.API: http">
     <configuration name="Publish TravelCapstone.BackEnd.API to Azure" type="AzureDotNetWebAppPublish" factoryName="Azure Web App">
       <option name="AZURE_WEB_APP_PROJECT" value="$PROJECT_DIR$/TravelCapstone.BackEnd.API/TravelCapstone.BackEnd.API.csproj" />
@@ -180,6 +219,10 @@
       <workItem from="1711530403948" duration="2302000" />
       <workItem from="1711533197013" duration="339000" />
       <workItem from="1711539108649" duration="606000" />
+      <workItem from="1711539915728" duration="1043000" />
+      <workItem from="1711541005073" duration="643000" />
+      <workItem from="1711544742793" duration="87000" />
+      <workItem from="1711545096592" duration="3658000" />
     </task>
     <task id="LOCAL-00001" summary="commit">
       <option name="closed" value="true" />

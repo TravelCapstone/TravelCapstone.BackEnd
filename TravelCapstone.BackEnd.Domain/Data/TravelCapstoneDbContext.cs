@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using TravelCapstone.BackEnd.Domain.IData;
+using NetCore.QK.DbContext;
 using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Domain.Data;

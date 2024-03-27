@@ -18,15 +18,15 @@ public class MappingConfigurationInstaller : IInstaller
         configuration.GetSection("Firebase").Bind(firebaseConfiguration);
         services.AddSingleton(firebaseConfiguration);
 
-        var firebaseAdminSDKConfiguration = new FirebaseAdminSDK();
-        configuration.GetSection("FirebaseAdminSDK").Bind(firebaseAdminSDKConfiguration);
-        services.AddSingleton(firebaseAdminSDKConfiguration);
+        var firebaseAdminSdkConfiguration = new FirebaseAdminSDK();
+        configuration.GetSection("FirebaseAdminSDK").Bind(firebaseAdminSdkConfiguration);
+        services.AddSingleton(firebaseAdminSdkConfiguration);
 
         var momoConfiguration = new MomoConfiguration();
         configuration.GetSection("Momo").Bind(momoConfiguration);
         services.AddSingleton(momoConfiguration);
 
-        var vnPayConfiguration = new VNPayConfiguration();
+        var vnPayConfiguration = new VnPayConfiguration();
         configuration.GetSection("Vnpay").Bind(vnPayConfiguration);
         services.AddSingleton(vnPayConfiguration);
     }
