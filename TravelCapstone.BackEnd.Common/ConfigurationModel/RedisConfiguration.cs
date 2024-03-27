@@ -1,8 +1,7 @@
-﻿namespace TravelCapstone.BackEnd.Common.ConfigurationModel
+﻿namespace TravelCapstone.BackEnd.Common.ConfigurationModel;
+
+public class RedisConfiguration
 {
-    public class RedisConfiguration
-    {
-        public bool Enabled { get; set; }
-        public string ConnectionString { get; set; }
-    }
+    public bool Enabled { get; set; }
+    public string ConnectionString { get; set; }
 }

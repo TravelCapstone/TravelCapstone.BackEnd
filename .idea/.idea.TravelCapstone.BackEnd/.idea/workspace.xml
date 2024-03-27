@@ -10,32 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e71fb8a2-e3ce-43ad-97fd-709657ec94ab" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/AuthInstaller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/CacheInstaller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/CorsInstaller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/DbInstaller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/HangfireInstaller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/IInstaller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/InstallerExtentions.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/LibraryInstaller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/MappingConfigurationInstaller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ServiceInstaller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/SwaggerInstaller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/SystemController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ValidatorInstaller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Middlewares/CacheAttribute.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Middlewares/DashboardNoAuthorizationFilter.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Middlewares/RemoveCacheAtrribute.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/Account.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Mapping/MappingConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/TravelCapstone.BackEnd.API.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/TravelCapstone.BackEnd.API.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/appsettings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/TravelCapstone.BackEnd.Application.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/TravelCapstone.BackEnd.Application.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Data/TravelCapstoneDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Data/TravelCapstoneDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/TravelCapstone.BackEnd.Domain.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/TravelCapstone.BackEnd.Domain.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Hub/NotificationHub.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Hub/NotificationHub.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/TravelCapstone.BackEnd.Infrastructure.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/TravelCapstone.BackEnd.Infrastructure.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,7 +177,8 @@
       <workItem from="1711505085813" duration="189000" />
       <workItem from="1711506591729" duration="957000" />
       <workItem from="1711512090372" duration="150000" />
-      <workItem from="1711525715053" duration="1005000" />
+      <workItem from="1711525715053" duration="2640000" />
+      <workItem from="1711529243006" duration="116000" />
     </task>
     <task id="LOCAL-00001" summary="commit">
       <option name="closed" value="true" />

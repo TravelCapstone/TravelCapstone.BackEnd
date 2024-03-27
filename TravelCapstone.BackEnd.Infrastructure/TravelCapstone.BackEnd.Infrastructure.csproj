@@ -10,10 +10,6 @@
         <ProjectReference Include="..\TravelCapstone.BackEnd.Application\TravelCapstone.BackEnd.Application.csproj"/>
         <ProjectReference Include="..\TravelCapstone.BackEnd.Domain\TravelCapstone.BackEnd.Domain.csproj"/>
     </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Repositories\"/>
-    </ItemGroup>
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="13.0.1"/>
         <PackageReference Include="Firebase.Auth" Version="1.0.0"/>
