@@ -1,4 +1,5 @@
 using TravelCapstone.BackEnd.API.Installers;
+using TravelCapstone.BackEnd.Infrastructure.ServerHub;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -37,5 +38,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHub<NotificationHub>(nameof(NotificationHub));
 app.Run();

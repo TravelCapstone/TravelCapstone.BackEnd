@@ -9,6 +9,7 @@ public class LibraryInstaller : IInstaller
         var mapper = MappingConfig.RegisterMap().CreateMapper();
         services.AddSingleton(mapper);
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddSignalR();
         //   services.AddSingleton<BackEndLogger>();
         //   services.AddSingleton(_ => new FirebaseStorage(configuration["Firebase:Bucket"]));
         //   services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
