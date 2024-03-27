@@ -2,6 +2,6 @@
 
 public class EmailConfiguration
 {
-    public string User { get; set; }
-    public string ApplicationPassword { get; set; }
+    public string User { get; set; } = null!;
+    public string ApplicationPassword { get; set; } = null!;
 }

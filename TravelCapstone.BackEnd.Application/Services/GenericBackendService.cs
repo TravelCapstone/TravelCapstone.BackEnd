@@ -9,8 +9,8 @@ public class GenericBackendService
         _serviceProvider = serviceProvider;
     }
 
-    public T Resolve<T>()
+    public T? Resolve<T>()
     {
-        return (T)_serviceProvider.GetService(typeof(T));
+        return (T)_serviceProvider.GetService(typeof(T))!;
     }
 }

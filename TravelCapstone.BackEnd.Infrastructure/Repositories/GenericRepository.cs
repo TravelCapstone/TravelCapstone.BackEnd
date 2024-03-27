@@ -16,8 +16,8 @@ public class GenericRepository<T> : IRepository<T> where T : class
         _context = context;
     }
 
-    public async Task<PagedResult<T>> GetAllDataByExpression(Expression<Func<T, bool>> filter, int pageNumber,
-        int pageSize, params Expression<Func<T, object>>[] includes)
+    public async Task<PagedResult<T>> GetAllDataByExpression(Expression<Func<T, bool>>? filter, int pageNumber,
+        int pageSize, params Expression<Func<T, object>>[]? includes)
     {
         IQueryable<T> query = _context.Set<T>();
 
@@ -43,7 +43,7 @@ public class GenericRepository<T> : IRepository<T> where T : class
 
     public async Task<T> GetById(object id)
     {
-        return await _context.Set<T>().FindAsync(id);
+        return (await _context.Set<T>().FindAsync(id))!;
     }
 
     public async Task<T> Insert(T entity)
@@ -53,14 +53,14 @@ public class GenericRepository<T> : IRepository<T> where T : class
         return entity;
     }
 
-    public async Task<T> Update(T entity)
+    public Task<T> Update(T entity)
     {
         _context.Set<T>().Attach(entity);
         _context.Entry(entity).State = EntityState.Modified;
-        return entity;
+        return Task.FromResult(entity);
     }
 
-    public async Task<T> DeleteById(object id)
+    public async Task<T?> DeleteById(object id)
     {
         var entityToDelete = await _context.Set<T>()
             .FindAsync(id);
@@ -71,30 +71,32 @@ public class GenericRepository<T> : IRepository<T> where T : class
         return entityToDelete;
     }
 
-    public async Task<T> GetByExpression(Expression<Func<T, bool>> filter,
-        params Expression<Func<T, object>>[] includeProperties)
+    public async Task<T?> GetByExpression(Expression<Func<T?, bool>> filter,
+        params Expression<Func<T, object>>[]? includeProperties)
     {
-        IQueryable<T> query = _context.Set<T>()
+        IQueryable<T?> query = _context.Set<T>()
             ;
 
         if (includeProperties != null)
             foreach (var includeProperty in includeProperties)
-                query = query.Include(includeProperty);
+                query = query.Include(includeProperty!);
 
         return await query.SingleOrDefaultAsync(filter);
     }
 
-    public async Task<List<T>> InsertRange(IEnumerable<T> entities)
+    public Task<List<T>> InsertRange(IEnumerable<T> entities)
     {
+        var enumerable = entities.ToList();
         _context.Set<T>()
-            .AddRange(entities);
-        return entities.ToList();
+            .AddRange(enumerable);
+        return Task.FromResult(enumerable.ToList());
     }
 
-    public async Task<List<T>> DeleteRange(IEnumerable<T> entities)
+    public Task<List<T>> DeleteRange(IEnumerable<T> entities)
     {
+        var enumerable = entities as T[] ?? entities.ToArray();
         _context.Set<T>()
-            .RemoveRange(entities);
-        return entities.ToList();
+            .RemoveRange(enumerable);
+        return Task.FromResult(enumerable.ToList());
     }
 }
