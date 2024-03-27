@@ -8,9 +8,9 @@ namespace TravelCapstone.BackEnd.Infrastructure.Repositories;
 
 public class GenericRepository<T> : IRepository<T> where T : class
 {
-    private readonly IDBContext _context;
+    private readonly IDbContext _context;
 
-    public GenericRepository(IDBContext context)
+    public GenericRepository(IDbContext context)
     {
         _context = context;
     }

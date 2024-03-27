@@ -6,7 +6,7 @@ using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Domain.Data;
 
-public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDBContext
+public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
 {
     public TravelCapstoneDbContext()
     {
@@ -17,15 +17,19 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDBContext
     }
 
     public DbSet<Account> Accounts { get; set; } = null!;
-    
-    override
-    public DbSet<T> Set<T>() where T : class
+
+    public override DbSet<T> Set<T>() where T : class
     {
         return base.Set<T>();
     }
-    override
-    public EntityEntry<T> Entry<T>(T entity) where T : class
+
+    public override EntityEntry<T> Entry<T>(T entity) where T : class
     {
         return base.Entry(entity);
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }
