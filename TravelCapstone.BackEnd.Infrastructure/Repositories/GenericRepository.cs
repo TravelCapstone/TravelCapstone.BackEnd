@@ -1,8 +1,7 @@
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Common.DTO;
-using TravelCapstone.BackEnd.Domain.Data;
 using TravelCapstone.BackEnd.Domain.IData;
 
 namespace TravelCapstone.BackEnd.Infrastructure.Repositories;
@@ -74,8 +73,7 @@ public class GenericRepository<T> : IRepository<T> where T : class
     public async Task<T?> GetByExpression(Expression<Func<T?, bool>> filter,
         params Expression<Func<T, object>>[]? includeProperties)
     {
-        IQueryable<T?> query = _context.Set<T>()
-            ;
+        IQueryable<T> query = _context.Set<T>();
 
         if (includeProperties != null)
             foreach (var includeProperty in includeProperties)

@@ -17,12 +17,13 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDBContext
     }
 
     public DbSet<Account> Accounts { get; set; } = null!;
-
+    
+    override
     public DbSet<T> Set<T>() where T : class
     {
         return base.Set<T>();
     }
-
+    override
     public EntityEntry<T> Entry<T>(T entity) where T : class
     {
         return base.Entry(entity);
