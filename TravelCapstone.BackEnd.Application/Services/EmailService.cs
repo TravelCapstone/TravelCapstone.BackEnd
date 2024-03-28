@@ -15,7 +15,7 @@ public class EmailService : GenericBackendService, IEmailService
     public EmailService(BackEndLogger logger, IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _logger = logger;
-        _emailConfiguration = Resolve<EmailConfiguration>();
+        _emailConfiguration = Resolve<EmailConfiguration>()!;
     }
 
     public void SendEmail(string recipient, string subject, string body)

@@ -70,12 +70,12 @@ public class SD
     public class WeekForYear
     {
         public int WeekIndex { get; set; }
-        public TimelineDto Timeline { get; set; }
+        public TimelineDto? Timeline { get; set; }
 
         public class TimelineDto
         {
-            public string StartDate { get; set; }
-            public string EndDate { get; set; }
+            public string? StartDate { get; set; }
+            public string? EndDate { get; set; }
         }
     }
 }

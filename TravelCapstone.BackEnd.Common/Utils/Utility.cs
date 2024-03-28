@@ -147,7 +147,7 @@ public class Utility
         var json = File.ReadAllText(appSettingsPath);
         var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
-        if (settings.ContainsKey(section) && settings[section] is JObject sectionObject)
+        if (settings!.ContainsKey(section) && settings[section] is JObject sectionObject)
             if (sectionObject.ContainsKey(key))
             {
                 sectionObject[key] = value;

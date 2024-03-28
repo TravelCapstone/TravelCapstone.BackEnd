@@ -1,11 +1,10 @@
-using System.Transactions;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Identity;
-using NetCore.QK.DbContext;
+using NetCore.QK.BackEndCore.Application.IRepositories;
+using NetCore.QK.BackEndCore.Application.IUnitOfWork;
 using Newtonsoft.Json;
-using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.ConfigurationModel;
 using TravelCapstone.BackEnd.Common.DTO;
@@ -17,27 +16,23 @@ namespace TravelCapstone.BackEnd.Application.Services;
 
 public class AccountService : GenericBackendService, IAccountService
 {
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IRepository<Account> _accountRepository;
     private readonly SignInManager<Account> _signInManager;
     private readonly TokenDto _tokenDto;
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<Account> _userManager;
-    private readonly IAccountRepository _accountRepository;
 
     public AccountService(
-        IAccountRepository accountRepository,
+        IRepository<Account> accountRepository,
         IUnitOfWork unitOfWork,
         UserManager<Account> userManager,
-        RoleManager<IdentityRole> roleManager,
         SignInManager<Account> signInManager,
         IServiceProvider serviceProvider
-      
     ) : base(serviceProvider)
     {
         _accountRepository = accountRepository;
         _unitOfWork = unitOfWork;
         _userManager = userManager;
-        _roleManager = roleManager;
         _signInManager = signInManager;
         _tokenDto = new TokenDto();
     }
@@ -48,22 +43,21 @@ public class AccountService : GenericBackendService, IAccountService
         try
         {
             var user = await _accountRepository.GetByExpression(u =>
-                u.Email.ToLower() == loginRequest.Email.ToLower() && u.IsDeleted == false);
+                u!.Email.ToLower() == loginRequest.Email.ToLower() && u.IsDeleted == false);
             if (user == null)
                 result = BuildAppActionResultError(result, $"The user with username {loginRequest.Email} not found");
             else if (user.IsVerified == false)
                 result = BuildAppActionResultError(result, "The account is not verified !");
 
-            var PasswordSignIn =
+            var passwordSignIn =
                 await _signInManager.PasswordSignInAsync(loginRequest.Email, loginRequest.Password, false, false);
-            if (!PasswordSignIn.Succeeded) result = BuildAppActionResultError(result, SD.ResponseMessage.LOGIN_FAILED);
+            if (!passwordSignIn.Succeeded) result = BuildAppActionResultError(result, SD.ResponseMessage.LOGIN_FAILED);
 
             if (!BuildAppActionResultIsError(result)) result = await LoginDefault(loginRequest.Email, user);
         }
         catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
-         
         }
 
         return result;
@@ -75,7 +69,7 @@ public class AccountService : GenericBackendService, IAccountService
         try
         {
             var user = await _accountRepository.GetByExpression(u =>
-                u.Email.ToLower() == email.ToLower() && u.IsDeleted == false);
+                u!.Email.ToLower() == email.ToLower() && u.IsDeleted == false);
             if (user == null)
                 result = BuildAppActionResultError(result, $"The user with username {email} not found");
             else if (user.IsVerified == false)
@@ -86,14 +80,13 @@ public class AccountService : GenericBackendService, IAccountService
             if (!BuildAppActionResultIsError(result))
             {
                 result = await LoginDefault(email, user);
-                user.VerifyCode = null;
+                user!.VerifyCode = null;
                 await _unitOfWork.SaveChangesAsync();
             }
         }
         catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
-         
         }
 
         return result;
@@ -101,95 +94,82 @@ public class AccountService : GenericBackendService, IAccountService
 
     public async Task<AppActionResult> CreateAccount(SignUpRequestDto signUpRequest, bool isGoogle)
     {
-        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        var result = new AppActionResult();
+        try
         {
-            var result = new AppActionResult();
-            try
+            if (await _accountRepository.GetByExpression(r => r!.UserName == signUpRequest.Email) != null)
+                result = BuildAppActionResultError(result, "The email or username is existed");
+
+            if (!BuildAppActionResultIsError(result))
             {
-                var userRoleRepository = Resolve<IUserRoleRepository>();
-                var identityRoleRepository = Resolve<IIdentityRoleRepository>();
-                if (await _accountRepository.GetByExpression(r => r.UserName == signUpRequest.Email) != null)
-                    result = BuildAppActionResultError(result, "The email or username is existed");
+                var emailService = Resolve<IEmailService>();
+                var verifyCode = string.Empty;
+                if (!isGoogle) verifyCode = Guid.NewGuid().ToString("N").Substring(0, 6);
 
-                if (!BuildAppActionResultIsError(result))
+                var user = new Account
                 {
-                    var emailService = Resolve<IEmailService>();
-                    string verifyCode = null;
-                    if (!isGoogle) verifyCode = Guid.NewGuid().ToString("N").Substring(0, 6);
-
-                    var user = new Account
-                    {
-                        Email = signUpRequest.Email,
-                        UserName = signUpRequest.Email,
-                        FirstName = signUpRequest.FirstName,
-                        LastName = signUpRequest.LastName,
-                        PhoneNumber = signUpRequest.PhoneNumber,
-                        Gender = signUpRequest.Gender,
-                        VerifyCode = verifyCode,
-                        IsVerified = isGoogle ? true : false
-                    };
-                    var resultCreateUser = await _userManager.CreateAsync(user, signUpRequest.Password);
-                    if (resultCreateUser.Succeeded)
-                    {
-                        result.Result = user;
-                        if (!isGoogle)
-                            emailService.SendEmail(user.Email, SD.SubjectMail.VERIFY_ACCOUNT,
-                                TemplateMappingHelper.GetTemplateOTPEmail(
-                                    TemplateMappingHelper.ContentEmailType.VERIFICATION_CODE, verifyCode,
-                                    user.FirstName));
-                    }
-                    else
-                    {
-                        result = BuildAppActionResultError(result, $"{SD.ResponseMessage.CREATE_FAILED} USER");
-                    }
-
-                    var resultCreateRole = await _userManager.AddToRoleAsync(user, "CUSTOMER");
-                    if (!resultCreateRole.Succeeded) result = BuildAppActionResultError(result, "ASSIGN ROLE FAILED");
+                    Email = signUpRequest.Email,
+                    UserName = signUpRequest.Email,
+                    FirstName = signUpRequest.FirstName,
+                    LastName = signUpRequest.LastName,
+                    PhoneNumber = signUpRequest.PhoneNumber,
+                    Gender = signUpRequest.Gender,
+                    VerifyCode = verifyCode,
+                    IsVerified = isGoogle ? true : false
+                };
+                var resultCreateUser = await _userManager.CreateAsync(user, signUpRequest.Password);
+                if (resultCreateUser.Succeeded)
+                {
+                    result.Result = user;
+                    if (!isGoogle)
+                        emailService!.SendEmail(user.Email, SD.SubjectMail.VERIFY_ACCOUNT,
+                            TemplateMappingHelper.GetTemplateOTPEmail(
+                                TemplateMappingHelper.ContentEmailType.VERIFICATION_CODE, verifyCode,
+                                user.FirstName));
+                }
+                else
+                {
+                    result = BuildAppActionResultError(result, $"{SD.ResponseMessage.CREATE_FAILED} USER");
                 }
 
-                if (!BuildAppActionResultIsError(result)) scope.Complete();
+                var resultCreateRole = await _userManager.AddToRoleAsync(user, "CUSTOMER");
+                if (!resultCreateRole.Succeeded) result = BuildAppActionResultError(result, "ASSIGN ROLE FAILED");
             }
-            catch (Exception ex)
-            {
-                result = BuildAppActionResultError(result, ex.Message);
-             
-            }
-
-            return result;
         }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+
+        return result;
     }
 
     public async Task<AppActionResult> UpdateAccount(UpdateAccountRequestDto accountRequest)
     {
-        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        var result = new AppActionResult();
+        try
         {
-            var result = new AppActionResult();
-            try
+            var account =
+                await _accountRepository.GetByExpression(
+                    a => a!.UserName.ToLower() == accountRequest.Email.ToLower());
+            if (account == null)
+                result = BuildAppActionResultError(result, $"The user with email {account!.Email} not found");
+            if (!BuildAppActionResultIsError(result))
             {
-                var account =
-                    await _accountRepository.GetByExpression(
-                        a => a.UserName.ToLower() == accountRequest.Email.ToLower());
-                if (account == null)
-                    result = BuildAppActionResultError(result, $"The user with email {account.Email} not found");
-                if (!BuildAppActionResultIsError(result))
-                {
-                    account.FirstName = accountRequest.FirstName;
-                    account.LastName = accountRequest.LastName;
-                    account.PhoneNumber = accountRequest.PhoneNumber;
-                    result.Result = await _accountRepository.Update(account);
-                }
-
-                await _unitOfWork.SaveChangesAsync();
-                if (!BuildAppActionResultIsError(result)) scope.Complete();
-            }
-            catch (Exception ex)
-            {
-                result = BuildAppActionResultError(result, ex.Message);
-             
+                account.FirstName = accountRequest.FirstName;
+                account.LastName = accountRequest.LastName;
+                account.PhoneNumber = accountRequest.PhoneNumber;
+                result.Result = await _accountRepository.Update(account);
             }
 
-            return result;
+            await _unitOfWork.SaveChangesAsync();
         }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+
+        return result;
     }
 
     public async Task<AppActionResult> GetAccountByUserId(string id)
@@ -213,148 +193,128 @@ public class AccountService : GenericBackendService, IAccountService
     {
         var result = new AppActionResult();
 
-        result.Result = await _accountRepository.GetAllDataByExpression(null, pageIndex, pageSize: pageSize, null);
+        result.Result = await _accountRepository.GetAllDataByExpression(null, pageIndex, pageSize, null);
         return result;
     }
 
 
     public async Task<AppActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
     {
-        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        var result = new AppActionResult();
+
+        try
         {
-            var result = new AppActionResult();
-
-            try
+            if (await _accountRepository.GetByExpression(c =>
+                    c!.Email == changePasswordDto.Email && c.IsDeleted == false) == null)
+                result = BuildAppActionResultError(result,
+                    $"The user with email {changePasswordDto.Email} not found");
+            if (!BuildAppActionResultIsError(result))
             {
-                if (await _accountRepository.GetByExpression(c =>
-                        c.Email == changePasswordDto.Email && c.IsDeleted == false) == null)
-                    result = BuildAppActionResultError(result,
-                        $"The user with email {changePasswordDto.Email} not found");
-                if (!BuildAppActionResultIsError(result))
-                {
-                    var user = await _accountRepository.GetByExpression(c =>
-                        c.Email == changePasswordDto.Email && c.IsDeleted == false);
-                    var ChangePassword = await _userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword,
-                        changePasswordDto.NewPassword);
-                    if (!ChangePassword.Succeeded)
-                        result = BuildAppActionResultError(result, SD.ResponseMessage.CREATE_FAILED);
-                }
-
-                await _unitOfWork.SaveChangesAsync();
-                if (!BuildAppActionResultIsError(result)) scope.Complete();
-            }
-            catch (Exception ex)
-            {
-                result = BuildAppActionResultError(result, ex.Message);
-             
+                var user = await _accountRepository.GetByExpression(c =>
+                    c!.Email == changePasswordDto.Email && c.IsDeleted == false);
+                var changePassword = await _userManager.ChangePasswordAsync(user!, changePasswordDto.OldPassword,
+                    changePasswordDto.NewPassword);
+                if (!changePassword.Succeeded)
+                    result = BuildAppActionResultError(result, SD.ResponseMessage.CREATE_FAILED);
             }
 
-            return result;
+            await _unitOfWork.SaveChangesAsync();
         }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+
+        return result;
     }
 
     public async Task<AppActionResult> GetNewToken(string refreshToken, string userId)
     {
-        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        var result = new AppActionResult();
+
+        try
         {
-            var result = new AppActionResult();
+            var user = await _accountRepository.GetById(userId);
+            if (user == null)
+                result = BuildAppActionResultError(result, "The user is not existed");
+            else if (user.RefreshToken != refreshToken)
+                result = BuildAppActionResultError(result, "The refresh token is not exacted");
 
-            try
+            if (!BuildAppActionResultIsError(result))
             {
-                var user = await _accountRepository.GetById(userId);
-                if (user == null)
-                    result = BuildAppActionResultError(result, "The user is not existed");
-                else if (user.RefreshToken != refreshToken)
-                    result = BuildAppActionResultError(result, "The refresh token is not exacted");
-
-                if (!BuildAppActionResultIsError(result))
-                {
-                    var jwtService = Resolve<IJwtService>();
-                    result.Result = await jwtService.GetNewToken(refreshToken, userId);
-                }
-
-                await _unitOfWork.SaveChangesAsync();
-                if (!BuildAppActionResultIsError(result)) scope.Complete();
-            }
-            catch (Exception ex)
-            {
-                result = BuildAppActionResultError(result, ex.Message);
-             
+                var jwtService = Resolve<IJwtService>();
+                result.Result = await jwtService!.GetNewToken(refreshToken, userId);
             }
 
-            return result;
+            await _unitOfWork.SaveChangesAsync();
         }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+
+        return result;
     }
 
     public async Task<AppActionResult> ForgotPassword(ForgotPasswordDto dto)
     {
-        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        var result = new AppActionResult();
+
+        try
         {
-            var result = new AppActionResult();
+            var user = await _accountRepository.GetByExpression(a =>
+                a!.Email == dto.Email && a.IsDeleted == false && a.IsVerified == true);
+            if (user == null)
+                result = BuildAppActionResultError(result, "The user is not existed or is not verified");
+            else if (user.VerifyCode != dto.RecoveryCode)
+                result = BuildAppActionResultError(result, "The verification code is wrong.");
 
-            try
+            if (!BuildAppActionResultIsError(result))
             {
-                var user = await _accountRepository.GetByExpression(a =>
-                    a.Email == dto.Email && a.IsDeleted == false && a.IsVerified == true);
-                if (user == null)
-                    result = BuildAppActionResultError(result, "The user is not existed or is not verified");
-                else if (user.VerifyCode != dto.RecoveryCode)
-                    result = BuildAppActionResultError(result, "The verification code is wrong.");
-
-                if (!BuildAppActionResultIsError(result))
-                {
-                    await _userManager.RemovePasswordAsync(user);
-                    var AddPassword = await _userManager.AddPasswordAsync(user, dto.NewPassword);
-                    if (AddPassword.Succeeded)
-                        user.VerifyCode = null;
-                    else
-                        result = BuildAppActionResultError(result, "Change password failed");
-                }
-
-                await _unitOfWork.SaveChangesAsync();
-                if (!BuildAppActionResultIsError(result)) scope.Complete();
-            }
-            catch (Exception ex)
-            {
-                result = BuildAppActionResultError(result, ex.Message);
-             
+                await _userManager.RemovePasswordAsync(user!);
+                var addPassword = await _userManager.AddPasswordAsync(user!, dto.NewPassword);
+                if (addPassword.Succeeded)
+                    user!.VerifyCode = null;
+                else
+                    result = BuildAppActionResultError(result, "Change password failed");
             }
 
-            return result;
+            await _unitOfWork.SaveChangesAsync();
         }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+
+        return result;
     }
 
     public async Task<AppActionResult> ActiveAccount(string email, string verifyCode)
     {
-        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        var result = new AppActionResult();
+        try
         {
-            var result = new AppActionResult();
-            try
-            {
-                var user = await _accountRepository.GetByExpression(a =>
-                    a.Email == email && a.IsDeleted == false && a.IsVerified == false);
-                if (user == null)
-                    result = BuildAppActionResultError(result, "The user is not existed ");
-                else if (user.VerifyCode != verifyCode)
-                    result = BuildAppActionResultError(result, "The verification code is wrong.");
+            var user = await _accountRepository.GetByExpression(a =>
+                a!.Email == email && a.IsDeleted == false && a.IsVerified == false);
+            if (user == null)
+                result = BuildAppActionResultError(result, "The user is not existed ");
+            else if (user.VerifyCode != verifyCode)
+                result = BuildAppActionResultError(result, "The verification code is wrong.");
 
-                if (!BuildAppActionResultIsError(result))
-                {
-                    user.IsVerified = true;
-                    user.VerifyCode = null;
-                }
-
-                await _unitOfWork.SaveChangesAsync();
-                if (!BuildAppActionResultIsError(result)) scope.Complete();
-            }
-            catch (Exception ex)
+            if (!BuildAppActionResultIsError(result))
             {
-                result = BuildAppActionResultError(result, ex.Message);
-             
+                user!.IsVerified = true;
+                user.VerifyCode = null;
             }
 
-            return result;
+            await _unitOfWork.SaveChangesAsync();
         }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+
+        return result;
     }
 
     public async Task<AppActionResult> SendEmailForgotPassword(string email)
@@ -364,22 +324,21 @@ public class AccountService : GenericBackendService, IAccountService
         try
         {
             var user = await _accountRepository.GetByExpression(a =>
-                a.Email == email && a.IsDeleted == false && a.IsVerified == true);
+                a!.Email == email && a.IsDeleted == false && a.IsVerified == true);
             if (user == null) result = BuildAppActionResultError(result, "The user is not existed or is not verified");
 
             if (!BuildAppActionResultIsError(result))
             {
                 var emailService = Resolve<IEmailService>();
-                var code = await GenerateVerifyCode(user.Email, true);
+                var code = await GenerateVerifyCode(user!.Email, true);
                 emailService?.SendEmail(email, SD.SubjectMail.PASSCODE_FORGOT_PASSWORD,
                     TemplateMappingHelper.GetTemplateOTPEmail(TemplateMappingHelper.ContentEmailType.FORGOTPASSWORD,
-                        code, user.FirstName));
+                        code, user.FirstName!));
             }
         }
         catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
-         
         }
 
         return result;
@@ -392,22 +351,21 @@ public class AccountService : GenericBackendService, IAccountService
         try
         {
             var user = await _accountRepository.GetByExpression(a =>
-                a.Email == email && a.IsDeleted == false && a.IsVerified == false);
+                a!.Email == email && a.IsDeleted == false && a.IsVerified == false);
             if (user == null) result = BuildAppActionResultError(result, "The user does not existed or is verified");
 
             if (!BuildAppActionResultIsError(result))
             {
                 var emailService = Resolve<IEmailService>();
-                var code = await GenerateVerifyCode(user.Email, false);
-                emailService.SendEmail(email, SD.SubjectMail.VERIFY_ACCOUNT,
+                var code = await GenerateVerifyCode(user!.Email, false);
+                emailService!.SendEmail(email, SD.SubjectMail.VERIFY_ACCOUNT,
                     TemplateMappingHelper.GetTemplateOTPEmail(TemplateMappingHelper.ContentEmailType.VERIFICATION_CODE,
-                        code, user.FirstName));
+                        code, user.FirstName!));
             }
         }
         catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
-         
         }
 
         return result;
@@ -416,23 +374,18 @@ public class AccountService : GenericBackendService, IAccountService
     public async Task<string> GenerateVerifyCode(string email, bool isForForgettingPassword)
     {
         var code = string.Empty;
-        try
-        {
-            var user = await _accountRepository.GetByExpression(a =>
-                a.Email == email && a.IsDeleted == false && a.IsVerified == isForForgettingPassword);
 
-            if (user != null)
-            {
-                code = Guid.NewGuid().ToString("N").Substring(0, 6);
-                user.VerifyCode = code;
-            }
+        var user = await _accountRepository.GetByExpression(a =>
+            a!.Email == email && a.IsDeleted == false && a.IsVerified == isForForgettingPassword);
 
-            await _unitOfWork.SaveChangesAsync();
-        }
-        catch (Exception ex)
+        if (user != null)
         {
-         
+            code = Guid.NewGuid().ToString("N").Substring(0, 6);
+            user.VerifyCode = code;
         }
+
+        await _unitOfWork.SaveChangesAsync();
+
 
         return code;
     }
@@ -448,7 +401,7 @@ public class AccountService : GenericBackendService, IAccountService
                 var config = Resolve<FirebaseAdminSDK>();
                 var credential = GoogleCredential.FromJson(JsonConvert.SerializeObject(new
                 {
-                    type = config.Type,
+                    type = config!.Type,
                     project_id = config.Project_id,
                     private_key_id = config.Private_key_id,
                     private_key = config.Private_key,
@@ -474,19 +427,19 @@ public class AccountService : GenericBackendService, IAccountService
 
             if (userEmail != null)
             {
-                var user = await _accountRepository.GetByExpression(a => a.Email == userEmail && a.IsDeleted == false);
+                var user = await _accountRepository.GetByExpression(a => a!.Email == userEmail && a.IsDeleted == false);
                 if (user == null)
                 {
                     var resultCreate =
                         await CreateAccount(
                             new SignUpRequestDto
                             {
-                                Email = userEmail, FirstName = name, Gender = true, LastName = string.Empty,
+                                Email = userEmail, FirstName = name!, Gender = true, LastName = string.Empty,
                                 Password = "Google123@", PhoneNumber = string.Empty
                             }, true);
-                    if (resultCreate != null && resultCreate.IsSuccess)
+                    if (resultCreate.IsSuccess)
                     {
-                        var account = (Account)resultCreate.Result;
+                        var account = (Account)resultCreate.Result!;
                         result = await LoginDefault(userEmail, account);
                     }
                 }
@@ -497,7 +450,6 @@ public class AccountService : GenericBackendService, IAccountService
         catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
-         
         }
 
         return result;
@@ -507,33 +459,28 @@ public class AccountService : GenericBackendService, IAccountService
     {
         var result = new AppActionResult();
 
-        try
+
+        var jwtService = Resolve<IJwtService>();
+        var utility = Resolve<Utility>();
+        var token = await jwtService!.GenerateAccessToken(new LoginRequestDto { Email = email });
+
+        if (user!.RefreshToken == null)
         {
-            var jwtService = Resolve<IJwtService>();
-            var utility = Resolve<Utility>();
-            var token = await jwtService.GenerateAccessToken(new LoginRequestDto { Email = email });
-
-            if (user.RefreshToken == null)
-            {
-                user.RefreshToken = jwtService.GenerateRefreshToken();
-                user.RefreshTokenExpiryTime = utility.GetCurrentDateInTimeZone().AddDays(1);
-            }
-
-            if (user.RefreshTokenExpiryTime <= utility.GetCurrentDateInTimeZone())
-            {
-                user.RefreshTokenExpiryTime = utility.GetCurrentDateInTimeZone().AddDays(1);
-                user.RefreshToken = jwtService.GenerateRefreshToken();
-            }
-
-            _tokenDto.Token = token;
-            _tokenDto.RefreshToken = user.RefreshToken;
-            result.Result = _tokenDto;
-            await _unitOfWork.SaveChangesAsync();
+            user.RefreshToken = jwtService.GenerateRefreshToken();
+            user.RefreshTokenExpiryTime = utility!.GetCurrentDateInTimeZone().AddDays(1);
         }
-        catch (Exception ex)
+
+        if (user.RefreshTokenExpiryTime <= utility!.GetCurrentDateInTimeZone())
         {
-         
+            user.RefreshTokenExpiryTime = utility.GetCurrentDateInTimeZone().AddDays(1);
+            user.RefreshToken = jwtService.GenerateRefreshToken();
         }
+
+        _tokenDto.Token = token;
+        _tokenDto.RefreshToken = user.RefreshToken;
+        result.Result = _tokenDto;
+        await _unitOfWork.SaveChangesAsync();
+
 
         return result;
     }
@@ -541,78 +488,66 @@ public class AccountService : GenericBackendService, IAccountService
 
     public async Task<AppActionResult> AssignRoleForUserId(string userId, IList<string> roleId)
     {
-        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        var result = new AppActionResult();
+        try
         {
-            var result = new AppActionResult();
-            try
-            {
-                var user = await _accountRepository.GetById(userId);
-                var userRoleRepository = Resolve<IUserRoleRepository>();
-                var identityRoleRepository = Resolve<IIdentityRoleRepository>();
-                if (user == null)
-                    result = BuildAppActionResultError(result, $"The user with id {userId} is not existed");
+            var user = await _accountRepository.GetById(userId);
+            var userRoleRepository = Resolve<IRepository<IdentityUserRole<string>>>();
+            var identityRoleRepository = Resolve<IRepository<IdentityRole>>();
+            foreach (var role in roleId)
+                if (await identityRoleRepository!.GetById(role) == null)
+                    result = BuildAppActionResultError(result, $"The role with id {role} is not existed");
+
+            if (!BuildAppActionResultIsError(result))
                 foreach (var role in roleId)
-                    if (await identityRoleRepository.GetById(role) == null)
-                        result = BuildAppActionResultError(result, $"The role with id {role} is not existed");
+                {
+                    var roleDb = await identityRoleRepository!.GetById(role);
+                    var resultCreateRole = await _userManager.AddToRoleAsync(user, roleDb.NormalizedName);
+                    if (!resultCreateRole.Succeeded)
+                        result = BuildAppActionResultError(result, $"ASSIGN ROLE {role}  FAILED");
+                }
 
-                if (!BuildAppActionResultIsError(result))
-                    foreach (var role in roleId)
-                    {
-                        var roleDB = await identityRoleRepository.GetById(role);
-                        var resultCreateRole = await _userManager.AddToRoleAsync(user, roleDB.NormalizedName);
-                        if (!resultCreateRole.Succeeded)
-                            result = BuildAppActionResultError(result, $"ASSIGN ROLE {role}  FAILED");
-                    }
-
-                await _unitOfWork.SaveChangesAsync();
-                if (!BuildAppActionResultIsError(result)) scope.Complete();
-            }
-            catch (Exception ex)
-            {
-                result = BuildAppActionResultError(result, ex.Message);
-             
-            }
-
-            return result;
+            await _unitOfWork.SaveChangesAsync();
         }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+
+        return result;
     }
 
     public async Task<AppActionResult> RemoveRoleForUserId(string userId, IList<string> roleId)
     {
-        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        var result = new AppActionResult();
+
+        try
         {
-            var result = new AppActionResult();
+            var user = await _accountRepository.GetById(userId);
+            var userRoleRepository = Resolve<IRepository<IdentityUserRole<string>>>();
+            var identityRoleRepository = Resolve<IRepository<IdentityRole>>();
+            if (user == null)
+                result = BuildAppActionResultError(result, $"The user with id {userId} is not existed");
+            foreach (var role in roleId)
+                if (await identityRoleRepository.GetById(role) == null)
+                    result = BuildAppActionResultError(result, $"The role with id {role} is not existed");
 
-            try
-            {
-                var user = await _accountRepository.GetById(userId);
-                var userRoleRepository = Resolve<IUserRoleRepository>();
-                var identityRoleRepository = Resolve<IIdentityRoleRepository>();
-                if (user == null)
-                    result = BuildAppActionResultError(result, $"The user with id {userId} is not existed");
+            if (!BuildAppActionResultIsError(result))
                 foreach (var role in roleId)
-                    if (await identityRoleRepository.GetById(role) == null)
-                        result = BuildAppActionResultError(result, $"The role with id {role} is not existed");
+                {
+                    var roleDb = await identityRoleRepository!.GetById(role);
+                    var resultCreateRole = await _userManager.RemoveFromRoleAsync(user!, roleDb.NormalizedName);
+                    if (!resultCreateRole.Succeeded)
+                        result = BuildAppActionResultError(result, $"REMOVE ROLE {role}  FAILED");
+                }
 
-                if (!BuildAppActionResultIsError(result))
-                    foreach (var role in roleId)
-                    {
-                        var roleDB = await identityRoleRepository.GetById(role);
-                        var resultCreateRole = await _userManager.RemoveFromRoleAsync(user, roleDB.NormalizedName);
-                        if (!resultCreateRole.Succeeded)
-                            result = BuildAppActionResultError(result, $"REMOVE ROLE {role}  FAILED");
-                    }
-
-                await _unitOfWork.SaveChangesAsync();
-                if (!BuildAppActionResultIsError(result)) scope.Complete();
-            }
-            catch (Exception ex)
-            {
-                result = BuildAppActionResultError(result, ex.Message);
-             
-            }
-
-            return result;
+            await _unitOfWork.SaveChangesAsync();
         }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+
+        return result;
     }
 }

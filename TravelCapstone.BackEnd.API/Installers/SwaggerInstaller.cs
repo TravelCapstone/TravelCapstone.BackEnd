@@ -35,7 +35,7 @@ public class SwaggerInstaller : IInstaller
             option.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Travel Canstone API",
+                Title = "Travel Capstone API",
                 Description = "©Copyright: Hồng Quân & Minh Khang",
                 TermsOfService = new Uri("https://example.com/terms"),
                 Contact = new OpenApiContact

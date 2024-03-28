@@ -5,8 +5,8 @@ using System.Text;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using NetCore.QK.DbContext;
-using TravelCapstone.BackEnd.Application.IRepositories;
+using NetCore.QK.BackEndCore.Application.IRepositories;
+using NetCore.QK.BackEndCore.Application.IUnitOfWork;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.ConfigurationModel;
 using TravelCapstone.BackEnd.Common.DTO;
@@ -18,10 +18,10 @@ namespace TravelCapstone.BackEnd.Application.Services;
 
 public class JwtService : GenericBackendService, IJwtService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly UserManager<Account> _userManager;
     private readonly JWTConfiguration _jwtConfiguration;
     private readonly BackEndLogger _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly UserManager<Account> _userManager;
 
     public JwtService(
         IUnitOfWork unitOfWork,
@@ -34,7 +34,7 @@ public class JwtService : GenericBackendService, IJwtService
         _unitOfWork = unitOfWork;
         _userManager = userManager;
         _logger = logger;
-        _jwtConfiguration = Resolve<JWTConfiguration>();
+        _jwtConfiguration = Resolve<JWTConfiguration>()!;
     }
 
     public string GenerateRefreshToken()
@@ -49,9 +49,10 @@ public class JwtService : GenericBackendService, IJwtService
     {
         try
         {
-            var accountRepository = Resolve<IAccountRepository>();
+            var accountRepository = Resolve<IRepository<Account>>();
             var utility = Resolve<Utility>();
-            var user = await accountRepository.GetByExpression(u => u.Email.ToLower() == loginRequest.Email.ToLower());
+            var user = await accountRepository!.GetByExpression(u =>
+                u!.Email.ToLower() == loginRequest.Email.ToLower());
 
             if (user != null)
             {
@@ -65,11 +66,11 @@ public class JwtService : GenericBackendService, IJwtService
                         new("AccountId", user.Id)
                     };
                     claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.ToUpper())));
-                    var authenKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.Key));
+                    var authenKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.Key!));
                     var token = new JwtSecurityToken(
                         _jwtConfiguration.Issuer,
                         _jwtConfiguration.Audience,
-                        expires: utility.GetCurrentDateInTimeZone().AddDays(1),
+                        expires: utility!.GetCurrentDateInTimeZone().AddDays(1),
                         claims: claims,
                         signingCredentials: new SigningCredentials(authenKey, SecurityAlgorithms.HmacSha512Signature)
                     );
@@ -93,10 +94,10 @@ public class JwtService : GenericBackendService, IJwtService
             var refreshTokenNew = "";
             try
             {
-                var accountRepository = Resolve<IAccountRepository>();
+                var accountRepository = Resolve<IRepository<Account>>();
                 var utility = Resolve<Utility>();
 
-                var user = await accountRepository.GetByExpression(u => u.Id.ToLower() == accountId);
+                var user = await accountRepository!.GetByExpression(u => u!.Id.ToLower() == accountId);
 
                 if (user != null && user.RefreshToken == refreshToken)
                 {
@@ -108,12 +109,12 @@ public class JwtService : GenericBackendService, IJwtService
                         new("AccountId", user.Id)
                     };
                     claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
-                    var authenKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.Key));
+                    var authenKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.Key!));
                     var token = new JwtSecurityToken
                     (
                         _jwtConfiguration.Issuer,
                         _jwtConfiguration.Audience,
-                        expires: utility.GetCurrentDateInTimeZone().AddDays(1),
+                        expires: utility!.GetCurrentDateInTimeZone().AddDays(1),
                         claims: claims,
                         signingCredentials: new SigningCredentials(authenKey, SecurityAlgorithms.HmacSha512Signature)
                     );
