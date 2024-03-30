@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelCapstone.BackEnd.Application", "TravelCapstone.BackEnd.Application\TravelCapstone.BackEnd.Application.csproj", "{4ECDAAFA-1016-4018-A0B0-DDE76421134A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravelCapstone.BackEnd.Application", "TravelCapstone.BackEnd.Application\TravelCapstone.BackEnd.Application.csproj", "{4ECDAAFA-1016-4018-A0B0-DDE76421134A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelCapstone.BackEnd.Domain", "TravelCapstone.BackEnd.Domain\TravelCapstone.BackEnd.Domain.csproj", "{167DE58E-D956-4D50-89C2-5A338A993300}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravelCapstone.BackEnd.Domain", "TravelCapstone.BackEnd.Domain\TravelCapstone.BackEnd.Domain.csproj", "{167DE58E-D956-4D50-89C2-5A338A993300}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelCapstone.BackEnd.Infrastructure", "TravelCapstone.BackEnd.Infrastructure\TravelCapstone.BackEnd.Infrastructure.csproj", "{8DFB043B-73DF-438A-9B1A-71500AAF14A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravelCapstone.BackEnd.Infrastructure", "TravelCapstone.BackEnd.Infrastructure\TravelCapstone.BackEnd.Infrastructure.csproj", "{8DFB043B-73DF-438A-9B1A-71500AAF14A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelCapstone.BackEnd.API", "TravelCapstone.BackEnd.API\TravelCapstone.BackEnd.API.csproj", "{483CDD4E-FDDD-41D7-A822-64EF2D808D10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravelCapstone.BackEnd.API", "TravelCapstone.BackEnd.API\TravelCapstone.BackEnd.API.csproj", "{483CDD4E-FDDD-41D7-A822-64EF2D808D10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelCapstone.BackEnd.Common", "TravelCapstone.BackEnd.Common\TravelCapstone.BackEnd.Common.csproj", "{C8747384-C14B-49C0-BF86-5B5C59123E84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravelCapstone.BackEnd.Common", "TravelCapstone.BackEnd.Common\TravelCapstone.BackEnd.Common.csproj", "{C8747384-C14B-49C0-BF86-5B5C59123E84}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{891B522C-8600-4289-AA7D-0A16B8E8B1AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{C8747384-C14B-49C0-BF86-5B5C59123E84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8747384-C14B-49C0-BF86-5B5C59123E84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8747384-C14B-49C0-BF86-5B5C59123E84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{891B522C-8600-4289-AA7D-0A16B8E8B1AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{891B522C-8600-4289-AA7D-0A16B8E8B1AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{891B522C-8600-4289-AA7D-0A16B8E8B1AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{891B522C-8600-4289-AA7D-0A16B8E8B1AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

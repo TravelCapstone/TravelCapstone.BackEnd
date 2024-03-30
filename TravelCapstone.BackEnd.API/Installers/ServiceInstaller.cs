@@ -1,11 +1,10 @@
-﻿using NetCore.QK.BackEndCore.Application.IRepositories;
-using NetCore.QK.BackEndCore.Application.IUnitOfWork;
-using NetCore.QK.BackEndCore.Domain;
-using NetCore.QK.BackEndCore.Infrastructure.Repositories;
-using NetCore.QK.BackEndCore.Infrastructure.UnitOfWork;
+﻿using TravelCapstone.BackEnd.Application;
+using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Application.Services;
 using TravelCapstone.BackEnd.Domain.Data;
+using TravelCapstone.BackEnd.Infrastructure.Repositories;
+using TravelCapstone.BackEnd.Infrastructure.UnitOfWork;
 
 namespace TravelCapstone.BackEnd.API.Installers;
 
@@ -13,6 +12,7 @@ public class ServiceInstaller : IInstaller
 {
     public void InstallService(IServiceCollection services, IConfiguration configuration)
     {
+        services.AddHttpClient();
         services.AddScoped<IDbContext, TravelCapstoneDbContext>();
         services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
         //========//

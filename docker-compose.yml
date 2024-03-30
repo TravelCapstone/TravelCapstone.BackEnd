@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  travelcapstone.backend.api.database:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: travelcapstone.backend.db
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "03122002Hq@@"
+    volumes:
+      - ./.containers/travelcapstone.backend.db:/var/lib/mssql/data
+    ports:
+      - 5432:5432
+  travelcapstone.backend.api:
+    image: ${DOCKER_REGISTRY-}travelcapstonebackendapi
+    container_name: travelcapstone.backend.api
+    build:
+      context: .
+      dockerfile: TravelCapstone.BackEnd.API/Dockerfile
+    ports:
+     - "5000:80"
+     - "5001:443"
+

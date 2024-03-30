@@ -1,10 +1,10 @@
+using AutoMapper;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Identity;
-using NetCore.QK.BackEndCore.Application.IRepositories;
-using NetCore.QK.BackEndCore.Application.IUnitOfWork;
 using Newtonsoft.Json;
+using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.ConfigurationModel;
 using TravelCapstone.BackEnd.Common.DTO;
@@ -21,12 +21,14 @@ public class AccountService : GenericBackendService, IAccountService
     private readonly TokenDto _tokenDto;
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<Account> _userManager;
+    private IMapper _mapper;
 
     public AccountService(
         IRepository<Account> accountRepository,
         IUnitOfWork unitOfWork,
         UserManager<Account> userManager,
         SignInManager<Account> signInManager,
+        IMapper mapper,
         IServiceProvider serviceProvider
     ) : base(serviceProvider)
     {
@@ -35,6 +37,7 @@ public class AccountService : GenericBackendService, IAccountService
         _userManager = userManager;
         _signInManager = signInManager;
         _tokenDto = new TokenDto();
+        _mapper = mapper;
     }
 
     public async Task<AppActionResult> Login(LoginRequestDto loginRequest)
@@ -192,8 +195,30 @@ public class AccountService : GenericBackendService, IAccountService
     public async Task<AppActionResult> GetAllAccount(int pageIndex, int pageSize)
     {
         var result = new AppActionResult();
+        var list = await _accountRepository.GetAllDataByExpression(null, pageIndex, pageSize, null);
 
-        result.Result = await _accountRepository.GetAllDataByExpression(null, pageIndex, pageSize, null);
+        var userRoleRepository = Resolve<IRepository<IdentityUserRole<string>>>();
+        var roleRepository = Resolve<IRepository<IdentityRole>>();
+        var listRole = await roleRepository!.GetAllDataByExpression(null, 1, 100, null);
+        var listMap = _mapper.Map<List<AccountResponse>>(list.Items);
+        foreach (var item in listMap)
+        {
+            List<IdentityRole> userRole = new List<IdentityRole>();
+            var role = await userRoleRepository!.GetAllDataByExpression(a => a.UserId == item.Id, 1, 100, null);
+            foreach (var itemRole in role.Items!)
+            {
+                var roleUser = listRole.Items!.ToList().FirstOrDefault(a => a.Id == itemRole.RoleId);
+                if (roleUser != null)
+                {
+                    userRole.Add(roleUser);
+                }
+            }
+            item.Role = userRole;
+        }
+
+        result.Result =
+            new PagedResult<AccountResponse>
+                { Items = listMap, TotalPages = list.TotalPages };
         return result;
     }
 
