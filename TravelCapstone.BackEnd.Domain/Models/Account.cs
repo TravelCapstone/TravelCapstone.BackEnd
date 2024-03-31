@@ -5,7 +5,7 @@ namespace TravelCapstone.BackEnd.Domain.Models;
 public class Account : IdentityUser
 {
     public override string? PhoneNumber { get; set; }
-    public string? FirstName { get; set; }
+    public string? FirstName { get; set; } 
     public string? LastName { get; set; }
     public bool Gender { get; set; }
     public bool IsDeleted { get; set; } = false;
