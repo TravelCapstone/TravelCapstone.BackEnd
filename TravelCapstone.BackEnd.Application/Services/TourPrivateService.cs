@@ -27,7 +27,7 @@ public class TourPrivateService : GenericBackendService, ITourPrivateService
             (null, pageNumber: pageNumber,
                 pageSize: pageSize,
                 p => p.Tour, p => p.Account!);
-            result.Result =   _mapper.Map<PagedResult<PrivateTourRequestDto>>(data);
+            result.Result =   _mapper.Map<PagedResult<PrivateTourResponeDto>>(data);
         }
         catch (Exception e)
         {

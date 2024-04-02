@@ -34,7 +34,7 @@ public class MappingConfig
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
                 ;
             
-            config.CreateMap<PrivateTourRequest,PrivateTourRequestDto>()
+            config.CreateMap<PrivateTourRequest,PrivateTourResponeDto>()
                 .ForMember(desc => desc.Id, act => act.MapFrom(src => src.Id))
                 .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
                 .ForMember(desc => desc.Description, act => act.MapFrom(src => src.Description))
@@ -45,7 +45,7 @@ public class MappingConfig
                 .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
                 .ForMember(desc => desc.Account, act => act.MapFrom(src => src.Account));
             
-            config.CreateMap<PagedResult<PrivateTourRequest>, PagedResult<PrivateTourRequestDto>>()
+            config.CreateMap<PagedResult<PrivateTourRequest>, PagedResult<PrivateTourResponeDto>>()
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
         });
         // Trong class MappingConfig

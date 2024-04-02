@@ -19,7 +19,7 @@ namespace TravelCapstone.BackEnd.API.Controllers
         }
 
         [HttpPost("create-private-tour-request")]
-        public async Task<AppActionResult> CreatePrivateTourRequest(PrivateTourRequestDTO request)
+        public async Task<AppActionResult> CreatePrivateTourRequest([FromBody]PrivateTourRequestDTO request)
         {
             var result = await _validator.ValidateAsync(request);
             if (!result.IsValid)

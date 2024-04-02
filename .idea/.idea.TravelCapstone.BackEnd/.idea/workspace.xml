@@ -13,16 +13,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e71fb8a2-e3ce-43ad-97fd-709657ec94ab" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/ITourPrivateService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/TourPrivateService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/PrivateTourRequestDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/dataSources/6f67a895-0f5e-4033-a0f2-a64fc8a00359.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/dataSources/6f67a895-0f5e-4033-a0f2-a64fc8a00359.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/TourController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/TourController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ServiceInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ServiceInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/TourService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/TourService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/TourDetail.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/TourDetail.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Mapping/MappingConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Mapping/MappingConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/PrivateTourRequestDTO.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/PrivateTourRequestDTO.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +79,7 @@
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="false" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="SWEA" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
