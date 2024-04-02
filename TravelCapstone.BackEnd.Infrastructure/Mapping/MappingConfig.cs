@@ -20,6 +20,19 @@ public class MappingConfig
                 .ForMember(desc => desc.PhoneNumber, act => act.MapFrom(src => src.PhoneNumber))
                 .ForMember(desc => desc.UserName, act => act.MapFrom(src => src.UserName))
                 ;
+
+            config.CreateMap<PrivateTourRequestDTO, PrivateTourRequest>()
+                .ForMember(desc => desc.Name, act => act.MapFrom(src => src.Name))
+                .ForMember(desc => desc.StartDate, act => act.MapFrom(src => src.StartDate))
+                .ForMember(desc => desc.EndDate, act => act.MapFrom(src => src.EndDate))
+                .ForMember(desc => desc.Description, act => act.MapFrom(src => src.Description))
+                .ForMember(desc => desc.NumOfAdult, act => act.MapFrom(src => src.NumOfAdult))
+                .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
+                .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
+                .ForMember(desc => desc.MainVehicle, act => act.MapFrom(src => src.MainVehicle))
+                .ForMember(desc => desc.isEnterprise, act => act.MapFrom(src => src.isEnterprise))
+                .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
+                ;
         });
         return mappingConfig;
     }
