@@ -12,4 +12,5 @@ public class DayPlanDto
 {
     public DayPlan DayPlan { get; set; }
     public List<Route> Routes { get; set; }
+    public List<Material> Materials { get; set; }
 }

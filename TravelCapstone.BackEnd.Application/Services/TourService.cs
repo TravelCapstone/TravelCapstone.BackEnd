@@ -21,19 +21,23 @@ public class TourService : GenericBackendService, ITourService
         {
             var dayPlanRepository = Resolve<IRepository<DayPlan>>();
             var routeRepository = Resolve<IRepository<Route>>();
+            var materialRepository = Resolve<IRepository<Material>>();
             var detail = new TourDetail();
             detail.DayPlanDtos = new List<DayPlanDto>();
             var tour = await _repository.GetById(id);
             detail.Tour = tour;
 
             var listPlan = await dayPlanRepository!.GetAllDataByExpression(a => a.TourId == id, 0, 0, null);
-            foreach (var item in listPlan.Items)
+            foreach (var item in listPlan.Items!)
             {
-                var route = await routeRepository!.GetAllDataByExpression(a => a.DayPlanId == item.Id, 0, 0, null);
-                detail.DayPlanDtos.Add(new DayPlanDto
+                var route = await routeRepository!.GetAllDataByExpression(a => a.DayPlanId == item.Id, 0, 0, a=> a.StartPoint!,a=> a.EndPoint!);
+                var materials =
+                    await materialRepository!.GetAllDataByExpression(a => a.DayPlanId == item.Id, 0, 0, null);
+              detail.DayPlanDtos.Add(new DayPlanDto
                 {
                     DayPlan = item,
-                    Routes = route.Items
+                    Routes = route.Items!,
+                    Materials = materials.Items!
                 });
             }
 
