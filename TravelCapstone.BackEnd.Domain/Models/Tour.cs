@@ -12,6 +12,8 @@ public class Tour
     public string Description { get; set; } = null!;
     public MainVehicleTour MainVehicle { get; set; }
     public double Price { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
     public TourType TourType { get; set; }
     public string? QRCode { get; set; }
     public TourStatus TourStatus { get; set; }

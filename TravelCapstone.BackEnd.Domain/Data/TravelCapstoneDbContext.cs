@@ -20,7 +20,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<TourTraveller> TourTravellers { get; set; }
     public DbSet<AttendanceDetail> AttendanceDetails { get; set; }
     public DbSet<AttendanceRoute> AttendanceRoutes { get; set; }
-    public DbSet<Commune> Communces { get; set; }
+    public DbSet<Commune> Communes { get; set; }
     public DbSet<DayPlan> DayPlans { get; set; }
     public DbSet<Destination> Destinations { get; set; }
     public DbSet<District> Districts { get; set; }
