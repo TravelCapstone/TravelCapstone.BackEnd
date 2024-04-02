@@ -13,12 +13,13 @@ public class ServiceInstaller : IInstaller
     public void InstallService(IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpClient();
-        services.AddScoped<IDbContext, TravelCapstoneDbContext>();
         services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
         //========//
+        services.AddScoped<IDbContext, TravelCapstoneDbContext>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ITourService, TourService>();
     }
 }

@@ -24,7 +24,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet("get-all-account")]
-    public async Task<AppActionResult> GetAllAccount(int pageIndex=1, int pageSize=10)
+    public async Task<AppActionResult> GetAllAccount(int pageIndex = 1, int pageSize = 10)
     {
         return await _accountService.GetAllAccount(pageIndex, pageSize);
     }

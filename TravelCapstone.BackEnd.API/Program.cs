@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System;
 using TravelCapstone.BackEnd.API.Installers;
 using TravelCapstone.BackEnd.Domain.Data;
 using TravelCapstone.BackEnd.Infrastructure.ServerHub;
@@ -44,14 +43,12 @@ app.MapControllers();
 app.MapHub<NotificationHub>(nameof(NotificationHub));
 ApplyMigration();
 app.Run();
+
 void ApplyMigration()
 {
     using (var scope = app.Services.CreateScope())
     {
         var _db = scope.ServiceProvider.GetRequiredService<TravelCapstoneDbContext>();
-        if (_db.Database.GetPendingMigrations().Count() > 0)
-        {
-            _db.Database.Migrate();
-        }
+        if (_db.Database.GetPendingMigrations().Count() > 0) _db.Database.Migrate();
     }
 }

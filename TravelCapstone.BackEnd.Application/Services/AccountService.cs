@@ -21,7 +21,7 @@ public class AccountService : GenericBackendService, IAccountService
     private readonly TokenDto _tokenDto;
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<Account> _userManager;
-    private IMapper _mapper;
+    private readonly IMapper _mapper;
 
     public AccountService(
         IRepository<Account> accountRepository,
@@ -203,16 +203,14 @@ public class AccountService : GenericBackendService, IAccountService
         var listMap = _mapper.Map<List<AccountResponse>>(list.Items);
         foreach (var item in listMap)
         {
-            List<IdentityRole> userRole = new List<IdentityRole>();
+            var userRole = new List<IdentityRole>();
             var role = await userRoleRepository!.GetAllDataByExpression(a => a.UserId == item.Id, 1, 100, null);
             foreach (var itemRole in role.Items!)
             {
                 var roleUser = listRole.Items!.ToList().FirstOrDefault(a => a.Id == itemRole.RoleId);
-                if (roleUser != null)
-                {
-                    userRole.Add(roleUser);
-                }
+                if (roleUser != null) userRole.Add(roleUser);
             }
+
             item.Role = userRole;
         }
 
