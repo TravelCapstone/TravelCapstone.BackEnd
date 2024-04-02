@@ -46,16 +46,5 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<VehicleRoute> VehicleRoutes { get; set; }
 
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        IConfiguration config = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", true, true)
-            .Build();
-        var cs = config["ConnectionStrings:DB"];
-        cs =
-            "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;";
-        if (!optionsBuilder.IsConfigured) optionsBuilder.UseSqlServer(cs);
-    }
+    
 }

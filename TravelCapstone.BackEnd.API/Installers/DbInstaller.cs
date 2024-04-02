@@ -11,7 +11,7 @@ public class DbInstaller : IInstaller
     {
         services.AddDbContext<TravelCapstoneDbContext>(option =>
         {
-            option.UseSqlServer(configuration["ConnectionStrings:DB"]);
+            option.UseSqlServer(configuration["ConnectionStrings:Host"]);
         });
 
         services.AddIdentity<Account, IdentityRole>().AddEntityFrameworkStores<TravelCapstoneDbContext>()
