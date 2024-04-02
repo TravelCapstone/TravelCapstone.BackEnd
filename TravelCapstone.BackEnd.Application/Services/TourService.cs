@@ -26,10 +26,10 @@ public class TourService : GenericBackendService, ITourService
             var tour = await _repository.GetById(id);
             detail.Tour = tour;
 
-            var listPlan = await dayPlanRepository.GetAllDataByExpression(a => a.TourId == id, 0, 0, null);
+            var listPlan = await dayPlanRepository!.GetAllDataByExpression(a => a.TourId == id, 0, 0, null);
             foreach (var item in listPlan.Items)
             {
-                var route = await routeRepository.GetAllDataByExpression(a => a.DayPlanId == item.Id, 0, 0, null);
+                var route = await routeRepository!.GetAllDataByExpression(a => a.DayPlanId == item.Id, 0, 0, null);
                 detail.DayPlanDtos.Add(new DayPlanDto
                 {
                     DayPlan = item,
