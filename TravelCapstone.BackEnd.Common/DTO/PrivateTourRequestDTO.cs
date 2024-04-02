@@ -21,6 +21,5 @@ namespace TravelCapstone.BackEnd.Common.DTO
         public VehicleType MainVehicle { get; set; }
         public bool isEnterprise { get; set; }
         public string? AccountId { get; set; }
-        public AccountResponse? Account {  get; set; }
     }
 }

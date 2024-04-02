@@ -44,7 +44,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     var tourDb = await tourRepository.GetById(privateTourequestDTO.TourId);
                     if (tourDb == null)
                     {
-                        result = BuildAppActionResultError(result, $"Tour with id {privateTourequestDTO.TourId} not found");
+                        result = BuildAppActionResultError(result, $"Không tìm thấy tour với id {privateTourequestDTO.TourId}");
                         return result;
                     }
 
@@ -52,14 +52,14 @@ namespace TravelCapstone.BackEnd.Application.Services
                     var accountDb = await accountRepository.GetById(privateTourequestDTO.AccountId);
                     if (accountDb == null)
                     {
-                        result = BuildAppActionResultError(result, $"Account with id {privateTourequestDTO.AccountId} not found");
+                        result = BuildAppActionResultError(result, $"Không tìm thấy tài khoản với id {privateTourequestDTO.AccountId}");
                         return result;
                     }
 
                     //Need improvement for condition
                     if(!isValidTime(tourDb.EndDate, tourDb.StartDate, privateTourequestDTO.EndDate, privateTourequestDTO.StartDate))
                     {
-                        result = BuildAppActionResultError(result, $"Request tour length is less than cloned one");
+                        result = BuildAppActionResultError(result, $"Lộ trình yêu cầu ngắn hơn lộ trình của tour mẫu");
                         return result;
                     }
 
