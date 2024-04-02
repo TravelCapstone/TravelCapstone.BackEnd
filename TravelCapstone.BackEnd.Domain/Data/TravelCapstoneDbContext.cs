@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
 using TravelCapstone.BackEnd.Domain.Models;
 
@@ -16,37 +15,36 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     {
     }
 
-    public DbSet<Account> Accounts { get; set; } = null!;
-    public DbSet<Configuration> Configurations { get; set; } = null!;
-    public DbSet<TourTraveller> TourTravellers { get; set; } = null!;
-    public DbSet<AttendanceDetail> AttendanceDetails { get; set; } = null!;
-    public DbSet<AttendanceRoute> AttendanceRoutes { get; set; } = null!;
-    public DbSet<Communce> Communces { get; set; } = null!;
-    public DbSet<DayPlan> DayPlans { get; set; } = null!;
-    public DbSet<Destination> Destinations { get; set; } = null!;
-    public DbSet<District> Districts { get; set; } = null!;
-    public DbSet<Driver> Drivers { get; set; } = null!;
-    public DbSet<Material> Materials { get; set; } = null!;
-    public DbSet<OptionQuotation> OptionQuotations { get; set; } = null!;
-    public DbSet<Order> Orders { get; set; } = null!;
-    public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
-    public DbSet<PlanServiceCostDetail> PlanServiceCostDetails { get; set; } = null!;
-    public DbSet<PrivateJoinTourRequest> PrivateJoinTourRequests { get; set; } = null!;
-    public DbSet<PrivateTourRequest> PrivateTourRequests { get; set; } = null!;
-    public DbSet<Province> Provinces { get; set; } = null!;
-    public DbSet<QuotationDetail> QuotationDetails { get; set; } = null!;
-    public DbSet<Route> Routes { get; set; } = null!;
-    public DbSet<SellPriceHistory> SellPriceHistorys { get; set; } = null!;
-    public DbSet<Service> Services { get; set; } = null!;
-    public DbSet<ServiceCostHistory> ServiceCostHistorys { get; set; } = null!;
-    public DbSet<ServiceProvider> ServiceProviders { get; set; } = null!;
-    public DbSet<Tour> Tours { get; set; } = null!;
-    public DbSet<TourRegistration> TourRegistrations { get; set; } = null!;
-    public DbSet<Transaction> Transactions { get; set; } = null!;
-    public DbSet<TravelCompanion> TravelCompanions { get; set; } = null!; 
-    public DbSet<Vehicle> Vehicles { get; set; } = null!;
-    public DbSet<VehicleRoute> VehicleRoutes { get; set; } = null!;
-
+    public DbSet<Account> Accounts { get; set; }
+    public DbSet<Configuration> Configurations { get; set; }
+    public DbSet<TourTraveller> TourTravellers { get; set; }
+    public DbSet<AttendanceDetail> AttendanceDetails { get; set; }
+    public DbSet<AttendanceRoute> AttendanceRoutes { get; set; }
+    public DbSet<Commune> Communces { get; set; }
+    public DbSet<DayPlan> DayPlans { get; set; }
+    public DbSet<Destination> Destinations { get; set; }
+    public DbSet<District> Districts { get; set; }
+    public DbSet<Driver> Drivers { get; set; }
+    public DbSet<Material> Materials { get; set; }
+    public DbSet<OptionQuotation> OptionQuotations { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderDetail> OrderDetails { get; set; }
+    public DbSet<PlanServiceCostDetail> PlanServiceCostDetails { get; set; }
+    public DbSet<PrivateJoinTourRequest> PrivateJoinTourRequests { get; set; }
+    public DbSet<PrivateTourRequest> PrivateTourRequests { get; set; }
+    public DbSet<Province> Provinces { get; set; }
+    public DbSet<QuotationDetail> QuotationDetails { get; set; }
+    public DbSet<Route> Routes { get; set; }
+    public DbSet<SellPriceHistory> SellPriceHistorys { get; set; }
+    public DbSet<Service> Services { get; set; }
+    public DbSet<ServiceCostHistory> ServiceCostHistorys { get; set; }
+    public DbSet<ServiceProvider> ServiceProviders { get; set; }
+    public DbSet<Tour> Tours { get; set; }
+    public DbSet<TourRegistration> TourRegistrations { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
+    public DbSet<TravelCompanion> TravelCompanions { get; set; }
+    public DbSet<Vehicle> Vehicles { get; set; }
+    public DbSet<VehicleRoute> VehicleRoutes { get; set; }
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -56,6 +54,8 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
             .AddJsonFile("appsettings.json", true, true)
             .Build();
         var cs = config["ConnectionStrings:DB"];
+        cs =
+            "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;";
         if (!optionsBuilder.IsConfigured) optionsBuilder.UseSqlServer(cs);
     }
 }

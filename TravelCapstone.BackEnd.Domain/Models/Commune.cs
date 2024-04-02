@@ -3,13 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TravelCapstone.BackEnd.Domain.Models;
 
-public class DayPlan
+public class Commune
 {
     [Key] public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
-    public string Description { get; set; } = null!;
-    public Guid TourId { get; set; }
+    public Guid DistrictId { get; set; }
 
-    [ForeignKey(nameof(TourId))] public Tour? Tour { get; set; }
+    [ForeignKey(nameof(DistrictId))] public District? District { get; set; }
 }

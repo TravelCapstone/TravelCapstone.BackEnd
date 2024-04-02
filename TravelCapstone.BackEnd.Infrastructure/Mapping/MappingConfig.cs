@@ -20,8 +20,6 @@ public class MappingConfig
                 .ForMember(desc => desc.PhoneNumber, act => act.MapFrom(src => src.PhoneNumber))
                 .ForMember(desc => desc.UserName, act => act.MapFrom(src => src.UserName))
                 ;
-
-            
         });
         return mappingConfig;
     }

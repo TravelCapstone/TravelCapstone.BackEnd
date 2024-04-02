@@ -1,27 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TravelCapstone.BackEnd.Domain.Models
+namespace TravelCapstone.BackEnd.Domain.Models;
+
+public class TourRegistration
 {
-    public class TourRegistration
-    {
-        [Key]
-        public Guid Id { get; set; }
-        public Guid TourId { get; set; }
-        [ForeignKey(nameof(TourId))]
-        public Tour? Tour { get; set; }
-        public Guid PresenterId { get; set; }
-        [ForeignKey(nameof(PresenterId))]
-        public TravelCompanion? Presenter { get; set; } 
-        public Guid? FollowerId { get; set; }
-        [ForeignKey(nameof(FollowerId))]
-        public TravelCompanion? Follower { get; set; } 
+    [Key] public Guid Id { get; set; }
 
+    public Guid TourId { get; set; }
 
-    }
+    [ForeignKey(nameof(TourId))] public Tour? Tour { get; set; }
+
+    public Guid PresenterId { get; set; }
+
+    [ForeignKey(nameof(PresenterId))] public TravelCompanion? Presenter { get; set; }
+
+    public Guid? FollowerId { get; set; }
+
+    [ForeignKey(nameof(FollowerId))] public TravelCompanion? Follower { get; set; }
 }

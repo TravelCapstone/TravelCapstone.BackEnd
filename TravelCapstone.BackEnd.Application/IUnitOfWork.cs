@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace TravelCapstone.BackEnd.Application;
 
-namespace TravelCapstone.BackEnd.Application
+public interface IUnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        Task<int> SaveChangesAsync();
-
-    }
+    Task<int> SaveChangesAsync();
 }
