@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravelCapstone.BackEnd.Comm
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{891B522C-8600-4289-AA7D-0A16B8E8B1AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{2BF3ED3D-AA8B-4493-B689-E530C1693CE3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +45,6 @@ Global
 		{891B522C-8600-4289-AA7D-0A16B8E8B1AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{891B522C-8600-4289-AA7D-0A16B8E8B1AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{891B522C-8600-4289-AA7D-0A16B8E8B1AC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2BF3ED3D-AA8B-4493-B689-E530C1693CE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BF3ED3D-AA8B-4493-B689-E530C1693CE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2BF3ED3D-AA8B-4493-B689-E530C1693CE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2BF3ED3D-AA8B-4493-B689-E530C1693CE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
