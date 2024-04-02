@@ -33,7 +33,25 @@ public class MappingConfig
                 .ForMember(desc => desc.isEnterprise, act => act.MapFrom(src => src.isEnterprise))
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
                 ;
+            
+            config.CreateMap<PrivateTourRequest,PrivateTourRequestDto>()
+                .ForMember(desc => desc.Id, act => act.MapFrom(src => src.Id))
+                .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
+                .ForMember(desc => desc.Description, act => act.MapFrom(src => src.Description))
+                .ForMember(desc => desc.Name, act => act.MapFrom(src => src.Name))
+                .ForMember(desc => desc.Status, act => act.MapFrom(src => src.Status))
+                .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
+                .ForMember(desc => desc.NumOfAdult, act => act.MapFrom(src => src.NumOfAdult))
+                .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
+                .ForMember(desc => desc.Account, act => act.MapFrom(src => src.Account));
+            
+            config.CreateMap<PagedResult<PrivateTourRequest>, PagedResult<PrivateTourRequestDto>>()
+                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
         });
+        // Trong class MappingConfig
+
+       
+
         return mappingConfig;
     }
 }
