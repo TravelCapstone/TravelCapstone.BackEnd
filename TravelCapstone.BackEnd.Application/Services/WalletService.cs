@@ -75,7 +75,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     pay.AddRequestData("vnp_Version", _vnPayConfiguration.Version!);
                     pay.AddRequestData("vnp_Command", _vnPayConfiguration.Command!);
                     pay.AddRequestData("vnp_TmnCode", _vnPayConfiguration.TmnCode!);
-                    pay.AddRequestData("vnp_Amount", (Math.Ceiling(amount)).ToString());
+                    pay.AddRequestData("vnp_Amount", (amount * 100).ToString());
                     pay.AddRequestData("vnp_CreateDate", timeNow.ToString("yyyyMMddHHmmss"));
                     pay.AddRequestData("vnp_CurrCode", _vnPayConfiguration.CurrCode!);
                     pay.AddRequestData("vnp_IpAddr", pay.GenerateRandomIPAddress());
@@ -318,10 +318,12 @@ namespace TravelCapstone.BackEnd.Application.Services
             AppActionResult result = new AppActionResult();
             try
             {
-                result.Result = await _transactionRepository.GetAllDataByExpression(
+               var data = await _transactionRepository.GetAllDataByExpression(
                     a => a.TravelCompanionId == travelcompanionId,
                     pageNumber, pageSize
                 );
+            data.Items =  data.Items!.OrderByDescending(a => a.Date).ToList();
+            result.Result = data;
             }
             catch (Exception ex)
             {

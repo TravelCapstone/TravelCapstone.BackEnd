@@ -15,13 +15,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e71fb8a2-e3ce-43ad-97fd-709657ec94ab" name="Changes" comment="commit create_private_tour">
+    <list default="true" id="e71fb8a2-e3ce-43ad-97fd-709657ec94ab" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/WallerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/WallerController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/DbInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/DbInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IWalletService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IWalletService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/WalletService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/WalletService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Data/TravelCapstoneDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Data/TravelCapstoneDbContext.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,12 +67,13 @@
     </option>
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/aspnetcore/3b519aa7d1a1b66e1d329d694f814e1d8228dc8c/src/Mvc/Mvc.Core/src/ControllerBase.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/aspnetcore/3b519aa7d1a1b66e1d329d694f814e1d8228dc8c/src/Mvc/Mvc.Core/src/Infrastructure/ActionMethodExecutor.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/AsyncTaskMethodBuilderT.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/AsyncTaskMethodBuilderT.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/AsyncValueTaskMethodBuilderT.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Threading/ExecutionContext.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Threading/Tasks/TaskContinuation.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Threading/ExecutionContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Threading/Tasks/TaskContinuation.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b4afdb2fdfab4615b88a101b04ea956b3600/11/3f45f1c1/GenericRepository`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b4afdb2fdfab4615b88a101b04ea956b3600/12/6df8aea1/IDbContext.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b4afdb2fdfab4615b88a101b04ea956b3600/7c/ba650d86/UnitOfWork.cs" root0="SKIP_HIGHLIGHTING" />
@@ -99,41 +97,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.TravelCapstone.BackEnd.API: http.executor": "Run",
-    ".NET Project.Test.executor": "Run",
-    ".NET Project.Unnamed.executor": "Run",
-    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (1).executor": "Run",
-    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (2).executor": "Run",
-    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (3).executor": "Run",
-    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (4).executor": "Run",
-    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (5).executor": "Run",
-    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (6).executor": "Run",
-    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure.executor": "Run",
-    "Docker.docker-compose.yml.travelcapstone.backend.api.database: Compose Deployment.executor": "Run",
-    "Docker.docker-compose.yml.travelcapstone.backend.api: Compose Deployment.executor": "Run",
-    "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
-    "Publish to IIS.TravelCapstone.BackEnd.API: travel-be - Zip Deploy.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "XThreadsFramesViewSplitterKey": "0.43457943",
-    "git-widget-placeholder": "sprint1__CreatePrivateTour",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.Language Defaults",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.TravelCapstone.BackEnd.API: http.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Project.Test.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Project.Unnamed.executor&quot;: &quot;Run&quot;,
+    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (1).executor&quot;: &quot;Run&quot;,
+    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (2).executor&quot;: &quot;Run&quot;,
+    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (3).executor&quot;: &quot;Run&quot;,
+    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (4).executor&quot;: &quot;Run&quot;,
+    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (5).executor&quot;: &quot;Run&quot;,
+    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (6).executor&quot;: &quot;Run&quot;,
+    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker-compose.yml.travelcapstone.backend.api.database: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker-compose.yml.travelcapstone.backend.api: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Publish to IIS.TravelCapstone.BackEnd.API: travel-be - Zip Deploy.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.43457943&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;sprint1__CreatePrivateTour&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.Language Defaults&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache",
-      "C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache",
-      "C:\\Users\\duong\\AppData\\Local\\Symbols\\src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\duong\\AppData\\Local\\Symbols\\src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (6)">
     <configuration name="Publish TravelCapstone.BackEnd.API to Azure (1)" type="AzureDotNetWebAppPublish" factoryName="Azure Web App">
       <option name="AZURE_WEB_APP_PROJECT" value="$PROJECT_DIR$/TravelCapstone.BackEnd.API/TravelCapstone.BackEnd.API.csproj" />
@@ -335,7 +333,7 @@
       <option name="AZURE_WEB_APP_SERVICE_PLAN_ID" value="" />
       <option name="AZURE_WEB_APP_SERVICE_PLAN_NAME" value="" />
       <option name="AZURE_WEB_APP_LOCATION" value="eastus" />
-      <option name="AZURE_WEB_APP_PRICING_TIER" value="S1" />
+      <option name="AZURE_WEB_APP_PRICING_TIER" value="" />
       <option name="AZURE_WEB_APP_NET_FRAMEWORK" value="4.7" />
       <option name="AZURE_WEB_APP_NET_CORE_RUNTIME" value="DOTNETCORE 6.0" />
       <option name="AZURE_WEB_APP_IS_DEPLOY_TO_SLOT" value="0" />
@@ -577,7 +575,8 @@
       <workItem from="1712157415243" duration="58000" />
       <workItem from="1712161723437" duration="860000" />
       <workItem from="1712162720490" duration="185000" />
-      <workItem from="1712164571567" duration="1540000" />
+      <workItem from="1712164571567" duration="3386000" />
+      <workItem from="1712168976962" duration="976000" />
     </task>
     <task id="LOCAL-00001" summary="commit">
       <option name="closed" value="true" />
@@ -755,7 +754,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712075078360</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="commit WalletService.cs">
+      <option name="closed" value="true" />
+      <created>1712166408146</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1712166408146</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -798,9 +805,27 @@
     <MESSAGE value="commit" />
     <MESSAGE value="fix conflict" />
     <MESSAGE value="commit db_host" />
-    <option name="LAST_COMMIT_MESSAGE" value="commit db_host" />
+    <MESSAGE value="commit WalletService.cs" />
+    <option name="LAST_COMMIT_MESSAGE" value="commit WalletService.cs" />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/WalletService.cs</url>
+          <line>77</line>
+          <properties documentPath="D:\workspace\github\TravelCapstone.BackEnd\TravelCapstone.BackEnd.Application\Services\WalletService.cs" initialLine="77" containingFunctionPresentation="Method 'GetUrlVnPayRecharge'">
+            <startOffsets>
+              <option value="3592" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3652" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="Type#TravelCapstone.BackEnd.Domain.Models.DayPlan" memberName="Tour" />
