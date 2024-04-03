@@ -16,6 +16,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             _walletService = walletService;
         }
+        [HttpGet("get-travel-companion")]
+        public async Task<AppActionResult> GetTravelCompanion(Guid travelCompanionId)
+        {
+            return await _walletService.GetTravelCompanion(travelCompanionId);
+        }
         [HttpGet("get-url-vnpay-recharge")]
         public async Task<AppActionResult> GetUrlVnPayRecharge(Guid travelCompanionId, double amount)
         {
@@ -25,6 +30,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         public async Task<AppActionResult> GetUrlMomoRecharge(Guid travelCompanionId, double amount)
         {
             return await _walletService.GetUrlMomoRecharge(travelCompanionId, amount);
+        }
+        [HttpGet("get-all-transaction")]
+        public async Task<AppActionResult> GetAllTransaction(Guid travelCompanionId, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _walletService.GetAllTransaction(travelCompanionId, pageNumber, pageSize);
         }
         [HttpPost("pay/{orderId}")]
         public async Task<AppActionResult> Pay(Guid orderId)
@@ -52,7 +62,8 @@ namespace TravelCapstone.BackEnd.API.Controllers
 
                 if (response.VnPayResponseCode == "00")
                 {
-                    await _walletService.Recharge(Guid.Parse(response.OrderId), double.Parse(response.Amount));
+                    var orderId = response.OrderId.ToString().Split(" ");
+                    await _walletService.Recharge(Guid.Parse(orderId[0]), double.Parse(response.Amount));
                 }
                 return Ok();
             }
