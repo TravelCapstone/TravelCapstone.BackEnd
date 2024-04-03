@@ -58,10 +58,10 @@ public class SD
 
     public class SubjectMail
     {
-        public static string VERIFY_ACCOUNT = "[THANK YOU] WELCOME TO LOVE HOUSE. PLEASE VERIFY ACCOUNT";
-        public static string WELCOME = "[THANK YOU] WELCOME TO LOVE HOUSE";
-        public static string REMIND_PAYMENT = "REMIND PAYMENT";
-        public static string PASSCODE_FORGOT_PASSWORD = "[LOVE HOUSE] PASSCODE FORGOT PASSWORD";
+        public static string VERIFY_ACCOUNT = "[TRAVEL]  CHÀO MỪNG BẠN ĐẾN VỚI TRAVEL. VUI LÒNG XÁC MINH TÀI KHOẢN";
+        public static string WELCOME = "[TRAVEL] CHÀO MỪNG BẠN ĐẾN VỚI TRAVEL";
+        public static string REMIND_PAYMENT = "[TRAVEL] NHẮC NHỞ THANH TOÁN";
+        public static string PASSCODE_FORGOT_PASSWORD = "[TRAVEL] MÃ XÁC THỰC QUÊN MẬT KHẨU";
 
         public static string SIGN_CONTRACT_VERIFICATION_CODE =
             "[LOVE HOUSE] You are in the process of completing contract procedures".ToUpper();

@@ -12,66 +12,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e71fb8a2-e3ce-43ad-97fd-709657ec94ab" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/ILocationService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IMapService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IServiceProviderService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/LocationService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/MapService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/ServiceProviderService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/ProcessDTO/RootObject.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Request/CreateOptionsPrivateTourDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Response/Compound.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Response/MapInfo.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/ServiceProviderDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Enum/Unit.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/RequestedLocation.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/dataSources/6f67a895-0f5e-4033-a0f2-a64fc8a00359.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/dataSources/6f67a895-0f5e-4033-a0f2-a64fc8a00359.xml" afterDir="false" />
+    <list default="true" id="e71fb8a2-e3ce-43ad-97fd-709657ec94ab" name="Changes" comment="commit create_private_tour">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TravelCapstone.BackEnd/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/AccountController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/AccountController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/MapController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/MapController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/PrivateTourRequestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/PrivateTourRequestController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/TourController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Controllers/TourController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/DbInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/DbInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/LibraryInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/LibraryInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ServiceInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ServiceInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ValidatorInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.API/Installers/ValidatorInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IRepositories/IRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IAccountService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IAccountService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IJwtService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IJwtService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IPrivateTourRequestService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/IPrivateTourRequestService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/ITourPrivateService.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/ITourService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/IServices/ITourService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/AccountService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/AccountService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/GenericBackendService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/GenericBackendService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/JwtService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/JwtService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/PrivateTourRequestService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/PrivateTourRequestService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/TourPrivateService.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/TourService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/TourService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/TravelCapstone.BackEnd.Application.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Application/TravelCapstone.BackEnd.Application.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/AccountResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Response/AccountResponse.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/AppActionResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Response/AppActionResult.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/ChangePasswordDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Request/ChangePasswordDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/ForgotPasswordDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Request/ForgotPasswordDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/LoginRequestDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Request/LoginRequestDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/PagedResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Response/PagedResult.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/PrivateTourRequestDTO.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Request/PrivateTourRequestDTO.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/PrivateTourResponeDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Response/PrivateTourResponeDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/SignUpRequestDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Request/SignUpRequestDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/TokenDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Response/TokenDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/TourDetail.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Response/TourDetail.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/UpdateAccountRequestDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/DTO/Request/UpdateAccountRequestDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/TravelCapstone.BackEnd.Common.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/TravelCapstone.BackEnd.Common.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Validator/HandleErrorValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Validator/HandleErrorValidator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Validator/PrivateTourRequestValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Common/Validator/PrivateTourRequestValidator.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Data/TravelCapstoneDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Data/TravelCapstoneDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Migrations/TravelCapstoneDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Migrations/TravelCapstoneDbContextModelSnapshot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/OptionQuotation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/OptionQuotation.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/Service.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/Service.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/ServiceCostHistory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/ServiceCostHistory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/Tour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/Tour.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Mapping/MappingConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Mapping/MappingConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Repositories/GenericRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Infrastructure/Repositories/GenericRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Enum/OptionQuotationStatus.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Enum/OptionQuotationStatus.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Enum/OrderStatus.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Enum/OrderStatus.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/Order.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/Order.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TravelCapstone.BackEnd.Domain/Models/OrderDetail.cs" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -149,36 +100,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.TravelCapstone.BackEnd.API: http.executor": "Debug",
-    ".NET Project.Test.executor": "Run",
-    ".NET Project.Unnamed.executor": "Run",
-    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (1).executor": "Run",
-    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (2).executor": "Run",
-    "Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure.executor": "Run",
-    "Docker.docker-compose.yml.travelcapstone.backend.api.database: Compose Deployment.executor": "Run",
-    "Docker.docker-compose.yml.travelcapstone.backend.api: Compose Deployment.executor": "Run",
-    "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "XThreadsFramesViewSplitterKey": "0.43457943",
-    "git-widget-placeholder": "sprint1__CreatePrivateTour",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.TravelCapstone.BackEnd.API: http.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Project.Test.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Project.Unnamed.executor&quot;: &quot;Run&quot;,
+    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (1).executor&quot;: &quot;Run&quot;,
+    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure (2).executor&quot;: &quot;Run&quot;,
+    &quot;Azure - Publish Web App.Publish TravelCapstone.BackEnd.API to Azure.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker-compose.yml.travelcapstone.backend.api.database: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker-compose.yml.travelcapstone.backend.api: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.43457943&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;sprint1__CreatePrivateTour&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.Language Defaults&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache",
-      "C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache",
-      "C:\\Users\\duong\\AppData\\Local\\Symbols\\src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\duong\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\duong\\AppData\\Local\\Symbols\\src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.TravelCapstone.BackEnd.API: http">
     <configuration name="Publish TravelCapstone.BackEnd.API to Azure (1)" type="AzureDotNetWebAppPublish" factoryName="Azure Web App">
       <option name="AZURE_WEB_APP_PROJECT" value="$PROJECT_DIR$/TravelCapstone.BackEnd.API/TravelCapstone.BackEnd.API.csproj" />
@@ -367,11 +318,11 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue=".NET Launch Settings Profile.TravelCapstone.BackEnd.API: http" />
         <item itemvalue="Docker.docker-compose.yml.travelcapstone.backend.api: Compose Deployment" />
         <item itemvalue="Docker.docker-compose.yml.travelcapstone.backend.api.database: Compose Deployment" />
         <item itemvalue=".NET Launch Settings Profile.TravelCapstone.BackEnd.API: http" />
-        <item itemvalue="Docker.docker-compose.yml.travelcapstone.backend.api.database: Compose Deployment" />
+        <item itemvalue=".NET Launch Settings Profile.TravelCapstone.BackEnd.API: http" />
+        <item itemvalue="Docker.docker-compose.yml.travelcapstone.backend.api: Compose Deployment" />
       </list>
     </recent_temporary>
   </component>
@@ -414,6 +365,7 @@
       <workItem from="1711895673874" duration="117000" />
       <workItem from="1712057001747" duration="5961000" />
       <workItem from="1712113710932" duration="21943000" />
+      <workItem from="1712157415243" duration="58000" />
     </task>
     <task id="LOCAL-00001" summary="commit">
       <option name="closed" value="true" />
@@ -637,23 +589,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="commit db_host" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/TravelCapstone.BackEnd.Application/Services/PrivateTourRequestService.cs</url>
-          <line>125</line>
-          <properties documentPath="D:\workspace\github\TravelCapstone.BackEnd\TravelCapstone.BackEnd.Application\Services\PrivateTourRequestService.cs" initialLine="125" containingFunctionPresentation="Method 'CreateOptionsPrivateTour'">
-            <startOffsets>
-              <option value="4323" />
-            </startOffsets>
-            <endOffsets>
-              <option value="4358" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="Type#TravelCapstone.BackEnd.Domain.Models.DayPlan" memberName="Tour" />

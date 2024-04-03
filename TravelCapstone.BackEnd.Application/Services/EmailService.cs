@@ -23,8 +23,8 @@ public class EmailService : GenericBackendService, IEmailService
         try
         {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("QK Back End Project", _emailConfiguration.User));
-            message.To.Add(new MailboxAddress("Customer", recipient));
+            message.From.Add(new MailboxAddress("Travel Việt", _emailConfiguration.User));
+            message.To.Add(new MailboxAddress("Khách hàng", recipient));
             message.Subject = subject;
             message.Importance = MessageImportance.High;
 

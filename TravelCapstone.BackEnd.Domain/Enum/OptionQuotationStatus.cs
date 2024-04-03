@@ -2,5 +2,8 @@
 
 public enum OptionQuotationStatus
 {
-    ACTIVE
+    NEW,
+    ACTIVE,
+    IN_ACTIVE
+    
 }

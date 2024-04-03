@@ -1,5 +1,4 @@
-﻿using System.Transactions;
-using AutoMapper;
+﻿using AutoMapper;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Request;
@@ -121,6 +120,28 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         return result;
     }
 
+    public async Task<AppActionResult> GetPrivateTourRequestById(Guid id)
+    {
+        var result = new AppActionResult();
+        var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
+        try
+        {
+            result.Result = await quotationDetailRepository!.GetAllDataByExpression(
+                a => a.OptionQuotation!.PrivateTourRequestId == id,
+                0,
+                0,
+                a => a.OptionQuotation!.PrivateTourRequest!,
+                a => a.SellPriceHistory!.Service!
+            );
+        }
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+        }
+
+        return result;
+    }
+
     public async Task<AppActionResult> CreateOptionsPrivateTour(CreateOptionsPrivateTourDto dto)
     {
         var result = new AppActionResult();
@@ -130,12 +151,12 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
         try
         {
-            if (dto.OptionRequestDtos.Count > 3)
+            if (dto.OptionRequestDtos.Count != 3)
             {
                 result = BuildAppActionResultError(result, $"Hệ thống chỉ hỗ trợ tạo 3 tùy chọn");
             }
 
-            var privateTourRequest =  await _repository.GetById(dto.PrivateTourRequestId);
+            var privateTourRequest = await _repository.GetById(dto.PrivateTourRequestId);
             if (privateTourRequest == null)
             {
                 result = BuildAppActionResultError(result, $"Không tồn tại request với id {dto.PrivateTourRequestId}");
@@ -172,7 +193,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     {
                         Id = quotationId,
                         OptionClass = item.OptionClass,
-                        Status = OptionQuotationStatus.ACTIVE,
+                        Status = OptionQuotationStatus.NEW,
                         PrivateTourRequestId = dto.PrivateTourRequestId,
                         Name = item.Name,
                         Description = item.Description
@@ -191,7 +212,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         SellPriceHistoryId = list.First().Id
                     };
                     total = list.First().Price * quotationDetail.Quantity;
-                    quotation.Total=total;
+                    quotation.Total = total;
                     optionQuotations.Add(quotation);
                     quotationDetails.Add(quotationDetail);
                 }
@@ -206,6 +227,73 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
         }
 
+        return result;
+    }
+
+    public async Task<AppActionResult> ConfirmOptionPrivateTour(Guid optionId, string accountId)
+    {
+        var result = new AppActionResult();
+        var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
+        var orderRepository = Resolve<IRepository<Order>>();
+        var travelCompanionRepository = Resolve<IRepository<TravelCompanion>>();
+        var option =
+            await optionQuotationRepository!.GetByExpression(
+                a => a!.Id == optionId, 
+                a => a.PrivateTourRequest!
+                );
+        var travelCompanion = await travelCompanionRepository!.GetByExpression(
+            a => a!.AccountId == accountId,
+            null);
+        try
+        {
+            if (option == null)
+            {
+                result = BuildAppActionResultError(result,
+                    $"Option với id {optionId} không tồn tại trong hệ thống");
+            }else if (option.Status != OptionQuotationStatus.NEW)
+            {
+                result = BuildAppActionResultError(result, 
+                    $"Chỉ chấp nhận confirm với option trạng thái NEW");
+            }
+            if (travelCompanion == null)
+            {
+                result = BuildAppActionResultError(result, 
+                    $"Không thấy thông tin trùng khớp với travel companion");
+
+            }
+            if (!BuildAppActionResultIsError(result))
+            {
+                
+                option!.Status = OptionQuotationStatus.ACTIVE;
+                var listOption =
+                    await optionQuotationRepository.GetAllDataByExpression(
+                        a => a.PrivateTourRequestId == option!.PrivateTourRequestId,
+                        0,
+                        0,
+                        null);
+                foreach (var item in listOption.Items!)
+                {
+                    item.Status = OptionQuotationStatus.IN_ACTIVE;
+                }
+
+                await orderRepository!.Insert(new Order()
+                {
+                    Id = Guid.NewGuid(),
+                    Content = $"Thanh toán cho private tour {option.PrivateTourRequest!.Name}",
+                    Total = option.Total,
+                    OrderStatus = OrderStatus.NEW,
+                    TravelCompanionId = travelCompanion!.Id,
+                    TourId = option.PrivateTourRequest.TourId,
+                    NumOfAdult = option.PrivateTourRequest.NumOfAdult,
+                    NumOfChildren = option.PrivateTourRequest.NumOfChildren
+                });
+                await _unitOfWork.SaveChangesAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+        }
         return result;
     }
 }
