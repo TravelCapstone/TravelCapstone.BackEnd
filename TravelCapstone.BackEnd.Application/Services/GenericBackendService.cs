@@ -1,4 +1,4 @@
-﻿using TravelCapstone.BackEnd.Common.DTO;
+﻿using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.Application.Services;
 

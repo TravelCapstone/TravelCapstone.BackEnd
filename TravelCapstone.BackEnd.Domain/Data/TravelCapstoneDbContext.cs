@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Domain.Data;
@@ -46,5 +46,42 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<VehicleRoute> VehicleRoutes { get; set; }
 
-    
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.Entity<IdentityRole>().HasData(new IdentityRole
+        {
+            Id = "6a32e12a-60b5-4d93-8306-82231e1232d7",
+            Name = "ADMIN",
+            ConcurrencyStamp = "6a32e12a-60b5-4d93-8306-82231e1232d7",
+            NormalizedName = "admin"
+        });
+        builder.Entity<IdentityRole>().HasData(new IdentityRole
+        {
+            Id = "85b6791c-49d8-4a61-ad0b-8274ec27e764",
+            Name = "STAFF",
+            ConcurrencyStamp = "85b6791c-49d8-4a61-ad0b-8274ec27e764",
+            NormalizedName = "staff"
+        });
+        builder.Entity<IdentityRole>().HasData(new IdentityRole
+        {
+            Id = "814f9270-78f5-4503-b7d3-0c567e5812ba",
+            Name = "TOUR GUIDE",
+            ConcurrencyStamp = "814f9270-78f5-4503-b7d3-0c567e5812ba",
+            NormalizedName = "tour guide"
+        });
+        builder.Entity<IdentityRole>().HasData(new IdentityRole
+        {
+            Id = "02962efa-1273-46c0-b103-7167b1742ef3",
+            Name = "CUSTOMER",
+            ConcurrencyStamp = "02962efa-1273-46c0-b103-7167b1742ef3",
+            NormalizedName = "customer"
+        });
+        base.OnModelCreating(builder);
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(
+            "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+    }
 }

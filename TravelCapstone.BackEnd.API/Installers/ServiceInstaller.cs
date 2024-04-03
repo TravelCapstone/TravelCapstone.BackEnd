@@ -22,6 +22,8 @@ public class ServiceInstaller : IInstaller
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ITourService, TourService>();
         services.AddScoped<IPrivateTourRequestService, PrivateTourRequestService>();
-        services.AddScoped<ITourPrivateService, TourPrivateService>();
+        services.AddScoped<IServiceProviderService, ServiceProviderService>();
+        services.AddScoped<ILocationService, LocationService>();
+        services.AddScoped<IMapService, MapService>();
     }
 }

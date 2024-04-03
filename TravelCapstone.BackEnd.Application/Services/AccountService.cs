@@ -7,7 +7,8 @@ using Newtonsoft.Json;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.ConfigurationModel;
-using TravelCapstone.BackEnd.Common.DTO;
+using TravelCapstone.BackEnd.Common.DTO.Request;
+using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Common.Utils;
 using TravelCapstone.BackEnd.Domain.Models;
 using Utility = TravelCapstone.BackEnd.Common.Utils.Utility;
@@ -17,11 +18,11 @@ namespace TravelCapstone.BackEnd.Application.Services;
 public class AccountService : GenericBackendService, IAccountService
 {
     private readonly IRepository<Account> _accountRepository;
+    private readonly IMapper _mapper;
     private readonly SignInManager<Account> _signInManager;
     private readonly TokenDto _tokenDto;
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<Account> _userManager;
-    private readonly IMapper _mapper;
 
     public AccountService(
         IRepository<Account> accountRepository,

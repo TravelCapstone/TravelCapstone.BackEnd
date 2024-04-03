@@ -18,6 +18,9 @@ public class Tour
     public string? QRCode { get; set; }
     public TourStatus TourStatus { get; set; }
     public Guid? BasedOnTourId { get; set; }
-
-    [ForeignKey(nameof(BasedOnTourId))] public Tour? BasedTour { get; set; }
+    [ForeignKey(nameof(BasedOnTourId))] 
+    public Tour? BasedTour { get; set; }
+    public string? TourGuideId { get; set; }
+    [ForeignKey(nameof(TourGuideId))]
+    public Account? TourGuide { get; set; }
 }

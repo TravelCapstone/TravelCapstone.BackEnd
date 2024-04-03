@@ -1,119 +1,211 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using NPOI.SS.Formula.Functions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
+﻿using System.Transactions;
+using AutoMapper;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
-using TravelCapstone.BackEnd.Common.DTO;
+using TravelCapstone.BackEnd.Common.DTO.Request;
+using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
 
-namespace TravelCapstone.BackEnd.Application.Services
+namespace TravelCapstone.BackEnd.Application.Services;
+
+public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequestService
 {
-    public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequestService
+    private readonly IMapper _mapper;
+    private readonly IRepository<PrivateTourRequest> _repository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public PrivateTourRequestService(
+        IRepository<PrivateTourRequest> repository,
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        IServiceProvider serviceProvider
+    ) : base(serviceProvider)
     {
-        private readonly IRepository<PrivateTourRequest> _repository;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        _repository = repository;
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+    }
 
-        public PrivateTourRequestService(
-            IRepository<PrivateTourRequest> repository,
-            IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IServiceProvider serviceProvider
-        ) : base(serviceProvider)
+    public async Task<AppActionResult> CreatePrivateTourRequest(PrivateTourRequestDTO privateTourequestDTO)
+    {
+        var result = new AppActionResult();
+        try
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
-
-        public async Task<AppActionResult> CreatePrivateTourRequest(PrivateTourRequestDTO privateTourequestDTO)
-        {
-            using(var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            var tourRepository = Resolve<IRepository<Tour>>();
+            var tourDb = await tourRepository!.GetById(privateTourequestDTO.TourId);
+            if (tourDb == null)
             {
-                AppActionResult result = new AppActionResult();
-                try
-                {
-                    var tourRepository = Resolve<IRepository<Tour>>();
-                    var tourDb = await tourRepository.GetById(privateTourequestDTO.TourId);
-                    if (tourDb == null)
-                    {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy tour với id {privateTourequestDTO.TourId}");
-                        return result;
-                    }
-
-                    var accountRepository = Resolve<IRepository<Account>>();
-                    var accountDb = await accountRepository.GetById(privateTourequestDTO.AccountId);
-                    if (accountDb == null)
-                    {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy tài khoản với id {privateTourequestDTO.AccountId}");
-                        return result;
-                    }
-
-                    //Need improvement for condition
-                    if(!isValidTime(tourDb.EndDate, tourDb.StartDate, privateTourequestDTO.EndDate, privateTourequestDTO.StartDate))
-                    {
-                        result = BuildAppActionResultError(result, $"Lộ trình yêu cầu ngắn hơn lộ trình của tour mẫu");
-                        return result;
-                    }
-
-                    var request = _mapper.Map<PrivateTourRequest>(privateTourequestDTO);
-                    request.Id = Guid.NewGuid();
-                    request.Status = PrivateTourStatus.NEW;
-
-                    await _repository.Insert(request);
-                    await _unitOfWork.SaveChangesAsync();
-
-                    result.Result = request;
-
-                    if (!BuildAppActionResultIsError(result))
-                    {
-                        scope.Complete();
-                    }
-                } catch(Exception ex)
-                {
-                    result = BuildAppActionResultError(result, ex.Message);
-                }
+                result = BuildAppActionResultError(result,
+                    $"Không tìm thấy tour với id {privateTourequestDTO.TourId}");
                 return result;
             }
-        }
 
-        private bool isValidTime(DateTime cloneEnd, DateTime cloneStart, DateTime requestEnd, DateTime requestStart)
-        {
-            int[] cloneResult = GetDaysAndNights(cloneStart, cloneEnd);
-            int[] requestResult = GetDaysAndNights(requestStart, requestEnd);
-            return cloneResult[0] <= requestResult[0] && cloneResult[1] <= requestResult[1];
-        }
-
-        private int[] GetDaysAndNights(DateTime start, DateTime end)
-        {
-            int[] res = new int[2];
-            DateTime curr = start;
-            while(curr < end)
+            var accountRepository = Resolve<IRepository<Account>>();
+            var accountDb = await accountRepository!.GetById(privateTourequestDTO.AccountId!);
+            if (accountDb == null)
             {
-                if (IsDayTime(curr))
-                {
-                    res[0]++;
-                }
-                else
-                {
-                    res[1]++;
-                }
-                curr = curr.AddHours(12);
+                result = BuildAppActionResultError(result,
+                    $"Không tìm thấy tài khoản với id {privateTourequestDTO.AccountId}");
+                return result;
             }
-            return res;
-        }
 
-        private bool IsDayTime(DateTime start)
+            //Need improvement for condition
+            if (!IsValidTime(tourDb.EndDate, tourDb.StartDate, privateTourequestDTO.EndDate,
+                    privateTourequestDTO.StartDate))
+            {
+                result = BuildAppActionResultError(result, "Lộ trình yêu cầu ngắn hơn lộ trình của tour mẫu");
+                return result;
+            }
+
+            var request = _mapper.Map<PrivateTourRequest>(privateTourequestDTO);
+            request.Id = Guid.NewGuid();
+            request.Status = PrivateTourStatus.NEW;
+            await _repository.Insert(request);
+            await _unitOfWork.SaveChangesAsync();
+            result.Result = request;
+        }
+        catch (Exception ex)
         {
-            return (start.Hour >= 6 && start.Hour < 18);
+            result = BuildAppActionResultError(result, ex.Message);
         }
 
+        return result;
+    }
+
+    private bool IsValidTime(DateTime cloneEnd, DateTime cloneStart, DateTime requestEnd, DateTime requestStart)
+    {
+        var cloneResult = GetDaysAndNights(cloneStart, cloneEnd);
+        var requestResult = GetDaysAndNights(requestStart, requestEnd);
+        return cloneResult[0] <= requestResult[0] && cloneResult[1] <= requestResult[1];
+    }
+
+    private int[] GetDaysAndNights(DateTime start, DateTime end)
+    {
+        var res = new int[2];
+        var curr = start;
+        while (curr < end)
+        {
+            if (IsDayTime(curr))
+                res[0]++;
+            else
+                res[1]++;
+            curr = curr.AddHours(12);
+        }
+
+        return res;
+    }
+
+    private bool IsDayTime(DateTime start)
+    {
+        return start.Hour >= 6 && start.Hour < 18;
+    }
+
+    public async Task<AppActionResult> GetAllTourPrivate(int pageNumber, int pageSize)
+    {
+        var result = new AppActionResult();
+        var accountRepository = Resolve<IRepository<Account>>();
+        try
+        {
+            var data = await _repository.GetAllDataByExpression
+            (null, pageNumber,
+                pageSize,
+                p => p.Tour, p => p.Account!);
+            result.Result = _mapper.Map<PagedResult<PrivateTourResponeDto>>(data);
+        }
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+        }
+
+        return result;
+    }
+
+    public async Task<AppActionResult> CreateOptionsPrivateTour(CreateOptionsPrivateTourDto dto)
+    {
+        var result = new AppActionResult();
+        var serviceRepository = Resolve<IRepository<Service>>();
+        var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
+        var optionDetailRepository = Resolve<IRepository<QuotationDetail>>();
+        var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
+        try
+        {
+            if (dto.OptionRequestDtos.Count > 3)
+            {
+                result = BuildAppActionResultError(result, $"Hệ thống chỉ hỗ trợ tạo 3 tùy chọn");
+            }
+
+            var privateTourRequest =  await _repository.GetById(dto.PrivateTourRequestId);
+            if (privateTourRequest == null)
+            {
+                result = BuildAppActionResultError(result, $"Không tồn tại request với id {dto.PrivateTourRequestId}");
+            }
+
+            foreach (var item in dto.OptionRequestDtos)
+            {
+                var serviceProvider = await serviceRepository!.GetById(item.ServiceId);
+                if (serviceProvider == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tồn tại service với id {item.ServiceId}");
+                }
+
+                var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(
+                    a => a.ServiceId == item.ServiceId,
+                    0, 0, null
+                );
+                if (!sellPriceHistory.Items!.Any())
+                {
+                    result = BuildAppActionResultError(result,
+                        $"Không tồn tại giá trong hệ thống với service id {item.ServiceId}");
+                }
+            }
+
+            if (!BuildAppActionResultIsError(result))
+            {
+                List<QuotationDetail> quotationDetails = new List<QuotationDetail>();
+                List<OptionQuotation> optionQuotations = new List<OptionQuotation>();
+                foreach (var item in dto.OptionRequestDtos)
+                {
+                    double total = 0;
+                    var quotationId = Guid.NewGuid();
+                    OptionQuotation quotation = new OptionQuotation()
+                    {
+                        Id = quotationId,
+                        OptionClass = item.OptionClass,
+                        Status = OptionQuotationStatus.ACTIVE,
+                        PrivateTourRequestId = dto.PrivateTourRequestId,
+                        Name = item.Name,
+                        Description = item.Description
+                    };
+
+                    var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(
+                        a => a.ServiceId == item.ServiceId,
+                        0, 0, null
+                    );
+                    var list = sellPriceHistory.Items!.OrderByDescending(o => o.Date);
+                    QuotationDetail quotationDetail = new QuotationDetail()
+                    {
+                        Id = Guid.NewGuid(),
+                        Quantity = item.Quantity,
+                        OptionQuotationId = quotationId,
+                        SellPriceHistoryId = list.First().Id
+                    };
+                    total = list.First().Price * quotationDetail.Quantity;
+                    quotation.Total=total;
+                    optionQuotations.Add(quotation);
+                    quotationDetails.Add(quotationDetail);
+                }
+
+                await optionQuotationRepository!.InsertRange(optionQuotations);
+                await optionDetailRepository!.InsertRange(quotationDetails);
+                await _unitOfWork.SaveChangesAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+        }
+
+        return result;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TravelCapstone.BackEnd.Application.IServices;
-using TravelCapstone.BackEnd.Common.DTO;
+using TravelCapstone.BackEnd.Common.DTO.Request;
+using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.API.Controllers;
 

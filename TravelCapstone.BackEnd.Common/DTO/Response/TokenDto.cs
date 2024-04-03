@@ -1,4 +1,4 @@
-﻿namespace TravelCapstone.BackEnd.Common.DTO;
+﻿namespace TravelCapstone.BackEnd.Common.DTO.Response;
 
 public class TokenDto
 {

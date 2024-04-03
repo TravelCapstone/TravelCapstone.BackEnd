@@ -1,30 +1,24 @@
 ﻿using FluentValidation.Results;
-using TravelCapstone.BackEnd.Common.DTO;
+using TravelCapstone.BackEnd.Common.DTO.Response;
 
-namespace HCQS.BackEnd.Common.Validator
+namespace TravelCapstone.BackEnd.Common.Validator;
+
+public class HandleErrorValidator
 {
-    public class HandleErrorValidator
+    public AppActionResult HandleError(ValidationResult result)
     {
-        public AppActionResult HandleError(ValidationResult result)
+        if (!result.IsValid)
         {
-            if (!result.IsValid)
+            var errorMessage = new List<string>();
+            foreach (var error in result.Errors) errorMessage.Add(error.ErrorMessage);
+            return new AppActionResult
             {
-                List<string> errorMessage = new List<string>();
-                foreach (var error in result.Errors)
-                {
-                    errorMessage.Add(error.ErrorMessage);
-                }
-                return new AppActionResult
-                {
-                    IsSuccess = false,
-                    Messages = errorMessage,
-                    Result = null
-                };
-            }
-            else
-            {
-                return new AppActionResult();
-            }
+                IsSuccess = false,
+                Messages = errorMessage,
+                Result = null
+            };
         }
+
+        return new AppActionResult();
     }
 }

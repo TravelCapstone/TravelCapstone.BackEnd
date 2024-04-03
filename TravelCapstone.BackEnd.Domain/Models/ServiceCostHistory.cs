@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.Domain.Models;
 
@@ -9,6 +10,7 @@ public class ServiceCostHistory
 
     public double Price { get; set; }
     public int MOQ { get; set; }
+    public Unit Unit { get; set; }
     public DateTime Date { get; set; }
     public Guid ServiceId { get; set; }
 

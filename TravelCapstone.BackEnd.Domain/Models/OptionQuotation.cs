@@ -13,7 +13,7 @@ public class OptionQuotation
     public OptionClass OptionClass { get; set; }
     public double Total { get; set; }
     public OptionQuotationStatus Status { get; set; }
-    public Guid PrivateTourRequestId { get; set; }
+    public Guid PrivateTourRequestId { get; set; }  
 
     [ForeignKey(nameof(PrivateTourRequestId))]
     public PrivateTourRequest? PrivateTourRequest { get; set; }

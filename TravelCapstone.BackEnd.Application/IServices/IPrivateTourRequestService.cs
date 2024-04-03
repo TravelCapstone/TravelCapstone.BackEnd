@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TravelCapstone.BackEnd.Common.DTO;
+﻿using TravelCapstone.BackEnd.Common.DTO.Request;
+using TravelCapstone.BackEnd.Common.DTO.Response;
 
-namespace TravelCapstone.BackEnd.Application.IServices
+namespace TravelCapstone.BackEnd.Application.IServices;
+
+public interface IPrivateTourRequestService
 {
-    public interface IPrivateTourRequestService
-    {
-        Task<AppActionResult> CreatePrivateTourRequest(PrivateTourRequestDTO privtaeTourequestDTO);
-    }
+    Task<AppActionResult> CreatePrivateTourRequest(PrivateTourRequestDTO privateTourequestDto);
+    Task<AppActionResult> GetAllTourPrivate(int pageNumber, int pageSize);
+    Task<AppActionResult> CreateOptionsPrivateTour(CreateOptionsPrivateTourDto dto);
+
 }
