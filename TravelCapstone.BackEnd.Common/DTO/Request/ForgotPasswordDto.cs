@@ -1,4 +1,4 @@
-﻿namespace TravelCapstone.BackEnd.Common.DTO;
+﻿namespace TravelCapstone.BackEnd.Common.DTO.Request;
 
 public class ForgotPasswordDto
 {

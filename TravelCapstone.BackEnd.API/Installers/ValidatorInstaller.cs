@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
-using HCQS.BackEnd.Common.Validator;
-using TravelCapstone.BackEnd.Common.DTO;
+using TravelCapstone.BackEnd.Common.DTO.Request;
+using TravelCapstone.BackEnd.Common.Validator;
+
 namespace TravelCapstone.BackEnd.API.Installers;
 
 public class ValidatorInstaller : IInstaller
