@@ -30,7 +30,8 @@ namespace TravelCapstone.BackEnd.Application.Services
         private readonly IConfiguration _configuration;
         private IUnitOfWork _unitOfWork;
 
-        public WalletService(IConfiguration configuration, IRepository<Transaction> repository, IUnitOfWork unitOfWork, IServiceProvider serviceProvider) : base(serviceProvider)
+        public WalletService(IConfiguration configuration, IRepository<Transaction> repository, IUnitOfWork unitOfWork,
+            IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _transactionRepository = repository;
             _configuration = configuration;
@@ -48,13 +49,16 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var travelCompanion = await travelCompanionRepository!.GetById(travelcompanionId);
                 if (travelCompanion == null)
                 {
-                    result = BuildAppActionResultError(result, $"Travel companion với id {travelcompanionId} không tồn tại");
+                    result = BuildAppActionResultError(result,
+                        $"Travel companion với id {travelcompanionId} không tồn tại");
                 }
+
                 if (amount < 100000 || amount > 100000000)
                 {
-                    result = BuildAppActionResultError(result, $"Hệ thống chỉ hỗ trợ nạp tối thiểu 10.000 đồng và tối đa là  100.000.000 đồng");
-
+                    result = BuildAppActionResultError(result,
+                        $"Hệ thống chỉ hỗ trợ nạp tối thiểu 10.000 đồng và tối đa là  100.000.000 đồng");
                 }
+
                 if (!BuildAppActionResultIsError(result))
                 {
                     PaymentInformationRequest momo = new PaymentInformationRequest
@@ -71,25 +75,29 @@ namespace TravelCapstone.BackEnd.Application.Services
                     pay.AddRequestData("vnp_Version", _vnPayConfiguration.Version!);
                     pay.AddRequestData("vnp_Command", _vnPayConfiguration.Command!);
                     pay.AddRequestData("vnp_TmnCode", _vnPayConfiguration.TmnCode!);
-                    pay.AddRequestData("vnp_Amount", (Math.Ceiling(amount)).ToString());
+                    pay.AddRequestData("vnp_Amount", (amount * 100).ToString());
                     pay.AddRequestData("vnp_CreateDate", timeNow.ToString("yyyyMMddHHmmss"));
                     pay.AddRequestData("vnp_CurrCode", _vnPayConfiguration.CurrCode!);
                     pay.AddRequestData("vnp_IpAddr", pay.GenerateRandomIPAddress());
                     pay.AddRequestData("vnp_Locale", _vnPayConfiguration.Locale!);
-                    pay.AddRequestData("vnp_OrderInfo", $"Khách hàng: {travelCompanion!.FirstName} {travelCompanion.LastName} nạp tiền vào hệ thống travel");
+                    pay.AddRequestData("vnp_OrderInfo",
+                        $"Khách hàng: {travelCompanion!.FirstName} {travelCompanion.LastName} nạp tiền vào hệ thống travel");
                     pay.AddRequestData("vnp_OrderType", "other");
                     pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
-                    pay.AddRequestData("vnp_TxnRef", travelcompanionId.ToString());
+                    pay.AddRequestData("vnp_TxnRef", $"{travelcompanionId.ToString()} {Guid.NewGuid()}");
 
-                    result.Result = pay.CreateRequestUrl(_configuration["Vnpay:BaseUrl"], _configuration["Vnpay:HashSecret"]);
+                    result.Result = pay.CreateRequestUrl(_configuration["Vnpay:BaseUrl"],
+                        _configuration["Vnpay:HashSecret"]);
                 }
             }
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
             }
+
             return result;
         }
+
         public async Task<AppActionResult> GetUrlMomoRecharge(Guid travelcompanionId, double amount)
         {
             AppActionResult result = new AppActionResult();
@@ -99,13 +107,16 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var travelCompanion = await travelCompanionRepository!.GetById(travelcompanionId);
                 if (travelCompanion == null)
                 {
-                    result = BuildAppActionResultError(result, $"Travel companion với id {travelcompanionId} không tồn tại");
+                    result = BuildAppActionResultError(result,
+                        $"Travel companion với id {travelcompanionId} không tồn tại");
                 }
+
                 if (amount < 100000 || amount > 100000000)
                 {
-                    result = BuildAppActionResultError(result, $"Hệ thống chỉ hỗ trợ nạp tối thiểu 10.000 đồng và tối đa là  100.000.000 đồng");
-
+                    result = BuildAppActionResultError(result,
+                        $"Hệ thống chỉ hỗ trợ nạp tối thiểu 10.000 đồng và tối đa là  100.000.000 đồng");
                 }
+
                 if (!BuildAppActionResultIsError(result))
                 {
                     PaymentInformationRequest momo = new PaymentInformationRequest
@@ -119,7 +130,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                     string partnerCode = _momoConfiguration.PartnerCode!;
                     string accessKey = _momoConfiguration.AccessKey!;
                     string secretkey = _momoConfiguration.Secretkey!;
-                    string orderInfo = $"Khách hàng: {travelCompanion!.FirstName} {travelCompanion.LastName} nạp tiền vào hệ thống travel";
+                    string orderInfo =
+                        $"Khách hàng: {travelCompanion!.FirstName} {travelCompanion.LastName} nạp tiền vào hệ thống travel";
                     string redirectUrl = $"{_momoConfiguration.RedirectUrl}";
                     string ipnUrl = _momoConfiguration.IPNUrl!;
                     //  string ipnUrl = "https://webhook.site/3399b42a-eee3-4e2d-8925-c2f893737de9";
@@ -133,15 +145,15 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     //Before sign HMAC SHA256 signature
                     string rawHash = "accessKey=" + accessKey +
-                        "&amount=" + amount +
-                        "&extraData=" + extraData +
-                        "&ipnUrl=" + ipnUrl +
-                        "&orderId=" + orderId +
-                        "&orderInfo=" + orderInfo +
-                        "&partnerCode=" + partnerCode +
-                        "&redirectUrl=" + redirectUrl +
-                        "&requestId=" + requestId +
-                        "&requestType=" + requestType
+                                     "&amount=" + amount +
+                                     "&extraData=" + extraData +
+                                     "&ipnUrl=" + ipnUrl +
+                                     "&orderId=" + orderId +
+                                     "&orderInfo=" + orderInfo +
+                                     "&partnerCode=" + partnerCode +
+                                     "&redirectUrl=" + redirectUrl +
+                                     "&requestId=" + requestId +
+                                     "&requestType=" + requestType
                         ;
 
                     MomoSecurity crypto = new MomoSecurity();
@@ -150,21 +162,21 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     //build body json request
                     JObject message = new JObject
-            {
-                { "partnerCode", partnerCode },
-                { "partnerName", "Test" },
-                { "storeId", "MomoTestStore" },
-                { "requestId", requestId },
-                { "amount", amount },
-                { "orderId", orderId },
-                { "orderInfo", orderInfo },
-                { "redirectUrl", redirectUrl },
-                { "ipnUrl", ipnUrl },
-                { "lang", "en" },
-                { "extraData", extraData },
-                { "requestType", requestType },
-                { "signature", signature }
-                };
+                    {
+                        { "partnerCode", partnerCode },
+                        { "partnerName", "Test" },
+                        { "storeId", "MomoTestStore" },
+                        { "requestId", requestId },
+                        { "amount", amount },
+                        { "orderId", orderId },
+                        { "orderInfo", orderInfo },
+                        { "redirectUrl", redirectUrl },
+                        { "ipnUrl", ipnUrl },
+                        { "lang", "en" },
+                        { "extraData", extraData },
+                        { "requestType", requestType },
+                        { "signature", signature }
+                    };
 
                     var client = new RestClient();
 
@@ -196,13 +208,16 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var travelCompanion = await travelCompanionRepository!.GetById(travelcompanionId);
                 if (travelCompanion == null)
                 {
-                    result = BuildAppActionResultError(result, $"Travel companion với id {travelcompanionId} không tồn tại");
+                    result = BuildAppActionResultError(result,
+                        $"Travel companion với id {travelcompanionId} không tồn tại");
                 }
+
                 if (amount < 100000 || amount > 100000000)
                 {
-                    result = BuildAppActionResultError(result, $"Hệ thống chỉ hỗ trợ nạp tối thiểu 10.000 đồng và tối đa là  100.000.000 đồng");
-
+                    result = BuildAppActionResultError(result,
+                        $"Hệ thống chỉ hỗ trợ nạp tối thiểu 10.000 đồng và tối đa là  100.000.000 đồng");
                 }
+
                 if (!BuildAppActionResultIsError(result))
                 {
                     await _transactionRepository.Insert(
@@ -213,7 +228,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                             Id = Guid.NewGuid(),
                             TravelCompanionId = travelcompanionId,
                         }
-                        );
+                    );
+                    travelCompanion!.Money += amount;
                     await _unitOfWork.SaveChangesAsync();
                 }
             }
@@ -231,26 +247,83 @@ namespace TravelCapstone.BackEnd.Application.Services
             try
             {
                 var orderRepository = Resolve<IRepository<Order>>();
+                var travelCompanionRepository = Resolve<IRepository<TravelCompanion>>();
+
                 var utility = Resolve<Utility>();
                 var order = await orderRepository!.GetById(orderId);
                 if (order == null)
                 {
                     result = BuildAppActionResultError(result, $"Biên lai với id {orderId} không tồn tại");
                 }
-              
+
+                var travelCompanion = await travelCompanionRepository!.GetById(order!.TravelCompanionId);
+                if (travelCompanion == null)
+                {
+                    result = BuildAppActionResultError(result,
+                        $"Travel companion với id {order.TravelCompanionId} không tồn tại");
+                }
+
                 if (!BuildAppActionResultIsError(result))
                 {
                     await _transactionRepository.Insert(
                         new Transaction
                         {
-                            Amount = - order!.Total,
+                            Amount = -order!.Total,
                             Date = utility!.GetCurrentDateTimeInTimeZone(),
                             Id = Guid.NewGuid(),
                             TravelCompanionId = order.TravelCompanionId,
                         }
-                        );
+                    );
+                    travelCompanion!.Money += -order!.Total;
+
                     await _unitOfWork.SaveChangesAsync();
                 }
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+
+            return result;
+        }
+
+        public async Task<AppActionResult> GetTravelCompanion(Guid travelCompanionId)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var travelCompanionRepository = Resolve<IRepository<TravelCompanion>>();
+                var travelCompanion = await travelCompanionRepository!.GetById(travelCompanionId);
+                if (travelCompanion == null)
+                {
+                    result = BuildAppActionResultError(result,
+                        $"Travel companion với id {travelCompanionId} không tồn tại");
+                }
+
+                if (!BuildAppActionResultIsError(result))
+                {
+                    result.Result = travelCompanion;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+
+            return result;
+        }
+
+        public async Task<AppActionResult> GetAllTransaction(Guid travelcompanionId, int pageNumber, int pageSize)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+               var data = await _transactionRepository.GetAllDataByExpression(
+                    a => a.TravelCompanionId == travelcompanionId,
+                    pageNumber, pageSize
+                );
+            data.Items =  data.Items!.OrderByDescending(a => a.Date).ToList();
+            result.Result = data;
             }
             catch (Exception ex)
             {
