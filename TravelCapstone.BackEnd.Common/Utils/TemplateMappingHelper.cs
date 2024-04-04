@@ -504,7 +504,6 @@ public class TemplateMappingHelper
         return content;
     }
 
-
     public static string GetTemplateNotification(string name)
     {
         var body = @"

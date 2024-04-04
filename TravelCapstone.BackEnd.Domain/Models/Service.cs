@@ -15,8 +15,9 @@ public class Service
     public string Address { get; set; }
     public Guid CommunceId { get; set; }
 
-    [ForeignKey(nameof(CommunceId))] 
+    [ForeignKey(nameof(CommunceId))]
     public Commune? Communce { get; set; }
+
     public Guid ServiceProviderId { get; set; }
 
     [ForeignKey(nameof(ServiceProviderId))]

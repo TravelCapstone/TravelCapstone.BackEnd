@@ -82,7 +82,6 @@ public class LocationService : GenericBackendService, ILocationService
         return result;
     }
 
-
     public async Task<AppActionResult> GetAllCommuneByDistrictNameAndCommuneName(string districtName,
         string communeName)
     {

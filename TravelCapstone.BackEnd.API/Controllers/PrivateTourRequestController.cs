@@ -28,16 +28,19 @@ public class PrivateTourRequestController : Controller
         if (!result.IsValid) return _handleErrorValidator.HandleError(result);
         return await _service.CreatePrivateTourRequest(request);
     }
+
     [HttpGet("get-all-private-tour-request/{pageNumber:int}/{pageSize:int}")]
     public async Task<AppActionResult> GetAllPrivateTourRequest(int pageNumber, int pageSize)
     {
         return await _service.GetAllTourPrivate(pageNumber, pageSize);
     }
+
     [HttpGet("get-private-tour-request-by-id/{id}")]
     public async Task<AppActionResult> GetPrivateTourRequestById(Guid id)
     {
         return await _service.GetPrivateTourRequestById(id);
     }
+
     [HttpPost("create-options-private-tour")]
     public async Task<AppActionResult> CreateOptionsPrivateTour([FromBody] CreateOptionsPrivateTourDto request)
     {

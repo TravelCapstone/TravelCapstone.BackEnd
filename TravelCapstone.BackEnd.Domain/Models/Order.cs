@@ -17,8 +17,14 @@ public class Order
 
     [ForeignKey(nameof(TravelCompanionId))]
     public TravelCompanion? TravelCompanion { get; set; }
-    
-    public Guid TourId { get; set; }
+
+    public Guid? PrivateTourRequestId { get; set; }
+
+    [ForeignKey(nameof(PrivateTourRequestId))]
+    public PrivateTourRequest? PrivateTourRequest { get; set; }
+
+    public Guid? TourId { get; set; }
+
     [ForeignKey(nameof(TourId))]
     public Tour? Tour { get; set; }
 }

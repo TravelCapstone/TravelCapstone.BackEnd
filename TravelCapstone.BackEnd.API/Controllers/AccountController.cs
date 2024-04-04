@@ -48,13 +48,11 @@ public class AccountController : ControllerBase
         return await _accountService.GetAccountByUserId(id);
     }
 
-
     [HttpPut("change-password")]
     public async Task<AppActionResult> ChangePassword(ChangePasswordDto dto)
     {
         return await _accountService.ChangePassword(dto);
     }
-
 
     [HttpPost("get-new-token/{userId}")]
     public async Task<AppActionResult> GetNewToken([FromBody] string refreshToken, string userId)

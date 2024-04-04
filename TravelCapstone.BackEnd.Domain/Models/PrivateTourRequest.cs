@@ -18,7 +18,7 @@ public class PrivateTourRequest
     [ForeignKey(nameof(TourId))] public Tour Tour { get; set; } = null!;
     public VehicleType MainVehicle { get; set; }
     public PrivateTourStatus Status { get; set; }
-    public bool isEnterprise { get; set; }
+    public bool IsEnterprise { get; set; }
     public string? AccountId { get; set; }
 
     [ForeignKey(nameof(AccountId))] public Account? Account { get; set; }

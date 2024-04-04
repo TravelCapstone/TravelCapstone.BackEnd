@@ -24,7 +24,7 @@ public class SD
         {
             WeekIndex = 1,
             Timeline = new WeekForYear.TimelineDto
-                { StartDate = startDate.ToString("d", cultureInfo), EndDate = endDate.ToString("d", cultureInfo) }
+            { StartDate = startDate.ToString("d", cultureInfo), EndDate = endDate.ToString("d", cultureInfo) }
         });
 
         for (var week = 2; week < 53; week++)
@@ -38,7 +38,7 @@ public class SD
             {
                 WeekIndex = week,
                 Timeline = new WeekForYear.TimelineDto
-                    { StartDate = startDate.ToString("d", cultureInfo), EndDate = endDate.ToString("d", cultureInfo) }
+                { StartDate = startDate.ToString("d", cultureInfo), EndDate = endDate.ToString("d", cultureInfo) }
             });
         }
 

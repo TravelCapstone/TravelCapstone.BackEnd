@@ -12,6 +12,7 @@ public class Transaction
     public DateTime Date { get; set; }
     public TransactionType TransactionType { get; set; }
     public Guid TravelCompanionId { get; set; }
+
     [ForeignKey(nameof(TravelCompanionId))]
     public TravelCompanion? TravelCompanion { get; set; }
 }

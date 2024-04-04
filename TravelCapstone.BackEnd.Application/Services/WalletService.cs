@@ -1,15 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
-using NPOI.SS.Formula.Functions;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.ConfigurationModel;
@@ -318,12 +310,12 @@ namespace TravelCapstone.BackEnd.Application.Services
             AppActionResult result = new AppActionResult();
             try
             {
-               var data = await _transactionRepository.GetAllDataByExpression(
-                    a => a.TravelCompanionId == travelcompanionId,
-                    pageNumber, pageSize
-                );
-            data.Items =  data.Items!.OrderByDescending(a => a.Date).ToList();
-            result.Result = data;
+                var data = await _transactionRepository.GetAllDataByExpression(
+                     a => a.TravelCompanionId == travelcompanionId,
+                     pageNumber, pageSize
+                 );
+                data.Items = data.Items!.OrderByDescending(a => a.Date).ToList();
+                result.Result = data;
             }
             catch (Exception ex)
             {

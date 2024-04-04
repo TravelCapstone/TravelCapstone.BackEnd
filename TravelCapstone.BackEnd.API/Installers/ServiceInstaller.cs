@@ -26,5 +26,6 @@ public class ServiceInstaller : IInstaller
         services.AddScoped<ILocationService, LocationService>();
         services.AddScoped<IMapService, MapService>();
         services.AddScoped<IWalletService, WalletService>();
+        services.AddScoped<ISmsService, SmsService>();
     }
 }

@@ -16,7 +16,7 @@ public class TravelCompanion
     public DateTime Dob { get; set; }
     public bool IsAdult { get; set; }
     public double Money { get; set; }
-    public string? AccountId { get; set; } 
+    public string? AccountId { get; set; }
 
     [ForeignKey(nameof(AccountId))] public Account? Account { get; set; }
 }

@@ -31,7 +31,7 @@ public class MappingConfig
                 .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
                 .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
                 .ForMember(desc => desc.MainVehicle, act => act.MapFrom(src => src.MainVehicle))
-                .ForMember(desc => desc.isEnterprise, act => act.MapFrom(src => src.isEnterprise))
+                .ForMember(desc => desc.IsEnterprise, act => act.MapFrom(src => src.isEnterprise))
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
                 ;
 
@@ -50,7 +50,6 @@ public class MappingConfig
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
         });
         // Trong class MappingConfig
-
 
         return mappingConfig;
     }
