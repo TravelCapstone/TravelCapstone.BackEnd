@@ -2,4 +2,7 @@
 
 public enum ServiceType
 {
+    FandB,
+    TRANSPORTATION
+
 }
