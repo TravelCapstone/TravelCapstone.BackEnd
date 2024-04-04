@@ -78,4 +78,17 @@ public class SD
             public string? EndDate { get; set; }
         }
     }
+
+    public class EnumType
+    {
+        public static Dictionary<string, int> MaterialUnit = new Dictionary<string, int> { { "KG", 0 }, { "M3", 1 }, { "BAR", 2 }, { "ITEM", 3 }, { "Kg", 0 }, { "m3", 1 }, { "Bar", 2 }, { "Item", 3 }, { "kg", 0 }, { "bar", 2 }, { "item", 3 } };
+        public static Dictionary<string, int> ServiceCostUnit = new Dictionary<string, int> { { "DAY", 0 }, { "Day", 0 }, { "day", 0 }, { "ROOM", 1 }, { "Room", 1 }, { "room", 1 }, { "PERSON", 2 }, { "Person", 2 }, { "person", 2 } };
+
+    }
+
+    public class ExcelHeaders
+    {
+        public static List<String> SERVICE_QUOTATION = new List<string> { "No", "ServiceName", "Unit", "MOQ", "PricePerAdult", "PricePerChild" };
+    }
+
 }
