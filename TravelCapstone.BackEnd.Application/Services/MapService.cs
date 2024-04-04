@@ -28,7 +28,7 @@ public class MapService : GenericBackendService, IMapService
             if (response.IsSuccessStatusCode)
             {
                 var data = response.Content;
-                var obj = JsonConvert.DeserializeObject<MapInfo.Root>(data);
+                var obj = JsonConvert.DeserializeObject<MapInfo.Root>(data!);
                 result.Result = obj;
             }
         }
@@ -55,7 +55,7 @@ public class MapService : GenericBackendService, IMapService
             if (response.IsSuccessStatusCode)
             {
                 var data = response.Content;
-                var obj = JsonConvert.DeserializeObject<Root>(data);
+                var obj = JsonConvert.DeserializeObject<Root>(data!);
                 var selectedData = obj.Predictions.Select(p => new Prediction
                 {
                     Description = p.Description,

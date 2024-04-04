@@ -28,7 +28,6 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Material> Materials { get; set; }
     public DbSet<OptionQuotation> OptionQuotations { get; set; }
     public DbSet<Order> Orders { get; set; }
-    public DbSet<OrderDetail> OrderDetails { get; set; }
     public DbSet<PlanServiceCostDetail> PlanServiceCostDetails { get; set; }
     public DbSet<PrivateJoinTourRequest> PrivateJoinTourRequests { get; set; }
     public DbSet<PrivateTourRequest> PrivateTourRequests { get; set; }
@@ -79,9 +78,9 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
         base.OnModelCreating(builder);
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(
-            "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
-    }
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     optionsBuilder.UseSqlServer(
+    //         "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+    // }
 }

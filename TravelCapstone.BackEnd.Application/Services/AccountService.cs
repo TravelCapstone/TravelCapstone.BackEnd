@@ -49,14 +49,13 @@ public class AccountService : GenericBackendService, IAccountService
             var user = await _accountRepository.GetByExpression(u =>
                 u!.Email.ToLower() == loginRequest.Email.ToLower() && u.IsDeleted == false);
             if (user == null)
-                result = BuildAppActionResultError(result, $"The user with username {loginRequest.Email} not found");
+                result = BuildAppActionResultError(result, $" {loginRequest.Email} này không tồn tại trong hệ thống");
             else if (user.IsVerified == false)
-                result = BuildAppActionResultError(result, "The account is not verified !");
+                result = BuildAppActionResultError(result, "Tài khoản này chưa được xác thực !");
 
             var passwordSignIn =
                 await _signInManager.PasswordSignInAsync(loginRequest.Email, loginRequest.Password, false, false);
-            if (!passwordSignIn.Succeeded) result = BuildAppActionResultError(result, SD.ResponseMessage.LOGIN_FAILED);
-
+            if (!passwordSignIn.Succeeded) result = BuildAppActionResultError(result,"Đăng nhâp thất bại");
             if (!BuildAppActionResultIsError(result)) result = await LoginDefault(loginRequest.Email, user);
         }
         catch (Exception ex)
@@ -75,11 +74,11 @@ public class AccountService : GenericBackendService, IAccountService
             var user = await _accountRepository.GetByExpression(u =>
                 u!.Email.ToLower() == email.ToLower() && u.IsDeleted == false);
             if (user == null)
-                result = BuildAppActionResultError(result, $"The user with username {email} not found");
+                result = BuildAppActionResultError(result, $"Email này không tồn tại");
             else if (user.IsVerified == false)
-                result = BuildAppActionResultError(result, "The account is not verified !");
+                result = BuildAppActionResultError(result, "Tài khoản này chưa xác thực !");
             else if (user.VerifyCode != verifyCode)
-                result = BuildAppActionResultError(result, "The  verify code is wrong !");
+                result = BuildAppActionResultError(result, "Mã xác thực sai!");
 
             if (!BuildAppActionResultIsError(result))
             {
@@ -102,7 +101,7 @@ public class AccountService : GenericBackendService, IAccountService
         try
         {
             if (await _accountRepository.GetByExpression(r => r!.UserName == signUpRequest.Email) != null)
-                result = BuildAppActionResultError(result, "The email or username is existed");
+                result = BuildAppActionResultError(result, "Email hoặc username không tồn tại!");
 
             if (!BuildAppActionResultIsError(result))
             {
@@ -133,11 +132,11 @@ public class AccountService : GenericBackendService, IAccountService
                 }
                 else
                 {
-                    result = BuildAppActionResultError(result, $"{SD.ResponseMessage.CREATE_FAILED} USER");
+                    result = BuildAppActionResultError(result, $"Tạo tài khoản không thành công");
                 }
 
                 var resultCreateRole = await _userManager.AddToRoleAsync(user, "CUSTOMER");
-                if (!resultCreateRole.Succeeded) result = BuildAppActionResultError(result, "ASSIGN ROLE FAILED");
+                if (!resultCreateRole.Succeeded) result = BuildAppActionResultError(result, $"Cấp quyền khách hàng không thành công");
             }
         }
         catch (Exception ex)
@@ -157,10 +156,10 @@ public class AccountService : GenericBackendService, IAccountService
                 await _accountRepository.GetByExpression(
                     a => a!.UserName.ToLower() == accountRequest.Email.ToLower());
             if (account == null)
-                result = BuildAppActionResultError(result, $"The user with email {account!.Email} not found");
+                result = BuildAppActionResultError(result, $"Tài khoản với email {accountRequest.Email} không tồn tại!");
             if (!BuildAppActionResultIsError(result))
             {
-                account.FirstName = accountRequest.FirstName;
+                account!.FirstName = accountRequest.FirstName;
                 account.LastName = accountRequest.LastName;
                 account.PhoneNumber = accountRequest.PhoneNumber;
                 result.Result = await _accountRepository.Update(account);
@@ -182,7 +181,7 @@ public class AccountService : GenericBackendService, IAccountService
         try
         {
             var account = await _accountRepository.GetById(id);
-            if (account == null) result = BuildAppActionResultError(result, $"The user with id {id} not found");
+            if (account == null) result = BuildAppActionResultError(result, $"Tài khoản với id {id} không tồn tại !");
             if (!BuildAppActionResultIsError(result)) result.Result = account;
         }
         catch (Exception ex)
@@ -231,7 +230,7 @@ public class AccountService : GenericBackendService, IAccountService
             if (await _accountRepository.GetByExpression(c =>
                     c!.Email == changePasswordDto.Email && c.IsDeleted == false) == null)
                 result = BuildAppActionResultError(result,
-                    $"The user with email {changePasswordDto.Email} not found");
+                    $"Tài khoản có email {changePasswordDto.Email} không tồn tại!");
             if (!BuildAppActionResultIsError(result))
             {
                 var user = await _accountRepository.GetByExpression(c =>
@@ -239,7 +238,7 @@ public class AccountService : GenericBackendService, IAccountService
                 var changePassword = await _userManager.ChangePasswordAsync(user!, changePasswordDto.OldPassword,
                     changePasswordDto.NewPassword);
                 if (!changePassword.Succeeded)
-                    result = BuildAppActionResultError(result, SD.ResponseMessage.CREATE_FAILED);
+                    result = BuildAppActionResultError(result, "Thay đổi mật khẩu thất bại");
             }
 
             await _unitOfWork.SaveChangesAsync();
@@ -260,9 +259,9 @@ public class AccountService : GenericBackendService, IAccountService
         {
             var user = await _accountRepository.GetById(userId);
             if (user == null)
-                result = BuildAppActionResultError(result, "The user is not existed");
+                result = BuildAppActionResultError(result, "Tài khoản không tồn tại");
             else if (user.RefreshToken != refreshToken)
-                result = BuildAppActionResultError(result, "The refresh token is not exacted");
+                result = BuildAppActionResultError(result, "Mã làm mới không chính xác");
 
             if (!BuildAppActionResultIsError(result))
             {
@@ -289,9 +288,9 @@ public class AccountService : GenericBackendService, IAccountService
             var user = await _accountRepository.GetByExpression(a =>
                 a!.Email == dto.Email && a.IsDeleted == false && a.IsVerified == true);
             if (user == null)
-                result = BuildAppActionResultError(result, "The user is not existed or is not verified");
+                result = BuildAppActionResultError(result, "Tài khoản không tồn tại hoặc chưa được xác thực!");
             else if (user.VerifyCode != dto.RecoveryCode)
-                result = BuildAppActionResultError(result, "The verification code is wrong.");
+                result = BuildAppActionResultError(result, "Mã xác thực sai!");
 
             if (!BuildAppActionResultIsError(result))
             {
@@ -300,7 +299,7 @@ public class AccountService : GenericBackendService, IAccountService
                 if (addPassword.Succeeded)
                     user!.VerifyCode = null;
                 else
-                    result = BuildAppActionResultError(result, "Change password failed");
+                    result = BuildAppActionResultError(result, "Thay đổi mật khẩu thất bại. Vui lòng thử lại");
             }
 
             await _unitOfWork.SaveChangesAsync();
@@ -321,9 +320,9 @@ public class AccountService : GenericBackendService, IAccountService
             var user = await _accountRepository.GetByExpression(a =>
                 a!.Email == email && a.IsDeleted == false && a.IsVerified == false);
             if (user == null)
-                result = BuildAppActionResultError(result, "The user is not existed ");
+                result = BuildAppActionResultError(result, "Tài khoản không tồn tại ");
             else if (user.VerifyCode != verifyCode)
-                result = BuildAppActionResultError(result, "The verification code is wrong.");
+                result = BuildAppActionResultError(result, "Mã xác thực sai");
 
             if (!BuildAppActionResultIsError(result))
             {
@@ -349,7 +348,7 @@ public class AccountService : GenericBackendService, IAccountService
         {
             var user = await _accountRepository.GetByExpression(a =>
                 a!.Email == email && a.IsDeleted == false && a.IsVerified == true);
-            if (user == null) result = BuildAppActionResultError(result, "The user is not existed or is not verified");
+            if (user == null) result = BuildAppActionResultError(result, "Tài khoản không tồn tại hoặc chưa được xác thực");
 
             if (!BuildAppActionResultIsError(result))
             {
@@ -376,7 +375,7 @@ public class AccountService : GenericBackendService, IAccountService
         {
             var user = await _accountRepository.GetByExpression(a =>
                 a!.Email == email && a.IsDeleted == false && a.IsVerified == false);
-            if (user == null) result = BuildAppActionResultError(result, "The user does not existed or is verified");
+            if (user == null) result = BuildAppActionResultError(result, "Tài khoản không tồn tại hoặc chưa xác thực");
 
             if (!BuildAppActionResultIsError(result))
             {
@@ -520,7 +519,7 @@ public class AccountService : GenericBackendService, IAccountService
             var identityRoleRepository = Resolve<IRepository<IdentityRole>>();
             foreach (var role in roleId)
                 if (await identityRoleRepository!.GetById(role) == null)
-                    result = BuildAppActionResultError(result, $"The role with id {role} is not existed");
+                    result = BuildAppActionResultError(result, $"Vai trò với id {role} không tồn tại");
 
             if (!BuildAppActionResultIsError(result))
                 foreach (var role in roleId)
@@ -528,7 +527,7 @@ public class AccountService : GenericBackendService, IAccountService
                     var roleDb = await identityRoleRepository!.GetById(role);
                     var resultCreateRole = await _userManager.AddToRoleAsync(user, roleDb.NormalizedName);
                     if (!resultCreateRole.Succeeded)
-                        result = BuildAppActionResultError(result, $"ASSIGN ROLE {role}  FAILED");
+                        result = BuildAppActionResultError(result, $"Cấp quyền với vai trò {role} không thành công");
                 }
 
             await _unitOfWork.SaveChangesAsync();
@@ -551,10 +550,10 @@ public class AccountService : GenericBackendService, IAccountService
             var userRoleRepository = Resolve<IRepository<IdentityUserRole<string>>>();
             var identityRoleRepository = Resolve<IRepository<IdentityRole>>();
             if (user == null)
-                result = BuildAppActionResultError(result, $"The user with id {userId} is not existed");
+                result = BuildAppActionResultError(result, $"Người dùng với {userId} không tồn tại");
             foreach (var role in roleId)
                 if (await identityRoleRepository.GetById(role) == null)
-                    result = BuildAppActionResultError(result, $"The role with id {role} is not existed");
+                    result = BuildAppActionResultError(result, $"Vai trò với {role} không tồn tại");
 
             if (!BuildAppActionResultIsError(result))
                 foreach (var role in roleId)
@@ -562,7 +561,7 @@ public class AccountService : GenericBackendService, IAccountService
                     var roleDb = await identityRoleRepository!.GetById(role);
                     var resultCreateRole = await _userManager.RemoveFromRoleAsync(user!, roleDb.NormalizedName);
                     if (!resultCreateRole.Succeeded)
-                        result = BuildAppActionResultError(result, $"REMOVE ROLE {role}  FAILED");
+                        result = BuildAppActionResultError(result, $"Xóa quyền {role} thất bại");
                 }
 
             await _unitOfWork.SaveChangesAsync();
