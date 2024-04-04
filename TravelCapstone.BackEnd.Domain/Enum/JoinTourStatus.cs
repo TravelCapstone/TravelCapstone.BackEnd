@@ -2,4 +2,7 @@
 
 public enum JoinTourStatus
 {
+    NEW,
+    APPROVED,
+    REJECTED
 }
