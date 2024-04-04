@@ -8,7 +8,8 @@ public class ServiceCostHistory
 {
     [Key] public Guid Id { get; set; }
 
-    public double Price { get; set; }
+    public double PricePerAdult { get; set; }
+    public double PricePerChild { get; set; }
     public int MOQ { get; set; }
     public Unit Unit { get; set; }
     public DateTime Date { get; set; }

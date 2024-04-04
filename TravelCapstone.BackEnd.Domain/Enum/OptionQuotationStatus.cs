@@ -5,5 +5,4 @@ public enum OptionQuotationStatus
     NEW,
     ACTIVE,
     IN_ACTIVE
-    
 }

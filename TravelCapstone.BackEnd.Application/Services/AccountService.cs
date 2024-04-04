@@ -55,7 +55,7 @@ public class AccountService : GenericBackendService, IAccountService
 
             var passwordSignIn =
                 await _signInManager.PasswordSignInAsync(loginRequest.Email, loginRequest.Password, false, false);
-            if (!passwordSignIn.Succeeded) result = BuildAppActionResultError(result,"Đăng nhâp thất bại");
+            if (!passwordSignIn.Succeeded) result = BuildAppActionResultError(result, "Đăng nhâp thất bại");
             if (!BuildAppActionResultIsError(result)) result = await LoginDefault(loginRequest.Email, user);
         }
         catch (Exception ex)
@@ -216,10 +216,9 @@ public class AccountService : GenericBackendService, IAccountService
 
         result.Result =
             new PagedResult<AccountResponse>
-                { Items = listMap, TotalPages = list.TotalPages };
+            { Items = listMap, TotalPages = list.TotalPages };
         return result;
     }
-
 
     public async Task<AppActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
     {
@@ -409,7 +408,6 @@ public class AccountService : GenericBackendService, IAccountService
 
         await _unitOfWork.SaveChangesAsync();
 
-
         return code;
     }
 
@@ -457,8 +455,12 @@ public class AccountService : GenericBackendService, IAccountService
                         await CreateAccount(
                             new SignUpRequestDto
                             {
-                                Email = userEmail, FirstName = name!, Gender = true, LastName = string.Empty,
-                                Password = "Google123@", PhoneNumber = string.Empty
+                                Email = userEmail,
+                                FirstName = name!,
+                                Gender = true,
+                                LastName = string.Empty,
+                                Password = "Google123@",
+                                PhoneNumber = string.Empty
                             }, true);
                     if (resultCreate.IsSuccess)
                     {
@@ -482,7 +484,6 @@ public class AccountService : GenericBackendService, IAccountService
     {
         var result = new AppActionResult();
 
-
         var jwtService = Resolve<IJwtService>();
         var utility = Resolve<Utility>();
         var token = await jwtService!.GenerateAccessToken(new LoginRequestDto { Email = email });
@@ -504,10 +505,8 @@ public class AccountService : GenericBackendService, IAccountService
         result.Result = _tokenDto;
         await _unitOfWork.SaveChangesAsync();
 
-
         return result;
     }
-
 
     public async Task<AppActionResult> AssignRoleForUserId(string userId, IList<string> roleId)
     {

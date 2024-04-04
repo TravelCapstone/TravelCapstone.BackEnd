@@ -211,12 +211,21 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         OptionQuotationId = quotationId,
                         SellPriceHistoryId = list.First().Id
                     };
-                    total = list.First().Price * quotationDetail.Quantity;
+                    var priceHistoryMatchMOQ = new SellPriceHistory();
+                    foreach (var price in list)
+                    {
+                        if (privateTourRequest!.NumOfAdult > price.MOQ)
+                        {
+                            total = price.PricePerAdult * quotationDetail.Quantity;
+                            total += price.PricePerChild * quotationDetail.Quantity;
+                            break;
+                        }
+                    }
                     quotation.Total = total;
                     optionQuotations.Add(quotation);
                     quotationDetails.Add(quotationDetail);
                 }
-
+                privateTourRequest!.Status = PrivateTourStatus.WAITINGFORCUSTOMER;
                 await optionQuotationRepository!.InsertRange(optionQuotations);
                 await optionDetailRepository!.InsertRange(quotationDetails);
                 await _unitOfWork.SaveChangesAsync();
@@ -238,7 +247,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         var travelCompanionRepository = Resolve<IRepository<TravelCompanion>>();
         var option =
             await optionQuotationRepository!.GetByExpression(
-                a => a!.Id == optionId, 
+                a => a!.Id == optionId,
                 a => a.PrivateTourRequest!
                 );
         var travelCompanion = await travelCompanionRepository!.GetByExpression(
@@ -250,20 +259,20 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             {
                 result = BuildAppActionResultError(result,
                     $"Option với id {optionId} không tồn tại trong hệ thống");
-            }else if (option.Status != OptionQuotationStatus.NEW)
+            }
+            else if (option.Status != OptionQuotationStatus.NEW)
             {
-                result = BuildAppActionResultError(result, 
+                result = BuildAppActionResultError(result,
                     $"Chỉ chấp nhận confirm với option trạng thái NEW");
             }
             if (travelCompanion == null)
             {
-                result = BuildAppActionResultError(result, 
+                result = BuildAppActionResultError(result,
                     $"Không thấy thông tin trùng khớp với travel companion");
-
             }
             if (!BuildAppActionResultIsError(result))
             {
-                
+                option!.PrivateTourRequest!.Status = PrivateTourStatus.APPROVED;
                 option!.Status = OptionQuotationStatus.ACTIVE;
                 var listOption =
                     await optionQuotationRepository.GetAllDataByExpression(
@@ -285,7 +294,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     TravelCompanionId = travelCompanion!.Id,
                     TourId = option.PrivateTourRequest.TourId,
                     NumOfAdult = option.PrivateTourRequest.NumOfAdult,
-                    NumOfChildren = option.PrivateTourRequest.NumOfChildren
+                    NumOfChildren = option.PrivateTourRequest.NumOfChildren,
+                    PrivateTourRequestId = option.PrivateTourRequestId
                 });
                 await _unitOfWork.SaveChangesAsync();
             }

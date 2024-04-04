@@ -1,7 +1,7 @@
-﻿using System.Globalization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 using Formatting = System.Xml.Formatting;
 
 namespace TravelCapstone.BackEnd.Common.Utils;

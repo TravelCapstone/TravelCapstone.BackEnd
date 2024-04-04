@@ -6,8 +6,9 @@ namespace TravelCapstone.BackEnd.Domain.Models;
 public class SellPriceHistory
 {
     [Key] public Guid Id { get; set; }
-
-    public double Price { get; set; }
+    public int MOQ { get; set; }
+    public double PricePerAdult { get; set; }
+    public double PricePerChild { get; set; }
     public DateTime Date { get; set; }
     public Guid ServiceId { get; set; }
 
