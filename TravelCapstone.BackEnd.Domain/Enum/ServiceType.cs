@@ -7,4 +7,6 @@ public enum ServiceType
     ENTERTAINMENT,
     VEHICLE_SUPPLY,
     AIR_TICKET_SUPPLY,
+    FandB,
+    TRANSPORTATION
 }
