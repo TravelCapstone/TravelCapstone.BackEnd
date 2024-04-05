@@ -67,7 +67,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 var requestedLocationRepository = Resolve<IRepository<RequestedLocation>>();
                 foreach(var requestedLocation in privateTourequestDTO.RequestedLocations)
                 {
-                    await requestedLocationRepository.Insert(new RequestedLocation
+                    await requestedLocationRepository!.Insert(new RequestedLocation
                     {
                         Id = Guid.NewGuid(),
                         PrivateTourRequestId = request.Id,

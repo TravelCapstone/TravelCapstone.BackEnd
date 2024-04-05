@@ -33,35 +33,35 @@ namespace TravelCapstone.BackEnd.Application.Services
             {
                 List<Province> data = new List<Province>();
                 var privateTourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
-                var privateTourRequestDb = await privateTourRequestRepository.GetByExpression(p => p.Id == Id, p => p.Tour); 
+                var privateTourRequestDb = await privateTourRequestRepository!.GetByExpression(p => p.Id == Id, p => p.Tour); 
                 if(privateTourRequestDb == null)
                 {
                     return result;
                 }
                 var requestedLocationRepository = Resolve<IRepository<RequestedLocation>>();
-                var requestedLocationListDb = await requestedLocationRepository.GetAllDataByExpression(r => r.PrivateTourRequestId == Id, 1, Int32.MaxValue, r => r.Province);
+                var requestedLocationListDb = await requestedLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == Id, 1, Int32.MaxValue, r => r.Province);
                 var dayPlanRepository = Resolve<IRepository<DayPlan>>();
-                var dayPlanDb = await dayPlanRepository.GetAllDataByExpression(r => r.TourId == Id, 1, Int32.MaxValue);
-                if(dayPlanDb.Items.Count == 0)
+                var dayPlanDb = await dayPlanRepository!.GetAllDataByExpression(r => r.TourId == privateTourRequestDb.TourId, 0, 0,null);
+                if(dayPlanDb.Items!.Count == 0)
                 {
                     return result;
                 }
                 var dayPlanIds = dayPlanDb.Items.Select(d => d.Id);
                 var routeRepository = Resolve<IRepository<Route>>();
-                var routeDb = await routeRepository.GetAllDataByExpression(r => dayPlanIds.Contains(r.DayPlanId), 1, Int32.MaxValue);
-                if (routeDb.Items.Count == 0)
+                var routeDb = await routeRepository!.GetAllDataByExpression(r => dayPlanIds.Contains(r.DayPlanId),0,0,null);
+                if (routeDb.Items!.Count == 0)
                 {
                     return result;
                 }
                 HashSet<Guid> destinationIds = new HashSet<Guid>();
                 foreach(var route in routeDb.Items)
                 {
-                    destinationIds.Add((Guid)route.StartPointId);
+                    destinationIds.Add((Guid)route.StartPointId!);
                     destinationIds.Add(route.EndPointId);
                 }
                 var destinationRepository = Resolve<IRepository<Destination>>();
-                var destinationDb = await destinationRepository.GetAllDataByExpression(r => destinationIds.Contains(r.Id), 1, Int32.MaxValue, r => r.Communce.District.Province);
-                result.Result = destinationDb.Items.Select(r => r.Communce.District.Province).Distinct().ToList();
+                var destinationDb = await destinationRepository!.GetAllDataByExpression(r => destinationIds.Contains(r.Id), 1, Int32.MaxValue, r => r.Communce!.District!.Province!);
+                result.Result = destinationDb!.Items!.Select(r => r.Communce!.District!.Province).Distinct().ToList();
             } catch ( Exception ex )
             {
                 result = BuildAppActionResultError(result, ex.Message);
