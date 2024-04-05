@@ -13,9 +13,9 @@ public class TourRegistration
 
     public Guid PresenterId { get; set; }
 
-    [ForeignKey(nameof(PresenterId))] public TravelCompanion? Presenter { get; set; }
+    [ForeignKey(nameof(PresenterId))] public Customer? Presenter { get; set; }
 
     public Guid? FollowerId { get; set; }
 
-    [ForeignKey(nameof(FollowerId))] public TravelCompanion? Follower { get; set; }
+    [ForeignKey(nameof(FollowerId))] public Customer? Follower { get; set; }
 }

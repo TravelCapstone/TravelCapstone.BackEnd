@@ -13,10 +13,10 @@ public class Order
     public OrderStatus OrderStatus { get; set; }
     public int NumOfAdult { get; set; }
     public int NumOfChildren { get; set; }
-    public Guid TravelCompanionId { get; set; }
+    public Guid CustomerId { get; set; }
 
-    [ForeignKey(nameof(TravelCompanionId))]
-    public TravelCompanion? TravelCompanion { get; set; }
+    [ForeignKey(nameof(CustomerId))]
+    public Customer? Customer { get; set; }
 
     public Guid? PrivateTourRequestId { get; set; }
 

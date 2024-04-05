@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
@@ -6,16 +8,16 @@ namespace TravelCapstone.BackEnd.API.Controllers
     [ApiController]
     public class SmsController : ControllerBase
     {
-        //private ISmsService _service;
+        private ISmsService _service;
 
-        //public SmsController(ISmsService service)
-        //{
-        //    _service = service;
-        //}
-        //[HttpPost]
-        //public async Task<AppActionResult> Post([FromBody] string body)
-        //{
-        //    return await _service.SendMessage(body);
-        //}
+        public SmsController(ISmsService service)
+        {
+            _service = service;
+        }
+        [HttpPost]
+        public async Task<AppActionResult> Post([FromBody] string body)
+        {
+            return await _service.SendMessage(body);
+        }
     }
 }

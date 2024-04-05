@@ -151,7 +151,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
         try
         {
-            if (dto.OptionRequestDtos.Count != 3)
+            if (dto.Option1.Count != 3)
             {
                 result = BuildAppActionResultError(result, $"Hệ thống chỉ hỗ trợ tạo 3 tùy chọn");
             }
@@ -162,7 +162,43 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 result = BuildAppActionResultError(result, $"Không tồn tại request với id {dto.PrivateTourRequestId}");
             }
 
-            foreach (var item in dto.OptionRequestDtos)
+            foreach (var item in dto.Option1)
+            {
+                var serviceProvider = await serviceRepository!.GetById(item.ServiceId);
+                if (serviceProvider == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tồn tại service với id {item.ServiceId}");
+                }
+
+                var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(
+                    a => a.ServiceId == item.ServiceId,
+                    0, 0, null
+                );
+                if (!sellPriceHistory.Items!.Any())
+                {
+                    result = BuildAppActionResultError(result,
+                        $"Không tồn tại giá trong hệ thống với service id {item.ServiceId}");
+                }
+            }
+            foreach (var item in dto.Option2)
+            {
+                var serviceProvider = await serviceRepository!.GetById(item.ServiceId);
+                if (serviceProvider == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tồn tại service với id {item.ServiceId}");
+                }
+
+                var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(
+                    a => a.ServiceId == item.ServiceId,
+                    0, 0, null
+                );
+                if (!sellPriceHistory.Items!.Any())
+                {
+                    result = BuildAppActionResultError(result,
+                        $"Không tồn tại giá trong hệ thống với service id {item.ServiceId}");
+                }
+            }
+            foreach (var item in dto.Option3)
             {
                 var serviceProvider = await serviceRepository!.GetById(item.ServiceId);
                 if (serviceProvider == null)
@@ -185,7 +221,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             {
                 List<QuotationDetail> quotationDetails = new List<QuotationDetail>();
                 List<OptionQuotation> optionQuotations = new List<OptionQuotation>();
-                foreach (var item in dto.OptionRequestDtos)
+                foreach (var item in dto.Option1)
                 {
                     double total = 0;
                     var quotationId = Guid.NewGuid();
@@ -225,6 +261,87 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     optionQuotations.Add(quotation);
                     quotationDetails.Add(quotationDetail);
                 }
+                foreach (var item in dto.Option2)
+                {
+                    double total = 0;
+                    var quotationId = Guid.NewGuid();
+                    OptionQuotation quotation = new OptionQuotation()
+                    {
+                        Id = quotationId,
+                        OptionClass = item.OptionClass,
+                        Status = OptionQuotationStatus.NEW,
+                        PrivateTourRequestId = dto.PrivateTourRequestId,
+                        Name = item.Name,
+                        Description = item.Description
+                    };
+
+                    var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(
+                        a => a.ServiceId == item.ServiceId,
+                        0, 0, null
+                    );
+                    var list = sellPriceHistory.Items!.OrderByDescending(o => o.Date);
+                    QuotationDetail quotationDetail = new QuotationDetail()
+                    {
+                        Id = Guid.NewGuid(),
+                        Quantity = item.Quantity,
+                        OptionQuotationId = quotationId,
+                        SellPriceHistoryId = list.First().Id
+                    };
+                    var priceHistoryMatchMOQ = new SellPriceHistory();
+                    foreach (var price in list)
+                    {
+                        if (privateTourRequest!.NumOfAdult > price.MOQ)
+                        {
+                            total = price.PricePerAdult * quotationDetail.Quantity;
+                            total += price.PricePerChild * quotationDetail.Quantity;
+                            break;
+                        }
+                    }
+                    quotation.Total = total;
+                    optionQuotations.Add(quotation);
+                    quotationDetails.Add(quotationDetail);
+                }
+                foreach (var item in dto.Option3)
+                {
+                    double total = 0;
+                    var quotationId = Guid.NewGuid();
+                    OptionQuotation quotation = new OptionQuotation()
+                    {
+                        Id = quotationId,
+                        OptionClass = item.OptionClass,
+                        Status = OptionQuotationStatus.NEW,
+                        PrivateTourRequestId = dto.PrivateTourRequestId,
+                        Name = item.Name,
+                        Description = item.Description
+                    };
+
+                    var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(
+                        a => a.ServiceId == item.ServiceId,
+                        0, 0, null
+                    );
+                    var list = sellPriceHistory.Items!.OrderByDescending(o => o.Date);
+                    QuotationDetail quotationDetail = new QuotationDetail()
+                    {
+                        Id = Guid.NewGuid(),
+                        Quantity = item.Quantity,
+                        OptionQuotationId = quotationId,
+                        SellPriceHistoryId = list.First().Id
+                    };
+                    var priceHistoryMatchMOQ = new SellPriceHistory();
+                    foreach (var price in list)
+                    {
+                        if (privateTourRequest!.NumOfAdult > price.MOQ)
+                        {
+                            total = price.PricePerAdult * quotationDetail.Quantity;
+                            total += price.PricePerChild * quotationDetail.Quantity;
+                            break;
+                        }
+                    }
+                    quotation.Total = total;
+                    optionQuotations.Add(quotation);
+                    quotationDetails.Add(quotationDetail);
+                }
+
                 privateTourRequest!.Status = PrivateTourStatus.WAITINGFORCUSTOMER;
                 await optionQuotationRepository!.InsertRange(optionQuotations);
                 await optionDetailRepository!.InsertRange(quotationDetails);
@@ -244,7 +361,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         var result = new AppActionResult();
         var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
         var orderRepository = Resolve<IRepository<Order>>();
-        var travelCompanionRepository = Resolve<IRepository<TravelCompanion>>();
+        var travelCompanionRepository = Resolve<IRepository<Customer>>();
         var option =
             await optionQuotationRepository!.GetByExpression(
                 a => a!.Id == optionId,
@@ -291,7 +408,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     Content = $"Thanh toán cho private tour {option.PrivateTourRequest!.Name}",
                     Total = option.Total,
                     OrderStatus = OrderStatus.NEW,
-                    TravelCompanionId = travelCompanion!.Id,
+                    CustomerId = travelCompanion!.Id,
                     TourId = option.PrivateTourRequest.TourId,
                     NumOfAdult = option.PrivateTourRequest.NumOfAdult,
                     NumOfChildren = option.PrivateTourRequest.NumOfChildren,

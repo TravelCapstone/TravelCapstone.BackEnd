@@ -5,7 +5,9 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request;
 public class CreateOptionsPrivateTourDto
 {
     public Guid PrivateTourRequestId { get; set; }
-    public List<OptionRequestDTO> OptionRequestDtos { get; set; } = new List<OptionRequestDTO>();
+    public  List<OptionRequestDTO> Option1 { get; set; } = new List<OptionRequestDTO>();
+    public  List<OptionRequestDTO> Option2 { get; set; } = new List<OptionRequestDTO>();
+    public  List<OptionRequestDTO> Option3 { get; set; } = new List<OptionRequestDTO>();
 }
 
 public class OptionRequestDTO
