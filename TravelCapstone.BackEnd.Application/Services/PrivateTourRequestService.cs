@@ -124,15 +124,30 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
     {
         var result = new AppActionResult();
         var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
+        var costHistoryRepository = Resolve<IRepository<ServiceCostHistory>>();
         try
         {
-            result.Result = await quotationDetailRepository!.GetAllDataByExpression(
+          var list= await quotationDetailRepository!.GetAllDataByExpression(
                 a => a.OptionQuotation!.PrivateTourRequestId == id,
                 0,
                 0,
                 a => a.OptionQuotation!.PrivateTourRequest!,
                 a => a.SellPriceHistory!.Service!
             );
+            List<object> data = new List<object>();
+            foreach( var quotationDetail in list.Items!)
+            {
+                var lastPrice = await costHistoryRepository!.GetAllDataByExpression(a => a.ServiceId == quotationDetail.SellPriceHistory.ServiceId, 0, 0, null);
+               var a = lastPrice!.Items!.OrderByDescending(a => a.Date).ToList();
+                data.Add(
+                    new 
+                    {
+                        QuotationDetail = quotationDetail,
+                        LastCost = a.FirstOrDefault()
+                    }
+                    );
+                result.Result = data;   
+            } 
         }
         catch (Exception e)
         {
