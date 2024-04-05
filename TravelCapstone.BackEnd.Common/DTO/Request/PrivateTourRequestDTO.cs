@@ -1,4 +1,5 @@
 using TravelCapstone.BackEnd.Domain.Enum;
+using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Common.DTO.Request;
 
@@ -13,5 +14,6 @@ public class PrivateTourRequestDTO
     public Guid TourId { get; set; }
     public VehicleType MainVehicle { get; set; }
     public bool isEnterprise { get; set; }
+    public List<Province>? RequestedLocations { get; set; }
     public string? AccountId { get; set; }
 }

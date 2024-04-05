@@ -8,6 +8,11 @@ public class RequestedLocation
     [Key]
     public Guid Id { get; set; }
 
+    public Guid PrivateTourRequestId { get; set; }
+
+    [ForeignKey(nameof(PrivateTourRequestId))]
+    public PrivateTourRequest? PrivateTourRequest { get; set; }
+
     public Guid ProvinceId { get; set; }
 
     [ForeignKey(nameof(ProvinceId))]

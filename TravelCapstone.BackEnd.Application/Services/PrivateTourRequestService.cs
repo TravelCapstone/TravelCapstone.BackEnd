@@ -28,6 +28,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
     public async Task<AppActionResult> CreatePrivateTourRequest(PrivateTourRequestDTO privateTourequestDTO)
     {
+
         var result = new AppActionResult();
         try
         {
@@ -61,8 +62,24 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             request.Id = Guid.NewGuid();
             request.Status = PrivateTourStatus.NEW;
             await _repository.Insert(request);
-            await _unitOfWork.SaveChangesAsync();
-            result.Result = request;
+            if(privateTourequestDTO.RequestedLocations != null && privateTourequestDTO.RequestedLocations.Count > 0)
+            {
+                var requestedLocationRepository = Resolve<IRepository<RequestedLocation>>();
+                foreach(var requestedLocation in privateTourequestDTO.RequestedLocations)
+                {
+                    await requestedLocationRepository.Insert(new RequestedLocation
+                    {
+                        Id = Guid.NewGuid(),
+                        PrivateTourRequestId = request.Id,
+                        ProvinceId = requestedLocation.Id
+                    });
+                }
+            }
+
+            if (!BuildAppActionResultIsError(result))
+            {
+                await _unitOfWork.SaveChangesAsync();
+            }
         }
         catch (Exception ex)
         {

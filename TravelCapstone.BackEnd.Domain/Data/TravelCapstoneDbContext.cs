@@ -30,6 +30,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<PlanServiceCostDetail> PlanServiceCostDetails { get; set; }
     public DbSet<PrivateJoinTourRequest> PrivateJoinTourRequests { get; set; }
+    public DbSet<RequestedLocation> RequestedLocations { get; set; }
     public DbSet<PrivateTourRequest> PrivateTourRequests { get; set; }
     public DbSet<Province> Provinces { get; set; }
     public DbSet<QuotationDetail> QuotationDetails { get; set; }
