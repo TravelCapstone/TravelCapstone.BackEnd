@@ -10,7 +10,20 @@ public class SD
     {
         return dateTime.ToString("dd/MM/yyyy");
     }
+    public static string GenerateOTP(int length = 6)
+    {
+        // Sử dụng thư viện Random để tạo mã ngẫu nhiên
+        Random random = new Random();
 
+        // Tạo chuỗi ngẫu nhiên với độ dài mong muốn
+        string otp = "";
+        for (int i = 0; i < length; i++)
+        {
+            otp += random.Next(0, 10); // Sinh số ngẫu nhiên từ 0 đến 9 và thêm vào chuỗi OTP
+        }
+
+        return otp;
+    }
     public static IEnumerable<WeekForYear> PrintWeeksForYear(int year)
     {
         var weekForYears = new List<WeekForYear>();
@@ -47,13 +60,13 @@ public class SD
 
     public class ResponseMessage
     {
-        public static string CREATE_SUCCESSFUL = "CREATE_SUCCESSFULLY";
-        public static string UPDATE_SUCCESSFUL = "UPDATE_SUCCESSFULLY";
-        public static string DELETE_SUCCESSFUL = "DELETE_SUCCESSFULLY";
-        public static string CREATE_FAILED = "CREATE_FAILED";
-        public static string UPDATE_FAILED = "UPDATE_FAILED";
-        public static string DELETE_FAILED = "DELETE_FAILED";
-        public static string LOGIN_FAILED = "LOGIN_FAILED";
+        public static string CREATE_SUCCESSFULLY = "Tạo mới thành công";
+        public static string UPDATE_SUCCESSFULLY = "Cập nhật thành công";
+        public static string DELETE_SUCCESSFULY = "Xóa thành công";
+        public static string CREATE_FAILED = "Có lỗi xảy ra trong quá trình tạo";
+        public static string UPDATE_FAILED = "Có lỗi xảy ra trong quá trình cập nhật";
+        public static string DELETE_FAILED = "Có lỗi xảy ra trong quá trình xóa";
+        public static string LOGIN_FAILED = "Đăng nhập thất bại";
     }
 
     public class SubjectMail

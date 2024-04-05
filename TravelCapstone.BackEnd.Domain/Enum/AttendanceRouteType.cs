@@ -2,4 +2,6 @@
 
 public enum AttendanceRouteType
 {
+    IN,
+    OUT,
 }

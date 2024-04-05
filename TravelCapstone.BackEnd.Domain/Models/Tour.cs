@@ -10,7 +10,7 @@ public class Tour
 
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public MainVehicleTour MainVehicle { get; set; }
+    public VehicleType MainVehicle { get; set; }
     public double TotalPrice { get; set; }
     public double PricePerAdult { get; set; }
     public double PricePerChild { get; set; }

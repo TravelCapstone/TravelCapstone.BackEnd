@@ -3,6 +3,9 @@
 public enum TourStatus
 {
     NEW,
-    START,
-    FINISHED
+    PENDING,
+    SUFFICIENT,
+    SCHEDULING_COMPLETED,
+    STARTING,
+    COMPLETED
 }

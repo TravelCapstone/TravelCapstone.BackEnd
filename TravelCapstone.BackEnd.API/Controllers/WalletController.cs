@@ -2,6 +2,7 @@
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Payment.PaymentRespone;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using Twilio.Http;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
@@ -23,15 +24,15 @@ namespace TravelCapstone.BackEnd.API.Controllers
         }
 
         [HttpGet("get-url-vnpay-recharge")]
-        public async Task<AppActionResult> GetUrlVnPayRecharge(Guid travelCompanionId, double amount)
+        public async Task<AppActionResult> GetUrlVnPayRecharge(Guid orderId)
         {
-            return await _walletService.GetUrlVnPayRecharge(travelCompanionId, amount);
+            return await _walletService.GetUrlVnPayRecharge(orderId);
         }
 
         [HttpGet("get-url-momo-recharge")]
-        public async Task<AppActionResult> GetUrlMomoRecharge(Guid travelCompanionId, double amount)
+        public async Task<AppActionResult> GetUrlMomoRecharge(Guid orderId)
         {
-            return await _walletService.GetUrlMomoRecharge(travelCompanionId, amount);
+            return await _walletService.GetUrlMomoRecharge(orderId);
         }
 
         [HttpGet("get-all-transaction")]
@@ -40,11 +41,6 @@ namespace TravelCapstone.BackEnd.API.Controllers
             return await _walletService.GetAllTransaction(travelCompanionId, pageNumber, pageSize);
         }
 
-        [HttpPost("pay/{orderId}")]
-        public async Task<AppActionResult> Pay(Guid orderId)
-        {
-            return await _walletService.Pay(orderId);
-        }
 
         [HttpGet("VNPayIpn")]
         public async Task<IActionResult> VNPayIPN()
@@ -68,7 +64,8 @@ namespace TravelCapstone.BackEnd.API.Controllers
                 if (response.VnPayResponseCode == "00")
                 {
                     var orderId = response.OrderId.ToString().Split(" ");
-                    await _walletService.Recharge(Guid.Parse(orderId[0]), double.Parse(response.Amount) / 100);
+                    await _walletService.UpdatesSucessStatus(Guid.Parse(orderId[0]));
+                    await _walletService.Recharge(Guid.Parse(orderId[1]),double.Parse( response.Amount)/100, Domain.Enum.TransactionType.RECHARGE_FROM_VNPAY);
                 }
             }
             catch (Exception ex)
@@ -89,7 +86,9 @@ namespace TravelCapstone.BackEnd.API.Controllers
             {
                 if (momo.resultCode == 0)
                 {
-                    await _walletService.Recharge(Guid.Parse(momo.extraData), double.Parse(momo.amount.ToString()));
+                    var orderId = momo.extraData.Split(" ");
+                    await _walletService.UpdatesSucessStatus(Guid.Parse(orderId[0]));
+                    await _walletService.Recharge(Guid.Parse(orderId[1]), double.Parse(momo.amount.ToString()) / 100, Domain.Enum.TransactionType.RECHARGE_FROM_VNPAY);
                 }
                 return NoContent();
             }

@@ -46,6 +46,40 @@ public class MappingConfig
                 .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
                 .ForMember(desc => desc.Account, act => act.MapFrom(src => src.Account));
 
+            config.CreateMap<Customer,CustomerDto>()
+                 .ForMember(desc => desc.Id, act => act.MapFrom(src => src.Id))
+                 .ForMember(desc => desc.LastName, act => act.MapFrom(src => src.LastName))
+                 .ForMember(desc => desc.FirstName, act => act.MapFrom(src => src.FirstName))
+                 .ForMember(desc => desc.Email, act => act.MapFrom(src => src.Email))
+                 .ForMember(desc => desc.PhoneNumber, act => act.MapFrom(src => src.PhoneNumber))
+                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
+                 .ForMember(desc => desc.Address, act => act.MapFrom(src => src.Address))
+                 .ForMember(desc => desc.Dob, act => act.MapFrom(src => src.Dob))
+                 .ForMember(desc => desc.Gender, act => act.MapFrom(src => src.Gender))
+                 .ForMember(desc => desc.IsAdult, act => act.MapFrom(src => src.IsAdult))
+                 .ForMember(desc => desc.Money, act => act.MapFrom(src => src.Money))
+                 .ForMember(desc => desc.Account, act => act.MapFrom(src => src.Account))
+                 .ForMember(desc => desc.IsVerfiedNPhoneNumber, act => act.MapFrom(src => src.IsVerfiedPhoneNumber))
+                 .ForMember(desc => desc.IsVerifiedEmail, act => act.MapFrom(src => src.IsVerifiedEmail))
+                 .ReverseMap()
+                 ;
+
+
+            config.CreateMap<Customer, TourRegistrationDto>()
+                 .ForMember(desc => desc.Id, act => act.MapFrom(src => src.Id))
+                 .ForMember(desc => desc.LastName, act => act.MapFrom(src => src.LastName))
+                 .ForMember(desc => desc.FirstName, act => act.MapFrom(src => src.FirstName))
+                 .ForMember(desc => desc.Email, act => act.MapFrom(src => src.Email))
+                 .ForMember(desc => desc.PhoneNumber, act => act.MapFrom(src => src.PhoneNumber))
+                 .ForMember(desc => desc.Address, act => act.MapFrom(src => src.Address))
+                 .ForMember(desc => desc.Dob, act => act.MapFrom(src => src.Dob))
+                 .ForMember(desc => desc.Gender, act => act.MapFrom(src => src.Gender))
+                 .ForMember(desc => desc.IsAdult, act => act.MapFrom(src => src.IsAdult))
+                 ;
+
+            config.CreateMap<PagedResult<CustomerDto>, PagedResult<Customer>>()
+             .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+
             config.CreateMap<PagedResult<PrivateTourRequest>, PagedResult<PrivateTourResponeDto>>()
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
         });

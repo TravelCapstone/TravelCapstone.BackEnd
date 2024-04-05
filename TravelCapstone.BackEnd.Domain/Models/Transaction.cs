@@ -14,5 +14,5 @@ public class Transaction
     public Guid TravelCompanionId { get; set; }
 
     [ForeignKey(nameof(TravelCompanionId))]
-    public TravelCompanion? TravelCompanion { get; set; }
+    public Customer? TravelCompanion { get; set; }
 }

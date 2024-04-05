@@ -15,7 +15,7 @@ public class PrivateJoinTourRequest
     public Guid TravelCompanionId { get; set; }
 
     [ForeignKey(nameof(TravelCompanionId))]
-    public TravelCompanion? TravelCompanion { get; set; }
+    public Customer? TravelCompanion { get; set; }
 
     public int NumOfAdult { get; set; }
     public int NumOfChildren { get; set; }

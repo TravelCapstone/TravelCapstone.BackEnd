@@ -16,13 +16,13 @@ namespace TravelCapstone.BackEnd.Application.Services
             AppActionResult result = new AppActionResult();
             try
             {
-                string accountSid = "AC4671e2f0ecc6bb9ede82c7c3538a58af";
-                string authToken = "3ccb7de6877a8bd77952baffcda4eb43";
+                string accountSid = "AC38b11d7ee74f1a987f6ad678556ea98d";
+                string authToken = "50f849812d522983fcf64a99c9210421";
                 TwilioClient.Init(accountSid, authToken);
 
                 var apiResponsse = MessageResource.Create(
                    body: $"{message}",
-                   from: new Twilio.Types.PhoneNumber("+17208623332"),
+                   from: new Twilio.Types.PhoneNumber("+13106516534"),
                    to: new Twilio.Types.PhoneNumber("+84366967957") //add receiver's phone number
                );
 
