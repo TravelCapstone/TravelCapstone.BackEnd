@@ -39,7 +39,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                     return result;
                 }
                 var requestedLocationRepository = Resolve<IRepository<RequestedLocation>>();
-                var requestedLocationListDb = await requestedLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == Id, 1, Int32.MaxValue, r => r.Province);
+                var requestedLocationListDb = await requestedLocationRepository!.GetAllDataByExpression(null, 0, 0, r => r.Province);
+                data.InsertRange(0, requestedLocationListDb.Items.Select(r => r.Province));
                 var dayPlanRepository = Resolve<IRepository<DayPlan>>();
                 var dayPlanDb = await dayPlanRepository!.GetAllDataByExpression(r => r.TourId == privateTourRequestDb.TourId, 0, 0,null);
                 if(dayPlanDb.Items!.Count == 0)
@@ -61,7 +62,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
                 var destinationRepository = Resolve<IRepository<Destination>>();
                 var destinationDb = await destinationRepository!.GetAllDataByExpression(r => destinationIds.Contains(r.Id), 1, Int32.MaxValue, r => r.Communce!.District!.Province!);
-                result.Result = destinationDb!.Items!.Select(r => r.Communce!.District!.Province).Distinct().ToList();
+                data.InsertRange(Math.Max(0, data.Count - 1), destinationDb!.Items!.Select(r => r.Communce!.District!.Province).ToList());
+                result.Result = data.DistinctBy(p => p.Id);
             } catch ( Exception ex )
             {
                 result = BuildAppActionResultError(result, ex.Message);
