@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.ConfigurationModel;
 using TravelCapstone.BackEnd.Common.DTO.Response;
@@ -25,7 +26,7 @@ public class RemoveCacheAtrribute : Attribute, IAsyncActionFilter
         }
         var cacheService = context.HttpContext.RequestServices.GetRequiredService<IResponseCacheService>();
         var result = await next();
-        if (result.Result is AppActionResult okObjectResult && okObjectResult.IsSuccess)
+        if (result.Result is ObjectResult okObjectResult)
         {
             await cacheService.RemoveCacheResponseAsync(pathEndPoint);
         }
