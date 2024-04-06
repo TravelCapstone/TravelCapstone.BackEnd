@@ -183,10 +183,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
         try
         {
-            if (dto.Option1.Count != 3)
-            {
-                result = BuildAppActionResultError(result, $"Hệ thống chỉ hỗ trợ tạo 3 tùy chọn");
-            }
+            
 
             var privateTourRequest = await _repository.GetById(dto.PrivateTourRequestId);
             if (privateTourRequest == null)
@@ -194,7 +191,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 result = BuildAppActionResultError(result, $"Không tồn tại request với id {dto.PrivateTourRequestId}");
             }
 
-            foreach (var item in dto.Option1)
+            foreach (var item in dto.Option1.Services)
             {
                 var serviceProvider = await serviceRepository!.GetById(item.ServiceId);
                 if (serviceProvider == null)
@@ -212,7 +209,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         $"Không tồn tại giá trong hệ thống với service id {item.ServiceId}");
                 }
             }
-            foreach (var item in dto.Option2)
+            foreach (var item in dto.Option2.Services)
             {
                 var serviceProvider = await serviceRepository!.GetById(item.ServiceId);
                 if (serviceProvider == null)
@@ -230,7 +227,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         $"Không tồn tại giá trong hệ thống với service id {item.ServiceId}");
                 }
             }
-            foreach (var item in dto.Option3)
+            foreach (var item in dto.Option3.Services)
             {
                 var serviceProvider = await serviceRepository!.GetById(item.ServiceId);
                 if (serviceProvider == null)
@@ -253,19 +250,38 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             {
                 List<QuotationDetail> quotationDetails = new List<QuotationDetail>();
                 List<OptionQuotation> optionQuotations = new List<OptionQuotation>();
-                foreach (var item in dto.Option1)
+                OptionQuotation quotation1 = new OptionQuotation()
+                {
+                    Id =   Guid.NewGuid(),
+                    OptionClass = dto.Option1.OptionClass,
+                    Status = OptionQuotationStatus.NEW,
+                    PrivateTourRequestId = dto.PrivateTourRequestId,
+                    Name = dto.Option1.Name,
+                };
+                OptionQuotation quotation2 = new OptionQuotation()
+                {
+                    Id = Guid.NewGuid(),
+                    OptionClass = dto.Option2.OptionClass,
+                    Status = OptionQuotationStatus.NEW,
+                    PrivateTourRequestId = dto.PrivateTourRequestId,
+                    Name = dto.Option2.Name,
+                };
+                OptionQuotation quotation3 = new OptionQuotation()
+                {
+                    Id = Guid.NewGuid(),
+                    OptionClass = dto.Option3.OptionClass,
+                    Status = OptionQuotationStatus.NEW,
+                    PrivateTourRequestId = dto.PrivateTourRequestId,
+                    Name = dto.Option3.Name,
+                };
+                optionQuotations.Add(quotation1);
+                optionQuotations.Add(quotation2);
+                optionQuotations.Add(quotation3);
+
+                foreach (var item in dto.Option1.Services)
                 {
                     double total = 0;
-                    var quotationId = Guid.NewGuid();
-                    OptionQuotation quotation = new OptionQuotation()
-                    {
-                        Id = quotationId,
-                        OptionClass = item.OptionClass,
-                        Status = OptionQuotationStatus.NEW,
-                        PrivateTourRequestId = dto.PrivateTourRequestId,
-                        Name = item.Name,
-                        Description = item.Description
-                    };
+                   
 
                     var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(
                         a => a.ServiceId == item.ServiceId,
@@ -276,7 +292,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     {
                         Id = Guid.NewGuid(),
                         Quantity = item.Quantity,
-                        OptionQuotationId = quotationId,
+                        OptionQuotationId = quotation1.Id,
                         SellPriceHistoryId = list.First().Id
                     };
                     var priceHistoryMatchMOQ = new SellPriceHistory();
@@ -289,24 +305,13 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             break;
                         }
                     }
-                    quotation.Total = total;
-                    optionQuotations.Add(quotation);
+                    quotation1.Total = total;
                     quotationDetails.Add(quotationDetail);
                 }
-                foreach (var item in dto.Option2)
+                foreach (var item in dto.Option2.Services)
                 {
                     double total = 0;
-                    var quotationId = Guid.NewGuid();
-                    OptionQuotation quotation = new OptionQuotation()
-                    {
-                        Id = quotationId,
-                        OptionClass = item.OptionClass,
-                        Status = OptionQuotationStatus.NEW,
-                        PrivateTourRequestId = dto.PrivateTourRequestId,
-                        Name = item.Name,
-                        Description = item.Description
-                    };
-
+                  
                     var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(
                         a => a.ServiceId == item.ServiceId,
                         0, 0, null
@@ -316,7 +321,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     {
                         Id = Guid.NewGuid(),
                         Quantity = item.Quantity,
-                        OptionQuotationId = quotationId,
+                        OptionQuotationId = quotation2.Id,
                         SellPriceHistoryId = list.First().Id
                     };
                     var priceHistoryMatchMOQ = new SellPriceHistory();
@@ -329,23 +334,13 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             break;
                         }
                     }
-                    quotation.Total = total;
-                    optionQuotations.Add(quotation);
+                    quotation2.Total = total;
                     quotationDetails.Add(quotationDetail);
                 }
-                foreach (var item in dto.Option3)
+
+                foreach (var item in dto.Option3.Services)
                 {
                     double total = 0;
-                    var quotationId = Guid.NewGuid();
-                    OptionQuotation quotation = new OptionQuotation()
-                    {
-                        Id = quotationId,
-                        OptionClass = item.OptionClass,
-                        Status = OptionQuotationStatus.NEW,
-                        PrivateTourRequestId = dto.PrivateTourRequestId,
-                        Name = item.Name,
-                        Description = item.Description
-                    };
 
                     var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(
                         a => a.ServiceId == item.ServiceId,
@@ -356,7 +351,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     {
                         Id = Guid.NewGuid(),
                         Quantity = item.Quantity,
-                        OptionQuotationId = quotationId,
+                        OptionQuotationId = quotation3.Id,
                         SellPriceHistoryId = list.First().Id
                     };
                     var priceHistoryMatchMOQ = new SellPriceHistory();
@@ -369,8 +364,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             break;
                         }
                     }
-                    quotation.Total = total;
-                    optionQuotations.Add(quotation);
+                    quotation3.Total = total;
                     quotationDetails.Add(quotationDetail);
                 }
 
