@@ -12,6 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Bogus" Version="35.5.0" />
+        <PackageReference Include="Faker" Version="1.2.0" />
+        <PackageReference Include="Faker.Net" Version="2.0.163" />
         <PackageReference Include="Firebase.Auth" Version="1.0.0" />
         <PackageReference Include="FirebaseAdmin" Version="2.0.0" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />

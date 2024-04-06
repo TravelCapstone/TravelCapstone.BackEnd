@@ -9,7 +9,6 @@ public class OptionQuotation
     [Key] public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
-    public string Description { get; set; } = null!;
     public OptionClass OptionClass { get; set; }
     public double Total { get; set; }
     public OptionQuotationStatus Status { get; set; }
