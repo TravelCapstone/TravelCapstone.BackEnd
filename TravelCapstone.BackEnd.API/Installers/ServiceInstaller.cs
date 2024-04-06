@@ -31,6 +31,7 @@ public class ServiceInstaller : IInstaller
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IServiceService, ServiceService>();
         services.AddScoped<IProvinceService, ProvinceService>();
+        services.AddScoped<IResponseCacheService, ResponseCacheService>();
         services.AddScoped<IFakeDataGenerator,FakeDataGenerator>();
     }
 }
