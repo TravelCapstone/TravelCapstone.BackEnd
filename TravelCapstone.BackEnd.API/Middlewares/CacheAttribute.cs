@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System.Text;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.ConfigurationModel;
+using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.API.Middlewares;
 
@@ -34,7 +35,7 @@ public class CacheAttribute : Attribute, IAsyncActionFilter
         }
 
         var excutedContext = await next();
-        if (excutedContext.Result is OkObjectResult okObjectResult)
+        if (excutedContext.Result is ObjectResult okObjectResult)
         {
             await cacheService.SetCacheResponseAsync(cacheKey, okObjectResult.Value, TimeSpan.FromSeconds(_timeToLiveSeconds));
         }
