@@ -405,8 +405,40 @@ namespace TravelCapstone.BackEnd.Application.Services
             }
             return string.Empty;
         }
+        public async Task<AppActionResult> GetLastCostHistory(List<Guid> servicesId)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var latestCostHistory = new Dictionary<Guid, ServiceCostHistory>();
+
+                foreach (var serviceId in servicesId)
+                {
+                    var latestHistoryForService = await _repository.GetAllDataByExpression(
+                        a => a.ServiceId == serviceId,
+                        0,
+                        0,
+                        null
+                    );
+                    latestHistoryForService.Items = latestHistoryForService.Items!.OrderByDescending(a => a.Date).ToList();
+                    if (latestHistoryForService.Items != null && latestHistoryForService.Items.Any())
+                    {
+                        latestCostHistory[serviceId] = latestHistoryForService.Items.First();
+                    }
+                }
+
+
+                result.Result = latestCostHistory.Values;
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
     }
 
 
 
-    }
+}
