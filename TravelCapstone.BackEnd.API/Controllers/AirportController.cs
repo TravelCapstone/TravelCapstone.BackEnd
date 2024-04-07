@@ -27,7 +27,7 @@ namespace TravelCapstone.BackEnd.API.Controllers
 
             };
         }
-        [HttpPost("search-airport")]
+        [HttpPost("search-air-flight")]
         public async Task<AppActionResult> SearchAirFlight(FlightSearchRequestDto request)
         {
          //   return await _service.SearchAirFlight(request);

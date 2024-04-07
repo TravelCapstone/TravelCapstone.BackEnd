@@ -32,5 +32,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetPriceQuotationTemplate();
         }
+
+        [HttpPost("get-last-cost-history")]
+        public async Task<AppActionResult> GetLastCostHistory([FromBody]List<Guid> guids)
+        {
+            return await _service.GetLastCostHistory(guids);
+        }
     }
 }
