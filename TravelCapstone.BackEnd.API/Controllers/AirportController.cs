@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Common.DTO.AirTransport;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Common.Enum;
 
@@ -27,13 +28,30 @@ namespace TravelCapstone.BackEnd.API.Controllers
             };
         }
         [HttpPost("search-airport")]
-        public async Task<AppActionResult> SearchAirFlight(List<AirlineType> airlineTypes, string startCode, string endCode,DateTime date)
+        public async Task<AppActionResult> SearchAirFlight(FlightSearchRequestDto request)
         {
-            //return await _service.SearchAirFlight(airlineTypes,startCode,endCode,date);
+         //   return await _service.SearchAirFlight(request);
             return new AppActionResult()
             {
 
             };
+
+        }
+        [HttpGet("get-all-airline")]
+        public async Task<AppActionResult> GetAllAirline()
+        {
+            return new AppActionResult
+            {
+
+                Result = new List<object>() {
+                     new   {Name= "VietJet", Code= "VJ" },
+                     new   {Name= "VietNam Airline", Code= "VN" },
+                     new   {Name= "Bamboo", Code= "QH" },
+                     new   {Name= "VietTravel Airline", Code= "VU" },
+                },
+                IsSuccess = true,
+            };
+
         }
 
     }

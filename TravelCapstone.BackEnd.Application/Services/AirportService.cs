@@ -17,71 +17,30 @@ namespace TravelCapstone.BackEnd.Application.Services
         public AirportService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
-
-        public async Task<AppActionResult> SearchAirFlight(List<AirlineType> airlineTypes, string starpointCode, string endPointCode, DateTime date)
+        public string ConverFormateDateAirport(DateTime date)
         {
-            AppActionResult result = new AppActionResult();
             DateTime departDateTime = new DateTime(date.Date.Year, date.Date.Month, date.Date.Day);
 
             // Format lại thành dạng chuỗi "dd/MM/yyyy"
-            string departDate = departDateTime.ToString("ddMMyyyy");
+            return  departDateTime.ToString("ddMMyyyy");
+        }
+        public async Task<AppActionResult> SearchAirFlight(FlightSearchRequestDto request)
+        {
+            AppActionResult result = new AppActionResult();
+           
             try
             {
-                List<object> listFlight = new List<object>();
-                
-                foreach (var airlineType in airlineTypes)
-                {
-                    switch (airlineType)
-                    {
-                        case AirlineType.VIETNAM_AIRLINE:
-                            listFlight.Add(new
-                            {
-                                StartPoint = "SGN",
-                                EndPoint = "DLI",
-                                DepartDate = departDate,
-                                Airline = "VN"
-                            });
-                            break;
-                        case AirlineType.VIETJET:
-                            listFlight.Add(new
-                            {
-                                StartPoint = "SGN",
-                                EndPoint = "DLI",
-                                DepartDate = departDate,
-                                Airline = "VJ"
-                            });
-                            break;
-                        case AirlineType.BAMBOO:
-                            listFlight.Add(new
-                            {
-                                StartPoint = "SGN",
-                                EndPoint = "DLI",
-                                DepartDate = departDate,
-                                Airline = "QH"
-                            });
-                            break;
-                        case AirlineType.VIET_TRAVEL_AIRLINE:
-                            listFlight.Add(new
-                            {
-                                StartPoint = "SGN",
-                                EndPoint = "DLI",
-                                DepartDate = departDate,
-                                Airline = "VU"
-                            });
-                            break;
-                    }
 
-                }
-
-                var payload = new
+                FlightSearchRequest payload = new FlightSearchRequest()
                 {
                     Key = "d009561aae4040b3f10a83036242f0b07a5",
-                    ProductKey = "j371azf9plina2s",
-                    Adt = 1,
-                    Chd = 0,
-                    Inf = 0,
-                    ViewMode = false,
-                    ListFlight = listFlight
+                    ProductKey= "j371azf9plina2s",
+                    Adt= request.Adt,
+                    Chd= request.Chd,
+                    Inf= request.Inf,
+                    ListFlight = request.ListFlight,
+                    ViewMode=false
+
                 };
                 var response = await CallApi("https://plugin.datacom.vn/flightsearch", payload, APIMethod.POST);
                 if (response != null && response.IsSuccessStatusCode)
