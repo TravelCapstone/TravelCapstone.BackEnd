@@ -14,6 +14,8 @@ namespace TravelCapstone.BackEnd.Application.IServices
         public Task<AppActionResult> UploadQuotation(IFormFile file);
         public Task<AppActionResult> ValidateExcelFile(IFormFile file);
         public Task<IActionResult> GetPriceQuotationTemplate();
+        Task<AppActionResult> GetLastCostHistory(List<Guid> servicesId);
+
     }
 
 }
