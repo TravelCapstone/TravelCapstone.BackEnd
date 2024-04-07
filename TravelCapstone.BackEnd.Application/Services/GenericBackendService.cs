@@ -43,7 +43,7 @@ public enum APIMethod
     DELETE
 }
 
-public async Task<RestResponse> CallApi(string endpoint, object data, APIMethod method)
+public async Task<RestResponse> CallAPIAsync(string endpoint, object data, APIMethod method)
 {
     var client = new RestClient();
     var request = new RestRequest(endpoint);

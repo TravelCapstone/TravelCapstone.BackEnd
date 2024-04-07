@@ -42,7 +42,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     ViewMode=false
 
                 };
-                var response = await CallApi("https://plugin.datacom.vn/flightsearch", payload, APIMethod.POST);
+                var response = await CallAPIAsync("https://plugin.datacom.vn/flightsearch", payload, APIMethod.POST);
                 if (response != null && response.IsSuccessStatusCode)
                 {
                     var data = response.Content;
@@ -70,7 +70,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     Keyword = keyword,
                     Code = ""
                 };
-                var response = await CallApi("https://plugin.datacom.vn/searchairport", payload, APIMethod.POST);
+                var response = await CallAPIAsync("https://plugin.datacom.vn/searchairport", payload, APIMethod.POST);
                 if (response != null && response.IsSuccessStatusCode)
                 {
                     var data = response.Content;

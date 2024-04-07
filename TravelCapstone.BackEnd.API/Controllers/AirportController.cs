@@ -53,6 +53,41 @@ namespace TravelCapstone.BackEnd.API.Controllers
             };
 
         }
+        [HttpGet("get-all-airport")]
+        public async Task<AppActionResult> GetAll()
+        {
+            return new AppActionResult
+            {
+
+                Result = new List<object>() {
+                    new  { Name = "Hà Nội", Code = "HAN" },
+                    new  { Name = "Hồ Chí Minh", Code = "SGN" },
+                    new  { Name = "Đà Nẵng", Code = "DAD" },
+                    new  { Name = "Điện Biên Phủ", Code = "DIN" },
+                    new  { Name = "Hải Phòng", Code = "HPH" },
+                    new  { Name = "Thanh Hóa", Code = "THD" },
+                    new  { Name = "Vinh", Code = "VII" },
+                    new  { Name = "Quảng Bình", Code = "VDH" },
+                    new  { Name = "Quảng Nam", Code = "VCL" },
+                    new  { Name = "Huế", Code = "HUI" },
+                    new  { Name = "PleiKu", Code = "PXU" },
+                    new  { Name = "Phú Yên", Code = "TBB" },
+                    new  { Name = "Ban Mê Thuột", Code = "BMV" },
+                    new  { Name = "Nha Trang", Code = "CXR" },
+                    new  { Name = "Qui Nhơn", Code = "UIH" },
+                    new  { Name = "Đà Lạt", Code = "DLI" },
+                    new  { Name = "Cần Thơ", Code = "VCA" },
+                    new  { Name = "Kiên Giang", Code = "VKG" },
+                    new  { Name = "Cà Mau", Code = "CAH" },
+                    new  { Name = "Phú Quốc", Code = "PQC" },
+                    new  { Name = "Côn Đảo", Code = "VCS" },
+                    new  { Name = "Vân Đồn", Code = "VDO" }
+                },
+                IsSuccess = true,
+            };
+
+        }
+
 
     }
 }

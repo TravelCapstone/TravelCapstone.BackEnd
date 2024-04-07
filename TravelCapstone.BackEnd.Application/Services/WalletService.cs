@@ -184,11 +184,12 @@ namespace TravelCapstone.BackEnd.Application.Services
                         { "signature", signature }
                     };
 
-                    var client = new RestClient();
+                    //var client = new RestClient();
 
-                    var request = new RestRequest(endpoint, Method.Post);
-                    request.AddJsonBody(message.ToString());
-                    RestResponse response = await client.ExecuteAsync(request);
+                    //var request = new RestRequest(endpoint, Method.Post);
+                    //request.AddJsonBody(message.ToString());
+                    //RestResponse response = await client.ExecuteAsync(request);
+                    var response = await CallAPIAsync(endpoint, message, APIMethod.POST);
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
                         JObject jmessage = JObject.Parse(response.Content!);
