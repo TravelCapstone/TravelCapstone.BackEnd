@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TravelCapstone.BackEnd.Common.DTO.AirTransport;
+using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Common.Enum;
+
+namespace TravelCapstone.BackEnd.Application.IServices
+{
+    public interface IAirportService
+    {
+        Task<AppActionResult> SearchAirport(string keyword);
+        Task<AppActionResult> SearchAirFlight(FlightSearchRequestDto request);
+    }
+}

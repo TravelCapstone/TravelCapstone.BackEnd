@@ -148,9 +148,10 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 a => a.OptionQuotation!.PrivateTourRequestId == id,
                 0,
                 0,
-                a => a.OptionQuotation!.PrivateTourRequest!,
+                a => a.OptionQuotation!,
                 a => a.SellPriceHistory!.Service!
             );
+            
             List<object> data = new List<object>();
             foreach( var quotationDetail in list.Items!)
             {
@@ -159,12 +160,18 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 data.Add(
                     new 
                     {
-                        QuotationDetail = quotationDetail,
+                        quotationDetail,
                         LastCost = a.FirstOrDefault()
                     }
                     );
-                result.Result = data;   
-            } 
+            }
+            var request = new
+            {
+                Request = _mapper.Map<PrivateTourResponeDto>( await _repository.GetByExpression(a=> a!.Id == id, a=> a.Account!)),
+                QuotationDetails = data
+            };
+            result.Result = request;
+
         }
         catch (Exception e)
         {
