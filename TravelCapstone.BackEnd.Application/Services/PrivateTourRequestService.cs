@@ -140,44 +140,50 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
     public async Task<AppActionResult> GetPrivateTourRequestById(Guid id)
     {
         var result = new AppActionResult();
-        var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
-        var costHistoryRepository = Resolve<IRepository<ServiceCostHistory>>();
-        try
+        OptionListResponseDto data = new OptionListResponseDto();
+        try 
         {
-          var list= await quotationDetailRepository!.GetAllDataByExpression(
-                a => a.OptionQuotation!.PrivateTourRequestId == id,
-                0,
-                0,
-                a => a.OptionQuotation!,
-                a => a.SellPriceHistory!.Service!
-            );
-            
-            List<object> data = new List<object>();
-            foreach( var quotationDetail in list.Items!)
+            var privateTourRequestDb = await _repository.GetById(id);
+            if(privateTourRequestDb == null)
             {
-                var lastPrice = await costHistoryRepository!.GetAllDataByExpression(a => a.ServiceId == quotationDetail.SellPriceHistory.ServiceId, 0, 0, null);
-               var a = lastPrice!.Items!.OrderByDescending(a => a.Date).ToList();
-                data.Add(
-                    new 
-                    {
-                        quotationDetail,
-                        LastCost = a.FirstOrDefault()
-                    }
-                    );
+                result = BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour riêng tư với id {id}");
+                return result;
             }
-            var request = new
+            data.PrivateTourRespone = _mapper.Map<PrivateTourResponeDto>(privateTourRequestDb);
+            var optionQuotationRepositry = Resolve<IRepository<OptionQuotation>>();
+            var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
+            var optionsDb = await optionQuotationRepositry.GetAllDataByExpression(q => q.PrivateTourRequestId == id, 0, 0);
+            if(optionsDb.Items.Count != 3)
             {
-                Request = _mapper.Map<PrivateTourResponeDto>( await _repository.GetByExpression(a=> a!.Id == id, a=> a.Account!)),
-                QuotationDetails = data
-            };
-            result.Result = request;
+                result = BuildAppActionResultError(result, $"Số lượng lựa chọn không phù hợp");
+                return result;
+            }
+            //Remind: add check 3 optionType
+            int fullOption = 0;
+            optionsDb.Items.ForEach(o => fullOption ^= (int)(o.OptionClass));
+            if(fullOption != 3)
+            {
+                result.Messages.Add("Danh sách lựa chọn không đủ các hạng mục");
+            }
 
-        }
-        catch (Exception e)
+            foreach( var item in optionsDb.Items ) {
+                OptionResponseDto option = new OptionResponseDto();
+                option.OptionQuotation = item;
+                var quotationDetailDb = await quotationDetailRepository.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, q => q.SellPriceHistory);
+                option.QuotationDetails = quotationDetailDb.Items.ToList();
+                //Option to order of OptionClass
+                if(item.OptionClass == OptionClass.ECONOMY)
+                    data.Option1 = option;
+                else if(item.OptionClass == OptionClass.MIDDLE)
+                    data.Option2 = option;
+                else data.Option3 = option;
+            }
+            result.Result = data;
+
+        } catch (Exception e)
         {
             result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
         }
-
         return result;
     }
 
