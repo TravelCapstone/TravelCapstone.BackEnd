@@ -39,6 +39,8 @@ public class MappingConfig
                 .ForMember(desc => desc.Id, act => act.MapFrom(src => src.Id))
                 .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
                 .ForMember(desc => desc.Description, act => act.MapFrom(src => src.Description))
+                .ForMember(desc => desc.StartDate, act => act.MapFrom(src => src.StartDate))
+                .ForMember(desc => desc.EndDate, act => act.MapFrom(src => src.EndDate))
                 .ForMember(desc => desc.Name, act => act.MapFrom(src => src.Name))
                 .ForMember(desc => desc.Status, act => act.MapFrom(src => src.Status))
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))

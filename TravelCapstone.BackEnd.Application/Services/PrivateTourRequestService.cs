@@ -153,10 +153,9 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             var optionQuotationRepositry = Resolve<IRepository<OptionQuotation>>();
             var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
             var optionsDb = await optionQuotationRepositry.GetAllDataByExpression(q => q.PrivateTourRequestId == id, 0, 0);
-            if(optionsDb.Items.Count != 3)
+            if (optionsDb.Items.Count != 3)
             {
-                result = BuildAppActionResultError(result, $"Số lượng lựa chọn không phù hợp");
-                return result;
+                result.Messages.Add($"Số lượng lựa chọn hiện tại: {optionsDb.Items.Count} không phù hợp");
             }
             //Remind: add check 3 optionType
             int fullOption = 0;
