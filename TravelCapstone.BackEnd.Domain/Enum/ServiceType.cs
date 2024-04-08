@@ -6,7 +6,5 @@ public enum ServiceType
     RESTAURANTS,
     ENTERTAINMENT,
     VEHICLE_SUPPLY,
-    AIR_TICKET_SUPPLY,
-    FandB,
-    TRANSPORTATION
+    AIR_TICKET_SUPPLY
 }

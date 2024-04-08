@@ -34,7 +34,7 @@ namespace TravelCapstone.BackEnd.API.Controllers
         }
 
         [HttpPost("get-last-cost-history")]
-        public async Task<AppActionResult> GetLastCostHistory([FromBody]List<Guid> guids)
+        public async Task<AppActionResult> GetLastCostHistory(List<Guid> guids)
         {
             return await _service.GetLastCostHistory(guids);
         }
