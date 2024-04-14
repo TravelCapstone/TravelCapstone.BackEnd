@@ -60,7 +60,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
             var request = _mapper.Map<PrivateTourRequest>(privateTourequestDTO);
             request.Id = Guid.NewGuid();
-            request.Status = PrivateTourStatus.NEW;
+          //  request.Status = PrivateTourStatus.NEW;
             await _repository.Insert(request);
             if(privateTourequestDTO.RequestedLocations != null && privateTourequestDTO.RequestedLocations.Count > 0)
             {
@@ -159,7 +159,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             }
             //Remind: add check 3 optionType
             int fullOption = 0;
-            optionsDb.Items.ForEach(o => fullOption ^= (int)(o.OptionClass));
+           // optionsDb.Items.ForEach(o => fullOption ^= (int)(o.OptionClass));
             if(fullOption != 3)
             {
                 result.Messages.Add("Danh sách lựa chọn không đủ các hạng mục");
@@ -171,11 +171,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
            //     var quotationDetailDb = await quotationDetailRepository.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, q => q.SellPriceHistory);
         //        option.QuotationDetails = quotationDetailDb.Items.ToList();
                 //Option to order of OptionClass
-                if(item.OptionClass == OptionClass.ECONOMY)
-                    data.Option1 = option;
-                else if(item.OptionClass == OptionClass.MIDDLE)
-                    data.Option2 = option;
-                else data.Option3 = option;
+           //     if(item.OptionClass == OptionClass.ECONOMY)
+                 //   data.Option1 = option;
+           //     else if(item.OptionClass == OptionClass.MIDDLE)
+              //      data.Option2 = option;
+             //   else data.Option3 = option;
             }
             result.Result = data;
 
@@ -265,24 +265,24 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 OptionQuotation quotation1 = new OptionQuotation()
                 {
                     Id =   Guid.NewGuid(),
-                    OptionClass = dto.Option1.OptionClass,
-                    Status = OptionQuotationStatus.NEW,
+             //       OptionClass = dto.Option1.OptionClass,
+             //       Status = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId,
                     Name = dto.Option1.Name,
                 };
                 OptionQuotation quotation2 = new OptionQuotation()
                 {
                     Id = Guid.NewGuid(),
-                    OptionClass = dto.Option2.OptionClass,
-                    Status = OptionQuotationStatus.NEW,
+             //       OptionClass = dto.Option2.OptionClass,
+             //       Status = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId,
                     Name = dto.Option2.Name,
                 };
                 OptionQuotation quotation3 = new OptionQuotation()
                 {
                     Id = Guid.NewGuid(),
-                    OptionClass = dto.Option3.OptionClass,
-                    Status = OptionQuotationStatus.NEW,
+              //      OptionClass = dto.Option3.OptionClass,
+              //      Status = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId,
                     Name = dto.Option3.Name,
                 };
@@ -380,7 +380,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     quotationDetails.Add(quotationDetail);
                 }
 
-                privateTourRequest!.Status = PrivateTourStatus.WAITINGFORCUSTOMER;
+          //      privateTourRequest!.Status = PrivateTourStatus.WAITINGFORCUSTOMER;
                 await optionQuotationRepository!.InsertRange(optionQuotations);
                 await optionDetailRepository!.InsertRange(quotationDetails);
                 await _unitOfWork.SaveChangesAsync();
@@ -415,11 +415,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 result = BuildAppActionResultError(result,
                     $"Option với id {optionId} không tồn tại trong hệ thống");
             }
-            else if (option.Status != OptionQuotationStatus.NEW)
-            {
-                result = BuildAppActionResultError(result,
-                    $"Chỉ chấp nhận confirm với option trạng thái NEW");
-            }
+   //         else if (option.Status != OptionQuotationStatus.NEW)
+          //  {
+   //             result = BuildAppActionResultError(result,
+   //                 $"Chỉ chấp nhận confirm với option trạng thái NEW");
+     //       }
             if (travelCompanion == null)
             {
                 result = BuildAppActionResultError(result,
@@ -427,8 +427,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             }
             if (!BuildAppActionResultIsError(result))
             {
-                option!.PrivateTourRequest!.Status = PrivateTourStatus.APPROVED;
-                option!.Status = OptionQuotationStatus.ACTIVE;
+            //    option!.PrivateTourRequest!.Status = PrivateTourStatus.APPROVED;
+           //     option!.Status = OptionQuotationStatus.ACTIVE;
                 var listOption =
                     await optionQuotationRepository.GetAllDataByExpression(
                         a => a.PrivateTourRequestId == option!.PrivateTourRequestId,
@@ -437,7 +437,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         null);
                 foreach (var item in listOption.Items!)
                 {
-                    item.Status = OptionQuotationStatus.IN_ACTIVE;
+              //      item.Status = OptionQuotationStatus.IN_ACTIVE;
                 }
 
                 await orderRepository!.Insert(new Order()
@@ -445,7 +445,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     Id = Guid.NewGuid(),
                     Content = $"Thanh toán cho private tour {option.PrivateTourRequest!.Name}",
                     Total = option.Total,
-                    OrderStatus = OrderStatus.NEW,
+               //     OrderStatus = OrderStatus.NEW,
                     CustomerId = travelCompanion!.Id,
                     TourId = option.PrivateTourRequest.TourId,
                     NumOfAdult = option.PrivateTourRequest.NumOfAdult,

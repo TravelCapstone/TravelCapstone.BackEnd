@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.Domain.Models;
@@ -7,7 +8,9 @@ public class Vehicle
 {
     [Key] public Guid Id { get; set; }
 
-    public VehicleType VehicleType { get; set; }
+    public Enum.VehicleType VehicleTypeId { get; set; }
+    [ForeignKey(nameof(VehicleTypeId))]
+    public EnumModels.VehicleType? VehicleType { get; set; }
     public string Plate { get; set; } = null!;
     public int Capacity { get; set; }
     public string EngineNumber { get; set; } = null!;

@@ -91,7 +91,7 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
                     PricePerAdult = Convert.ToDouble(random.Next(50, 500)),
                     PricePerChild = Convert.ToDouble(random.Next(20, 250)),
                     MOQ = random.Next(1, 100),
-                    Unit = Unit.PERSON,
+                //    Unit = Unit.PERSON,
                     Date = DateTime.Now,
                     ServiceId = service.Id
                 };
@@ -144,15 +144,15 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
                 Id = Guid.NewGuid(),
                 Name = Faker.Company.Name(),
                 Description = Lorem.Paragraph(),
-                MainVehicle = (VehicleType)random.Next(System.Enum.GetValues(typeof(VehicleType)).Length),
+                //MainVehicle = (VehicleType)random.Next(System.Enum.GetValues(typeof(VehicleType)).Length),
                 TotalPrice = random.NextDouble() * 1000,
                 PricePerAdult = random.NextDouble() * 500,
                 PricePerChild = random.NextDouble() * 200,
                 StartDate = DateTime.Now.AddDays(random.Next(30)), // Random date within next 30 days
                 EndDate = DateTime.Now.AddDays(random.Next(31, 60)), // Random date between 31st and 60th day from now
-                TourType = (TourType)random.Next(System.Enum.GetValues(typeof(TourType)).Length),
+         //       TourType = (TourType)random.Next(System.Enum.GetValues(typeof(TourType)).Length),
                 QRCode = null,
-                TourStatus = (TourStatus)random.Next(System.Enum.GetValues(typeof(TourStatus)).Length),
+             //   TourStatus = (TourStatus)random.Next(System.Enum.GetValues(typeof(TourStatus)).Length),
                 BasedOnTourId = null, // Cần điều chỉnh nếu cần thiết
                 TourGuideId = "e392d0b3-1ffe-4bfe-81cb-c3f80c402ea5"
             };

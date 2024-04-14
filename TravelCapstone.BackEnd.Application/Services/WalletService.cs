@@ -234,7 +234,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                             Date = utility!.GetCurrentDateTimeInTimeZone(),
                             Id = Guid.NewGuid(),
                             TravelCompanionId = travelcompanionId,
-                            TransactionType = transactionType
+                   //         TransactionType = transactionType
                         }
                     );
                     await _unitOfWork.SaveChangesAsync();
@@ -381,13 +381,13 @@ namespace TravelCapstone.BackEnd.Application.Services
                             Description = "Tour custom",
                             EndDate = privateTourRequest.EndDate,
                             StartDate = privateTourRequest.StartDate,
-                            MainVehicle = VehicleType.CAR,
+                            //MainVehicle = VehicleType.CAR,
                             Name = "Tour",
                         });
 
                     }
 
-                    order!.OrderStatus = OrderStatus.PAID;
+                 //   order!.OrderStatus = OrderStatus.PAID;
                     await _unitOfWork.SaveChangesAsync();
                 }
             }

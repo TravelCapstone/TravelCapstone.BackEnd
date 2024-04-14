@@ -30,7 +30,7 @@ public class MappingConfig
                 .ForMember(desc => desc.NumOfAdult, act => act.MapFrom(src => src.NumOfAdult))
                 .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
                 .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
-                .ForMember(desc => desc.MainVehicle, act => act.MapFrom(src => src.MainVehicle))
+       //         .ForMember(desc => desc.MainVehicle, act => act.MapFrom(src => src.MainVehicle))
                 .ForMember(desc => desc.IsEnterprise, act => act.MapFrom(src => src.isEnterprise))
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
                 ;
@@ -42,7 +42,7 @@ public class MappingConfig
                 .ForMember(desc => desc.StartDate, act => act.MapFrom(src => src.StartDate))
                 .ForMember(desc => desc.EndDate, act => act.MapFrom(src => src.EndDate))
                 .ForMember(desc => desc.Name, act => act.MapFrom(src => src.Name))
-                .ForMember(desc => desc.Status, act => act.MapFrom(src => src.Status))
+             //   .ForMember(desc => desc.Status, act => act.MapFrom(src => src.Status))
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
                 .ForMember(desc => desc.NumOfAdult, act => act.MapFrom(src => src.NumOfAdult))
                 .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
