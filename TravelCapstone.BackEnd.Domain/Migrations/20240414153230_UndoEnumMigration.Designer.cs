@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240414153230_UndoEnumMigration")]
+    partial class UndoEnumMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -520,18 +522,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AttendanceRouteTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "IN"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "OUT"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.AttendanceType", b =>
@@ -546,23 +536,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AttendanceTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NOTYET"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "ATTENDEDED"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "ABSENT"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.JoinTourStatus", b =>
@@ -577,23 +550,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("JoinTourStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NEW"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "APPROVED"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "REJECTED"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.MainVehicleTour", b =>
@@ -622,13 +578,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MaterialTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "PASSPORT"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.OptionClass", b =>
@@ -643,23 +592,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OptionClasses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "ECONOMY"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "MIDDLE"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "PREMIUM"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.OptionQuotationStatus", b =>
@@ -674,23 +606,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OptionQuotationStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NEW"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "ACTIVE"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "IN_ACTIVE"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.OrderStatus", b =>
@@ -705,18 +620,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NEW"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "PAID"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.PrivateTourStatus", b =>
@@ -731,28 +634,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PrivateTourStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NEW"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "WAITINGFORCUSTOMER"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "APPROVED"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "REJECTED"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.ServiceType", b =>
@@ -767,33 +648,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ServiceTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "HOTEL"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "RESTAURANTS"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "ENTERTAINMENT"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "VEHICLE_SUPPLY"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "AIR_TICKET_SUPPLY"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.TourStatus", b =>
@@ -808,38 +662,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TourStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NEW"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "PENDING"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "SUFFICIENT"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "SCHEDULING_COMPLETED"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "STARTING"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "COMPLETED"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.TourType", b =>
@@ -854,23 +676,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TourTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "PUBLIC"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "CUSTOM"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "ENTERPRISE"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.TransactionType", b =>
@@ -885,23 +690,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TransactionTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "RECHARGE_FROM_VNPAY"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "RECHARGE_FROM_MOMO"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "PAYMENT_FOR_SERVICES"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.Unit", b =>
@@ -916,23 +704,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Units");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "DAY"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "ROOM"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "PERSON"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.VehicleType", b =>
@@ -947,38 +718,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VehicleTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "BUS"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "CAR"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "PLANE"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "BOAT"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "BICYCLE"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "HELICOPTER"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Material", b =>

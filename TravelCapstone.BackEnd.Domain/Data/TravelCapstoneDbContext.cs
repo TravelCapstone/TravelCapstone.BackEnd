@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Domain.Data;
@@ -92,7 +93,47 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
             ConcurrencyStamp = "02962efa-1273-46c0-b103-7167b1742ef3",
             NormalizedName = "customer"
         });
+
         base.OnModelCreating(builder);
+
+        SeedEnumTable<Models.EnumModels.AttendanceRouteType, Domain.Enum.AttendanceRouteType>(builder);
+        SeedEnumTable<Models.EnumModels.AttendanceType, Domain.Enum.AttendanceType>(builder);
+        SeedEnumTable<Models.EnumModels.JoinTourStatus, Domain.Enum.JoinTourStatus>(builder);
+        SeedEnumTable<Models.EnumModels.MainVehicleTour, Domain.Enum.MainVehicleTour>(builder);
+        SeedEnumTable<Models.EnumModels.MaterialType, Domain.Enum.MaterialType>(builder);
+        SeedEnumTable<Models.EnumModels.OptionClass, Domain.Enum.OptionClass>(builder);
+        SeedEnumTable<Models.EnumModels.OptionQuotationStatus, Domain.Enum.OptionQuotationStatus>(builder);
+        SeedEnumTable<Models.EnumModels.OrderStatus, Domain.Enum.OrderStatus>(builder);
+        SeedEnumTable<Models.EnumModels.PrivateTourStatus, Domain.Enum.PrivateTourStatus>(builder);
+        SeedEnumTable<Models.EnumModels.ServiceType, Domain.Enum.ServiceType>(builder);
+        SeedEnumTable<Models.EnumModels.TourStatus, Domain.Enum.TourStatus>(builder);
+        SeedEnumTable<Models.EnumModels.TourType, Domain.Enum.TourType>(builder);
+        SeedEnumTable<Models.EnumModels.TransactionType, Domain.Enum.TransactionType>(builder);
+        SeedEnumTable<Models.EnumModels.Unit, Domain.Enum.Unit>(builder);
+        SeedEnumTable<Models.EnumModels.VehicleType, Domain.Enum.VehicleType>(builder);
+    }
+
+    private static void SeedEnumTable<TEntity, TEnum>(ModelBuilder modelBuilder)
+             where TEntity : class
+             where TEnum : System.Enum
+    {
+        var enumType = typeof(TEnum);
+        var entityType = typeof(TEntity);
+
+        if (!enumType.IsEnum)
+        {
+            throw new ArgumentException("TEnum must be an enum type.");
+        }
+
+        var enumValues = System.Enum.GetValues(enumType).Cast<TEnum>();
+
+        foreach (var enumValue in enumValues)
+        {
+            var entityInstance = Activator.CreateInstance(entityType);
+            entityType.GetProperty("Id").SetValue(entityInstance, enumValue);
+            entityType.GetProperty("Name").SetValue(entityInstance, enumValue.ToString());
+            modelBuilder.Entity<TEntity>().HasData(entityInstance);
+        }
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
