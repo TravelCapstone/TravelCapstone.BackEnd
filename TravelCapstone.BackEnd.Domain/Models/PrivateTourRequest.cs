@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TravelCapstone.BackEnd.Domain.Enum;
+using TravelCapstone.BackEnd.Domain.Models.BaseModel;
 
 namespace TravelCapstone.BackEnd.Domain.Models;
 
-public class PrivateTourRequest
+public class PrivateTourRequest: BaseEntity
 {
     [Key] public Guid Id { get; set; }
     public DateTime StartDate { get; set; }
