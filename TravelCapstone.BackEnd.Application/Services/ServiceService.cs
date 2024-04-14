@@ -27,7 +27,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AppActionResult> GetServiceByProvinceIdAndServiceType(Guid Id, ServiceType type)
+        public async Task<AppActionResult> GetServiceByProvinceIdAndServiceType(Guid Id, Domain.Enum.ServiceType type)
         {
             AppActionResult result = new AppActionResult();
             try
@@ -46,8 +46,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                     return result;
                 }
                 var communeIds = communeListDb.Items.Select(d => d.Id);
-                var serviceListDb = await _repository.GetAllDataByExpression(s => communeIds.Contains(s.CommunceId) && s.Type== type, 1, Int32.MaxValue);
-                result.Result = serviceListDb;
+                //var serviceListDb = await _repository.GetAllDataByExpression(s => communeIds.Contains(s.CommunceId) && s.Type== type, 1, Int32.MaxValue);
+              //  result.Result = serviceListDb;
             }
             catch (Exception ex)
             {

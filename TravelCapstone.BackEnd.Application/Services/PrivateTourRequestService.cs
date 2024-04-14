@@ -168,8 +168,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             foreach( var item in optionsDb.Items ) {
                 OptionResponseDto option = new OptionResponseDto();
                 option.OptionQuotation = item;
-                var quotationDetailDb = await quotationDetailRepository.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, q => q.SellPriceHistory);
-                option.QuotationDetails = quotationDetailDb.Items.ToList();
+           //     var quotationDetailDb = await quotationDetailRepository.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, q => q.SellPriceHistory);
+        //        option.QuotationDetails = quotationDetailDb.Items.ToList();
                 //Option to order of OptionClass
                 if(item.OptionClass == OptionClass.ECONOMY)
                     data.Option1 = option;
@@ -303,17 +303,17 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     QuotationDetail quotationDetail = new QuotationDetail()
                     {
                         Id = Guid.NewGuid(),
-                        Quantity = item.Quantity,
+                        //Quantity = item.Quantity,
                         OptionQuotationId = quotation1.Id,
-                        SellPriceHistoryId = list.First().Id
+                  //      SellPriceHistoryId = list.First().Id
                     };
                     var priceHistoryMatchMOQ = new SellPriceHistory();
                     foreach (var price in list)
                     {
                         if (privateTourRequest!.NumOfAdult > price.MOQ)
                         {
-                            total = price.PricePerAdult * quotationDetail.Quantity;
-                            total += price.PricePerChild * quotationDetail.Quantity;
+                      //      total = price.PricePerAdult * quotationDetail.Quantity;
+                        //    total += price.PricePerChild * quotationDetail.Quantity;
                             break;
                         }
                     }
@@ -332,17 +332,17 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     QuotationDetail quotationDetail = new QuotationDetail()
                     {
                         Id = Guid.NewGuid(),
-                        Quantity = item.Quantity,
+                //        Quantity = item.Quantity,
                         OptionQuotationId = quotation2.Id,
-                        SellPriceHistoryId = list.First().Id
+                  //      SellPriceHistoryId = list.First().Id
                     };
                     var priceHistoryMatchMOQ = new SellPriceHistory();
                     foreach (var price in list)
                     {
                         if (privateTourRequest!.NumOfAdult > price.MOQ)
                         {
-                            total = price.PricePerAdult * quotationDetail.Quantity;
-                            total += price.PricePerChild * quotationDetail.Quantity;
+                   //         total = price.PricePerAdult * quotationDetail.Quantity;
+                    //        total += price.PricePerChild * quotationDetail.Quantity;
                             break;
                         }
                     }
@@ -362,17 +362,17 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     QuotationDetail quotationDetail = new QuotationDetail()
                     {
                         Id = Guid.NewGuid(),
-                        Quantity = item.Quantity,
+                  //      Quantity = item.Quantity,
                         OptionQuotationId = quotation3.Id,
-                        SellPriceHistoryId = list.First().Id
+                //        SellPriceHistoryId = list.First().Id
                     };
                     var priceHistoryMatchMOQ = new SellPriceHistory();
                     foreach (var price in list)
                     {
                         if (privateTourRequest!.NumOfAdult > price.MOQ)
                         {
-                            total = price.PricePerAdult * quotationDetail.Quantity;
-                            total += price.PricePerChild * quotationDetail.Quantity;
+                     //       total = price.PricePerAdult * quotationDetail.Quantity;
+                   //         total += price.PricePerChild * quotationDetail.Quantity;
                             break;
                         }
                     }

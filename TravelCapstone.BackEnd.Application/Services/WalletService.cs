@@ -360,8 +360,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                             var details = await quotationDetailRepository!.GetAllDataByExpression(
                         filter: a => a!.OptionQuotation!.PrivateTourRequestId == order!.PrivateTourRequestId!,
                         pageNumber: 0,
-                        pageSize: 0,
-                        includes: a => a.SellPriceHistory!.Service!
+                        pageSize: 0
+                        //includes: a => a.SellPriceHistory!.Service!
                                 );
                             foreach (var detail in details.Items!)
                             {

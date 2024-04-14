@@ -63,7 +63,7 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
                 Id = Guid.NewGuid(),
                 Name = Faker.Company.Name(),
                 Description = Lorem.Paragraph(),
-                Type = (ServiceType)random.Next(System.Enum.GetValues(typeof(ServiceType)).Length),
+                //Type = (TravelCapstone.BackEnd.Domain.Enum.ServiceType)random.Next(System.Enum.GetValues(typeof(TravelCapstone.BackEnd.Domain.Enum.ServiceType)).Length),
                 IsActive = true,
                 Address = Faker.Address.StreetAddress(),
                 CommunceId = communes.Items[random.Next(communes.Items.Count)].Id, // Chọn một Commune ngẫu nhiên từ danh sách

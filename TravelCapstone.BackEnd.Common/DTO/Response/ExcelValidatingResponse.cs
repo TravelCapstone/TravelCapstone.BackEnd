@@ -1,4 +1,4 @@
-﻿namespace TravelCapstone.BackEnd.Common
+﻿namespace TravelCapstone.BackEnd.Common.DTO.Response
 {
     public class ExcelValidatingResponse
     {
