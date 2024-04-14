@@ -10,9 +10,11 @@ public class Service
 
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public ServiceType Type { get; set; }
+    public Guid ServiceRatingId { get; set; }
+    [ForeignKey(nameof(ServiceRatingId))]
+    public ServiceRating? ServiceRating { get; set; }
     public bool IsActive { get; set; }
-    public string Address { get; set; }
+    public string Address { get; set; }=null!;
     public Guid CommunceId { get; set; }
 
     [ForeignKey(nameof(CommunceId))]

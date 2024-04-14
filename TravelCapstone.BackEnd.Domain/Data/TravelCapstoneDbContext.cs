@@ -45,6 +45,22 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<VehicleRoute> VehicleRoutes { get; set; }
+    public DbSet<ServiceRating> ServiceRatings { get; set; }    
+    public DbSet<Models.EnumModels.AttendanceRouteType> AttendanceRouteTypes { get; set; }
+    public DbSet<Models.EnumModels.AttendanceType> AttendanceTypes { get; set; }
+    public DbSet<Models.EnumModels.JoinTourStatus> JoinTourStatuses { get; set; }
+    public DbSet<Models.EnumModels.MainVehicleTour> MainVehicleTours { get; set; }
+    public DbSet<Models.EnumModels.MaterialType> MaterialTypes { get; set; }
+    public DbSet<Models.EnumModels.OptionClass> OptionClasses { get; set; }
+    public DbSet<Models.EnumModels.OptionQuotationStatus> OptionQuotationStatuses { get; set; }
+    public DbSet<Models.EnumModels.OrderStatus> OrderStatuses { get; set; }
+    public DbSet<Models.EnumModels.PrivateTourStatus> PrivateTourStatuses { get; set; }
+    public DbSet<Models.EnumModels.ServiceType> ServiceTypes { get; set; }
+    public DbSet<Models.EnumModels.TourStatus> TourStatuses { get; set; }
+    public DbSet<Models.EnumModels.TourType> TourTypes { get; set; }
+    public DbSet<Models.EnumModels.TransactionType> TransactionTypes { get; set; }
+    public DbSet<Models.EnumModels.Unit> Units { get; set; }
+    public DbSet<Models.EnumModels.VehicleType> VehicleTypes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -79,9 +95,9 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
         base.OnModelCreating(builder);
     }
 
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //{
-    //    optionsBuilder.UseSqlServer(
-    //        "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
-    //}
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(
+            "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+    }
 }

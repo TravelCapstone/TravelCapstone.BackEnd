@@ -5,7 +5,7 @@ using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("account")]
 [ApiController]
 public class AccountController : ControllerBase
 {
