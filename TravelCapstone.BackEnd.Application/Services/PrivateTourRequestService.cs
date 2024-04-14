@@ -3,6 +3,7 @@ using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Common.Utils;
 using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
 
@@ -59,8 +60,10 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             }
 
             var request = _mapper.Map<PrivateTourRequest>(privateTourequestDTO);
+            var utility = Resolve<Utility>();
+            request.CreateAt = utility.GetCurrentDateTimeInTimeZone();
             request.Id = Guid.NewGuid();
-          //  request.Status = PrivateTourStatus.NEW;
+            request.PrivateTourStatusId = PrivateTourStatus.NEW;
             await _repository.Insert(request);
             if(privateTourequestDTO.RequestedLocations != null && privateTourequestDTO.RequestedLocations.Count > 0)
             {
@@ -150,16 +153,16 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 return result;
             }
             data.PrivateTourRespone = _mapper.Map<PrivateTourResponeDto>(privateTourRequestDb);
-            var optionQuotationRepositry = Resolve<IRepository<OptionQuotation>>();
+            var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
             var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
-            var optionsDb = await optionQuotationRepositry.GetAllDataByExpression(q => q.PrivateTourRequestId == id, 0, 0);
+            var optionsDb = await optionQuotationRepository.GetAllDataByExpression(q => q.PrivateTourRequestId == id, 0, 0);
             if (optionsDb.Items.Count != 3)
             {
                 result.Messages.Add($"Số lượng lựa chọn hiện tại: {optionsDb.Items.Count} không phù hợp");
             }
             //Remind: add check 3 optionType
             int fullOption = 0;
-           // optionsDb.Items.ForEach(o => fullOption ^= (int)(o.OptionClass));
+            optionsDb.Items.ForEach(o => fullOption ^= (int)(o.OptionClassId));
             if(fullOption != 3)
             {
                 result.Messages.Add("Danh sách lựa chọn không đủ các hạng mục");
@@ -168,14 +171,14 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             foreach( var item in optionsDb.Items ) {
                 OptionResponseDto option = new OptionResponseDto();
                 option.OptionQuotation = item;
-           //     var quotationDetailDb = await quotationDetailRepository.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, q => q.SellPriceHistory);
-        //        option.QuotationDetails = quotationDetailDb.Items.ToList();
+                var quotationDetailDb = await quotationDetailRepository.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0);
+                option.QuotationDetails = quotationDetailDb.Items.ToList();
                 //Option to order of OptionClass
-           //     if(item.OptionClass == OptionClass.ECONOMY)
-                 //   data.Option1 = option;
-           //     else if(item.OptionClass == OptionClass.MIDDLE)
-              //      data.Option2 = option;
-             //   else data.Option3 = option;
+                if (item.OptionClassId == OptionClass.ECONOMY)
+                    data.Option1 = option;
+                else if (item.OptionClassId == OptionClass.MIDDLE)
+                    data.Option2 = option;
+                else data.Option3 = option;
             }
             result.Result = data;
 
@@ -266,23 +269,23 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 {
                     Id =   Guid.NewGuid(),
              //       OptionClass = dto.Option1.OptionClass,
-             //       Status = OptionQuotationStatus.NEW,
+                    OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId,
                     Name = dto.Option1.Name,
                 };
                 OptionQuotation quotation2 = new OptionQuotation()
                 {
                     Id = Guid.NewGuid(),
-             //       OptionClass = dto.Option2.OptionClass,
-             //       Status = OptionQuotationStatus.NEW,
+                    //       OptionClass = dto.Option2.OptionClass,
+                    OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId,
                     Name = dto.Option2.Name,
                 };
                 OptionQuotation quotation3 = new OptionQuotation()
                 {
                     Id = Guid.NewGuid(),
-              //      OptionClass = dto.Option3.OptionClass,
-              //      Status = OptionQuotationStatus.NEW,
+                    //      OptionClass = dto.Option3.OptionClass,
+                    OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId,
                     Name = dto.Option3.Name,
                 };
@@ -380,7 +383,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     quotationDetails.Add(quotationDetail);
                 }
 
-          //      privateTourRequest!.Status = PrivateTourStatus.WAITINGFORCUSTOMER;
+                privateTourRequest!.PrivateTourStatusId = PrivateTourStatus.WAITINGFORCUSTOMER;
                 await optionQuotationRepository!.InsertRange(optionQuotations);
                 await optionDetailRepository!.InsertRange(quotationDetails);
                 await _unitOfWork.SaveChangesAsync();
@@ -437,7 +440,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         null);
                 foreach (var item in listOption.Items!)
                 {
-              //      item.Status = OptionQuotationStatus.IN_ACTIVE;
+                    item.OptionQuotationStatusId = OptionQuotationStatus.IN_ACTIVE;
                 }
 
                 await orderRepository!.Insert(new Order()
@@ -461,4 +464,76 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         }
         return result;
     }
+
+    public async Task<AppActionResult> GetServiceRatingListByServiceType(Guid communeId, Domain.Enum.ServiceType serviceTypeId)
+    {
+        AppActionResult result = new AppActionResult();
+        try
+        {
+            var serviceRepository = Resolve<IRepository<Service>>();
+            var serviceListDb = await serviceRepository.GetAllDataByExpression(s => s.CommunceId == communeId
+                                                                                && s.ServiceRating.ServiceTypeId == serviceTypeId,
+                                                                                0, 0, s => s.ServiceRating);
+            List<ServiceRating> serviceRatings = serviceListDb.Items.Select(x => x.ServiceRating).ToList();
+            result.Result = serviceRatings;
+        }
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, e.Message);
+        }
+        return result;
+    }
+
+    public async Task<AppActionResult> GetServicePriceRangeOfCommune(Guid communeId, Guid serviceRatingId, int adultQuantity)
+    {
+        AppActionResult result = new AppActionResult();
+        try
+        {
+            ServicePriceRangeResponse data = new ServicePriceRangeResponse();
+            var serviceRepository = Resolve<IRepository<Service>>();
+            var serviceListDb = await serviceRepository.GetAllDataByExpression(s => s.CommunceId == communeId
+                                                                                && s.ServiceRatingId == serviceRatingId,
+                                                                                0, 0);
+            var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
+            PagedResult<SellPriceHistory> serviceSellPriceListDb = null;
+            SellPriceHistory serviceSellPriceDb = null;
+            serviceListDb.Items.ForEach(async s =>
+            {
+                serviceSellPriceListDb = await sellPriceRepository.GetAllDataByExpression(sp => sp.ServiceId == s.Id && sp.MOQ <= adultQuantity, 0, 0);
+                if (serviceSellPriceListDb.Items.Count <= 0)
+                {
+                    result.Messages.Add($"Không tìm thấy giá của dịch vụ {s.Name} với số lượng tối thiểu {adultQuantity} người");
+                }
+                else
+                {
+                    serviceSellPriceDb = serviceSellPriceListDb.Items.OrderByDescending(s => s.Date).ThenByDescending(s => s.MOQ).FirstOrDefault();
+                    if (serviceSellPriceDb.PricePerAdult > data.AdultMaxPrice)
+                    {
+                        data.AdultMaxPrice = serviceSellPriceDb.PricePerAdult;
+                    }
+                    else if (serviceSellPriceDb.PricePerAdult < data.AdultMinPrice)
+                    {
+                        data.AdultMinPrice = serviceSellPriceDb.PricePerAdult;
+                    }
+
+                    if (serviceSellPriceDb.PricePerChild > data.ChildMaxPrice)
+                    {
+                        data.ChildMaxPrice = serviceSellPriceDb.PricePerAdult;
+                    }
+                    else if (serviceSellPriceDb.PricePerChild < data.ChildMinPrice)
+                    {
+                        data.ChildMinPrice = serviceSellPriceDb.PricePerChild;
+                    }
+
+                }
+            });
+            result.Result = data;
+        }
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, e.Message);
+        }
+        return result;
+    }
+
 }
