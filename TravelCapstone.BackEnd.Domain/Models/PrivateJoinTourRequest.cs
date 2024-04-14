@@ -19,5 +19,7 @@ public class PrivateJoinTourRequest
 
     public int NumOfAdult { get; set; }
     public int NumOfChildren { get; set; }
-    public JoinTourStatus Status { get; set; }
+    public Enum.JoinTourStatus JoinTourStatusId { get; set; }
+    [ForeignKey(nameof(JoinTourStatusId))]
+    public Models.EnumModels.JoinTourStatus? JoinTourStatus { get; set; }
 }

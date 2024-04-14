@@ -16,8 +16,12 @@ public class PrivateTourRequest
     public Guid TourId { get; set; }
 
     [ForeignKey(nameof(TourId))] public Tour Tour { get; set; } = null!;
-    public VehicleType MainVehicle { get; set; }
-    public PrivateTourStatus Status { get; set; }
+    public Enum.VehicleType MainVehicleId { get; set; }
+    [ForeignKey(nameof(MainVehicleId))]
+    public Models.EnumModels.VehicleType? VehicleType { get; set; }
+    public Enum.PrivateTourStatus PrivateTourStatusId { get; set; }
+    [ForeignKey(nameof(PrivateTourStatusId))]
+    public Models.EnumModels.PrivateTourStatus? PrivateTourStatus { get; set; }
     public bool IsEnterprise { get; set; }
     public string? AccountId { get; set; }
 

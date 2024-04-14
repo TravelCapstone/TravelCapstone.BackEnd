@@ -7,8 +7,9 @@ namespace TravelCapstone.BackEnd.Domain.Models;
 public class AttendanceDetail
 {
     [Key] public Guid Id { get; set; }
-
-    public AttendanceType AttendanceType { get; set; }
+    public AttendanceType AttendanceTypeId { get; set; }
+    [ForeignKey(nameof(AttendanceTypeId))]
+    public Models.EnumModels.AttendanceType? AttendanceType { get; set; }
     public Guid TourTravellerId { get; set; }
 
     [ForeignKey(nameof(TourTravellerId))] public TourTraveller? TourTraveller { get; set; }

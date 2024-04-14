@@ -9,9 +9,13 @@ public class OptionQuotation
     [Key] public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
-    public OptionClass OptionClass { get; set; }
+    public OptionClass OptionClassId { get; set; }
+    [ForeignKey(nameof(OptionClassId))]
+    public Models.EnumModels.OptionClass? OptionClass { get; set; }
     public double Total { get; set; }
-    public OptionQuotationStatus Status { get; set; }
+    public OptionQuotationStatus OptionQuotationStatusId { get; set; }
+    [ForeignKey(nameof(OptionQuotationStatusId))]
+    public Models.EnumModels.OptionQuotationStatus? OptionQuotationStatus { get; set; }
     public Guid PrivateTourRequestId { get; set; }
 
     [ForeignKey(nameof(PrivateTourRequestId))]

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TravelCapstone.BackEnd.Domain.Enum;
+using TravelCapstone.BackEnd.Domain.Models.EnumModels;
 
 namespace TravelCapstone.BackEnd.Domain.Models;
 
@@ -10,7 +11,9 @@ public class Order
 
     public double Total { get; set; }
     public string Content { get; set; } = null!;
-    public OrderStatus OrderStatus { get; set; }
+    public Enum.OrderStatus OrderStatusId { get; set; }
+    [ForeignKey(nameof(OrderStatusId))]
+    public Models.EnumModels.OrderStatus? OrderStatus { get; set; }
     public int NumOfAdult { get; set; }
     public int NumOfChildren { get; set; }
     public Guid CustomerId { get; set; }

@@ -10,7 +10,9 @@ public class Transaction
 
     public double Amount { get; set; }
     public DateTime Date { get; set; }
-    public TransactionType TransactionType { get; set; }
+    public Enum.TransactionType TransactionTypeId { get; set; }
+    [ForeignKey(nameof(TransactionTypeId))]
+    public EnumModels.TransactionType? TransactionType { get; set; }
     public Guid TravelCompanionId { get; set; }
 
     [ForeignKey(nameof(TravelCompanionId))]
