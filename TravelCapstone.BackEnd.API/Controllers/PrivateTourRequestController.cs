@@ -48,14 +48,14 @@ public class PrivateTourRequestController : Controller
     }
 
     [HttpGet("get-service-rating-list-by-service-type")]
-    public async Task<AppActionResult> GetServiceRatingListByServiceType(Guid communeId, Domain.Enum.ServiceType serviceTypeId)
+    public async Task<AppActionResult> GetServiceRatingListByServiceType(Guid provinceId, Domain.Enum.ServiceType serviceTypeId)
     {
-        return await _service.GetServiceRatingListByServiceType(communeId, serviceTypeId);
+        return await _service.GetServiceRatingListByServiceType(provinceId, serviceTypeId);
     }
 
-    [HttpGet("get-service-price-range-of-commune")]
-    public async Task<AppActionResult> GetServicePriceRangeOfCommune(Guid communeId, Guid serviceRatingId, int adultQuantity)
+    [HttpGet("get-service-price-range-of-province")]
+    public async Task<AppActionResult> GetServicePriceRangeOfProvince(Guid provinceId, Domain.Enum.ServiceType serviceTypeId, Guid tourRequestId)
     {
-        return await _service.GetServicePriceRangeOfCommune(communeId, serviceRatingId, adultQuantity);
+        return await _service.GetServicePriceRange(provinceId, serviceTypeId, tourRequestId);
     }
 }
