@@ -47,6 +47,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<VehicleRoute> VehicleRoutes { get; set; }
     public DbSet<ServiceRating> ServiceRatings { get; set; }    
+    public DbSet<FlightInformation> FlightInformations { get; set; }
     public DbSet<Models.EnumModels.AttendanceRouteType> AttendanceRouteTypes { get; set; }
     public DbSet<Models.EnumModels.AttendanceType> AttendanceTypes { get; set; }
     public DbSet<Models.EnumModels.JoinTourStatus> JoinTourStatuses { get; set; }
@@ -130,9 +131,9 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
         foreach (var enumValue in enumValues)
         {
             var entityInstance = Activator.CreateInstance(entityType);
-            entityType.GetProperty("Id").SetValue(entityInstance, enumValue);
-            entityType.GetProperty("Name").SetValue(entityInstance, enumValue.ToString());
-            modelBuilder.Entity<TEntity>().HasData(entityInstance);
+            entityType.GetProperty("Id")!.SetValue(entityInstance, enumValue);
+            entityType.GetProperty("Name")!.SetValue(entityInstance, enumValue.ToString());
+            modelBuilder.Entity<TEntity>().HasData(entityInstance!);
         }
     }
 

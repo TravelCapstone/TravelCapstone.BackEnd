@@ -7,12 +7,11 @@ namespace TravelCapstone.BackEnd.Domain.Models;
 public class OptionQuotation
 {
     [Key] public Guid Id { get; set; }
-
-    public string Name { get; set; } = null!;
     public OptionClass OptionClassId { get; set; }
     [ForeignKey(nameof(OptionClassId))]
     public Models.EnumModels.OptionClass? OptionClass { get; set; }
-    public double Total { get; set; }
+    public double MinTotal { get; set; }
+    public double MaxTotal { get; set; }
     public OptionQuotationStatus OptionQuotationStatusId { get; set; }
     [ForeignKey(nameof(OptionQuotationStatusId))]
     public Models.EnumModels.OptionQuotationStatus? OptionQuotationStatus { get; set; }

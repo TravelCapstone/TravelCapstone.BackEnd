@@ -23,7 +23,6 @@ public class MappingConfig
                 ;
 
             config.CreateMap<PrivateTourRequestDTO, PrivateTourRequest>()
-                .ForMember(desc => desc.Name, act => act.MapFrom(src => src.Name))
                 .ForMember(desc => desc.StartDate, act => act.MapFrom(src => src.StartDate))
                 .ForMember(desc => desc.EndDate, act => act.MapFrom(src => src.EndDate))
                 .ForMember(desc => desc.Description, act => act.MapFrom(src => src.Description))
@@ -41,7 +40,6 @@ public class MappingConfig
                 .ForMember(desc => desc.Description, act => act.MapFrom(src => src.Description))
                 .ForMember(desc => desc.StartDate, act => act.MapFrom(src => src.StartDate))
                 .ForMember(desc => desc.EndDate, act => act.MapFrom(src => src.EndDate))
-                .ForMember(desc => desc.Name, act => act.MapFrom(src => src.Name))
              //   .ForMember(desc => desc.Status, act => act.MapFrom(src => src.Status))
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
                 .ForMember(desc => desc.NumOfAdult, act => act.MapFrom(src => src.NumOfAdult))

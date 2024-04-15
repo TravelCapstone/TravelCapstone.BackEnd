@@ -10,13 +10,12 @@ public class PrivateTourRequest: BaseEntity
     [Key] public Guid Id { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public DateTime CreateAt { get; set; }
-    public string Name { get; set; } = null!;
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; } 
+    public int NumOfDay { get; set; }   
+    public int NumOfNight { get; set; }
     public int NumOfAdult { get; set; }
     public int NumOfChildren { get; set; }
     public Guid TourId { get; set; }
-
     [ForeignKey(nameof(TourId))] public Tour Tour { get; set; } = null!;
     public Enum.VehicleType MainVehicleId { get; set; }
     [ForeignKey(nameof(MainVehicleId))]
@@ -25,6 +24,9 @@ public class PrivateTourRequest: BaseEntity
     [ForeignKey(nameof(PrivateTourStatusId))]
     public Models.EnumModels.PrivateTourStatus? PrivateTourStatus { get; set; }
     public bool IsEnterprise { get; set; }
+    public Guid MainDestinationId { get; set; }
+    [ForeignKey(nameof(MainDestinationId))]
+    public Province? Province { get; set; }
     public string? AccountId { get; set; }
 
     [ForeignKey(nameof(AccountId))] public Account? Account { get; set; }
