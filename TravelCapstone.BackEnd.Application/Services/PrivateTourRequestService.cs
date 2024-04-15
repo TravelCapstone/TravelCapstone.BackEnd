@@ -61,7 +61,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
             var request = _mapper.Map<PrivateTourRequest>(privateTourequestDTO);
             var utility = Resolve<Utility>();
-            request.CreateAt = utility.GetCurrentDateTimeInTimeZone();
+            request.CreateAt = utility!.GetCurrentDateTimeInTimeZone();
             request.Id = Guid.NewGuid();
             request.PrivateTourStatusId = PrivateTourStatus.NEW;
             await _repository.Insert(request);
