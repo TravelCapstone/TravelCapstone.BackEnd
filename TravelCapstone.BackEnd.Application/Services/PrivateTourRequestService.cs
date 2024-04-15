@@ -61,7 +61,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
             var request = _mapper.Map<PrivateTourRequest>(privateTourequestDTO);
             var utility = Resolve<Utility>();
-            request.CreateAt = utility.GetCurrentDateTimeInTimeZone();
+            request.CreateDate = utility!.GetCurrentDateTimeInTimeZone();
             request.Id = Guid.NewGuid();
             request.PrivateTourStatusId = PrivateTourStatus.NEW;
             await _repository.Insert(request);
@@ -271,7 +271,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
              //       OptionClass = dto.Option1.OptionClass,
                     OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId,
-                    Name = dto.Option1.Name,
                 };
                 OptionQuotation quotation2 = new OptionQuotation()
                 {
@@ -279,7 +278,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     //       OptionClass = dto.Option2.OptionClass,
                     OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId,
-                    Name = dto.Option2.Name,
                 };
                 OptionQuotation quotation3 = new OptionQuotation()
                 {
@@ -287,7 +285,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     //      OptionClass = dto.Option3.OptionClass,
                     OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId,
-                    Name = dto.Option3.Name,
                 };
                 optionQuotations.Add(quotation1);
                 optionQuotations.Add(quotation2);
@@ -320,7 +317,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             break;
                         }
                     }
-                    quotation1.Total = total;
                     quotationDetails.Add(quotationDetail);
                 }
                 foreach (var item in dto.Option2.Services)
@@ -349,7 +345,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             break;
                         }
                     }
-                    quotation2.Total = total;
                     quotationDetails.Add(quotationDetail);
                 }
 
@@ -379,7 +374,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             break;
                         }
                     }
-                    quotation3.Total = total;
                     quotationDetails.Add(quotationDetail);
                 }
 
@@ -446,8 +440,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 await orderRepository!.Insert(new Order()
                 {
                     Id = Guid.NewGuid(),
-                    Content = $"Thanh toán cho private tour {option.PrivateTourRequest!.Name}",
-                    Total = option.Total,
                //     OrderStatus = OrderStatus.NEW,
                     CustomerId = travelCompanion!.Id,
                     TourId = option.PrivateTourRequest.TourId,

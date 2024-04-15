@@ -30,11 +30,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         [HttpPost("search-air-flight")]
         public async Task<AppActionResult> SearchAirFlight(FlightSearchRequestDto request)
         {
-         //   return await _service.SearchAirFlight(request);
-            return new AppActionResult()
-            {
+            return await _service.SearchAirFlight(request);
+            //return new AppActionResult()
+            //{
 
-            };
+            //};
 
         }
         [HttpGet("get-all-airline")]

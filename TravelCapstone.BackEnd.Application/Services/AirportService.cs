@@ -33,7 +33,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                 FlightSearchRequest payload = new FlightSearchRequest()
                 {
-                    Key = "d009561aae4040b3f10a83036242f0b07a5",
+                    Key = "e06713371b3a80d546134a02a5668622242",
                     ProductKey= "j371azf9plina2s",
                     Adt= request.Adt,
                     Chd= request.Chd,
@@ -47,7 +47,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                 {
                     var data = response.Content;
                     var obj = JsonConvert.DeserializeObject<FlightSearch>(data!);
-                    result.Result = obj;
+                   
+                    result.Result = obj.DomesticDatas;
                 }
             }
             catch (Exception ex)
