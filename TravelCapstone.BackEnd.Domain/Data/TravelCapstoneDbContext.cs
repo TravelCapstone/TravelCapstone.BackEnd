@@ -48,6 +48,9 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<VehicleRoute> VehicleRoutes { get; set; }
     public DbSet<ServiceRating> ServiceRatings { get; set; }    
     public DbSet<FlightInformation> FlightInformations { get; set; }
+    public DbSet<Port> Ports { get; set; }
+    public DbSet<Contract> Contracts { get; set; }
+    public DbSet<ReferenceTransportPrice> ReferenceTransportPrices { get; set; }
     public DbSet<Models.EnumModels.AttendanceRouteType> AttendanceRouteTypes { get; set; }
     public DbSet<Models.EnumModels.AttendanceType> AttendanceTypes { get; set; }
     public DbSet<Models.EnumModels.JoinTourStatus> JoinTourStatuses { get; set; }
@@ -63,6 +66,8 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Models.EnumModels.TransactionType> TransactionTypes { get; set; }
     public DbSet<Models.EnumModels.Unit> Units { get; set; }
     public DbSet<Models.EnumModels.VehicleType> VehicleTypes { get; set; }
+    public DbSet<Models.EnumModels.PortType> PortTypes { get; set; }
+    public DbSet<Models.EnumModels.ContractStatus> ContractStatuses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
