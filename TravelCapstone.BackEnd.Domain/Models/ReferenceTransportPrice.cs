@@ -19,5 +19,9 @@ namespace TravelCapstone.BackEnd.Domain.Models
         public DateTime DepartureDate { get; set; }
         public double AdultPrice { get; set; }
         public double ChildPrice { get; set; }
+        public Guid ServiceRatingId {  get; set; }
+        [ForeignKey(nameof(ServiceRatingId))]
+        public ServiceRating? ServiceRating { get; set; }
+        public string ProviderName { get; set; } = null!;
     }
 }
