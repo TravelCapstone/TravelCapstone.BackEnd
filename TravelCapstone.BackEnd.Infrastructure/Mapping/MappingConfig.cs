@@ -29,26 +29,14 @@ public class MappingConfig
                 .ForMember(desc => desc.NumOfAdult, act => act.MapFrom(src => src.NumOfAdult))
                 .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
                 .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
-                .ForMember(desc => desc.MainVehicleId, act => act.MapFrom(src => src.MainVehicle))
-                .ForMember(desc => desc.MainDestinationId, act => act.MapFrom(src => src.MainDestinationId))
-                .ForMember(desc => desc.IsEnterprise, act => act.MapFrom(src => src.isEnterprise))
+                .ForMember(desc => desc.IsEnterprise, act => act.MapFrom(src => src.IsEnterprise))
+                .ForMember(desc => desc.Note, act => act.MapFrom(src => src.Note))
+                .ForMember(desc => desc.RecommnendedTourUrl, act => act.MapFrom(src => src.RecommnendedTourUrl))
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
+                .ReverseMap()
                 ;
 
-            config.CreateMap<PrivateTourRequest, PrivateTourResponeDto>()
-                .ForMember(desc => desc.Id, act => act.MapFrom(src => src.Id))
-                .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
-                .ForMember(desc => desc.Description, act => act.MapFrom(src => src.Description))
-                .ForMember(desc => desc.CreateDate, act => act.MapFrom(src => src.CreateDate))
-                .ForMember(desc => desc.StartDate, act => act.MapFrom(src => src.StartDate))
-                .ForMember(desc => desc.EndDate, act => act.MapFrom(src => src.EndDate))
-                .ForMember(desc => desc.NumOfDay, act => act.MapFrom(src => src.EndDate))
-                .ForMember(desc => desc.NumOfNight, act => act.MapFrom(src => src.PrivateTourStatusId))
-                .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
-                .ForMember(desc => desc.NumOfAdult, act => act.MapFrom(src => src.NumOfAdult))
-                .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
-                .ForMember(desc => desc.Account, act => act.MapFrom(src => src.Account));
-
+          
             config.CreateMap<Customer,CustomerDto>()
                  .ForMember(desc => desc.Id, act => act.MapFrom(src => src.Id))
                  .ForMember(desc => desc.LastName, act => act.MapFrom(src => src.LastName))
