@@ -17,15 +17,14 @@ public class PrivateTourRequest: BaseEntity
     public int NumOfChildren { get; set; }
     public Guid TourId { get; set; }
     [ForeignKey(nameof(TourId))] public Tour Tour { get; set; } = null!;
-    public Enum.VehicleType MainVehicleId { get; set; }
-    [ForeignKey(nameof(MainVehicleId))]
-    public Models.EnumModels.VehicleType? VehicleType { get; set; }
+
     public Enum.PrivateTourStatus PrivateTourStatusId { get; set; }
     [ForeignKey(nameof(PrivateTourStatusId))]
     public Models.EnumModels.PrivateTourStatus? PrivateTourStatus { get; set; }
     public bool IsEnterprise { get; set; }
     public string? RecommnendedTourUrl { get; set; }
     public string? Note { get; set; }
+    public string? StartLocation { get; set; }
 
     public Guid MainDestinationId { get; set; }
     [ForeignKey(nameof(MainDestinationId))]
