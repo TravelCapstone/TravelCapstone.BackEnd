@@ -531,23 +531,23 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     else
                     {
                         serviceSellPriceDb = serviceSellPriceListDb.Items.OrderByDescending(s => s.Date).ThenByDescending(s => s.MOQ).FirstOrDefault();
-                        if (serviceSellPriceDb.PricePerAdult > data.AdultMaxPrice)
-                        {
-                            data.AdultMaxPrice = serviceSellPriceDb.PricePerAdult;
-                        }
-                        else if (serviceSellPriceDb.PricePerAdult < data.AdultMinPrice)
-                        {
-                            data.AdultMinPrice = serviceSellPriceDb.PricePerAdult;
-                        }
+                        //if (serviceSellPriceDb.PricePerAdult > data.AdultMaxPrice)
+                        //{
+                        //    data.AdultMaxPrice = serviceSellPriceDb.PricePerAdult;
+                        //}
+                        //else if (serviceSellPriceDb.PricePerAdult < data.AdultMinPrice)
+                        //{
+                        //    data.AdultMinPrice = serviceSellPriceDb.PricePerAdult;
+                        //}
 
-                        if (serviceSellPriceDb.PricePerChild > data.ChildMaxPrice)
-                        {
-                            data.ChildMaxPrice = serviceSellPriceDb.PricePerAdult;
-                        }
-                        else if (serviceSellPriceDb.PricePerChild < data.ChildMinPrice)
-                        {
-                            data.ChildMinPrice = serviceSellPriceDb.PricePerChild;
-                        }
+                        //if (serviceSellPriceDb.PricePerChild > data.ChildMaxPrice)
+                        //{
+                        //    data.ChildMaxPrice = serviceSellPriceDb.PricePerAdult;
+                        //}
+                        //else if (serviceSellPriceDb.PricePerChild < data.ChildMinPrice)
+                        //{
+                        //    data.ChildMinPrice = serviceSellPriceDb.PricePerChild;
+                        //}
 
                     }
                 });
@@ -617,23 +617,23 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 else
                                 {
                                     serviceSellPriceDb = serviceSellPriceListDb.Items.OrderByDescending(s => s.Date).ThenByDescending(s => s.MOQ).FirstOrDefault();
-                                    if (serviceSellPriceDb.PricePerAdult > serviceRatingRange.AdultMaxPrice)
-                                    {
-                                        serviceRatingRange.AdultMaxPrice = serviceSellPriceDb.PricePerAdult;
-                                    }
-                                    else if (serviceSellPriceDb.PricePerAdult < serviceRatingRange.AdultMinPrice)
-                                    {
-                                        serviceRatingRange.AdultMinPrice = serviceSellPriceDb.PricePerAdult;
-                                    }
+                                    //if (serviceSellPriceDb.PricePerAdult > serviceRatingRange.AdultMaxPrice)
+                                    //{
+                                    //    serviceRatingRange.AdultMaxPrice = serviceSellPriceDb.PricePerAdult;
+                                    //}
+                                    //else if (serviceSellPriceDb.PricePerAdult < serviceRatingRange.AdultMinPrice)
+                                    //{
+                                    //    serviceRatingRange.AdultMinPrice = serviceSellPriceDb.PricePerAdult;
+                                    //}
 
-                                    if (serviceSellPriceDb.PricePerChild > serviceRatingRange.ChildMaxPrice)
-                                    {
-                                        serviceRatingRange.ChildMaxPrice = serviceSellPriceDb.PricePerAdult;
-                                    }
-                                    else if (serviceSellPriceDb.PricePerChild < serviceRatingRange.ChildMinPrice)
-                                    {
-                                        serviceRatingRange.ChildMinPrice = serviceSellPriceDb.PricePerChild;
-                                    }
+                                    //if (serviceSellPriceDb.PricePerChild > serviceRatingRange.ChildMaxPrice)
+                                    //{
+                                    //    serviceRatingRange.ChildMaxPrice = serviceSellPriceDb.PricePerAdult;
+                                    //}
+                                    //else if (serviceSellPriceDb.PricePerChild < serviceRatingRange.ChildMinPrice)
+                                    //{
+                                    //    serviceRatingRange.ChildMinPrice = serviceSellPriceDb.PricePerChild;
+                                    //}
 
                                 }
                             }

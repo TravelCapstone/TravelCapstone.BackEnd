@@ -113,8 +113,8 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
                 var serviceCostHistory = new ServiceCostHistory
                 {
                     Id = Guid.NewGuid(),
-                    PricePerAdult = Convert.ToDouble(random.Next(50, 500)),
-                    PricePerChild = Convert.ToDouble(random.Next(20, 250)),
+                //    PricePerAdult = Convert.ToDouble(random.Next(50, 500)),
+                 //   PricePerChild = Convert.ToDouble(random.Next(20, 250)),
                     MOQ = random.Next(1, 100),
                     UnitId = (TravelCapstone.BackEnd.Domain.Enum.Unit)random.Next(System.Enum.GetValues(typeof(TravelCapstone.BackEnd.Domain.Enum.Unit)).Length),
                     //    Unit = Unit.PERSON,
@@ -141,8 +141,8 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
                 var sellPriceHistory = new SellPriceHistory
                 {
                     Id = Guid.NewGuid(),
-                    PricePerAdult = Convert.ToDouble(random.Next(50, 500)),
-                    PricePerChild = Convert.ToDouble(random.Next(20, 250)),
+                  //  PricePerAdult = Convert.ToDouble(random.Next(50, 500)),
+                //    PricePerChild = Convert.ToDouble(random.Next(20, 250)),
                     MOQ = random.Next(1, 100),
                     Date = DateTime.Now,
                     ServiceId = service.Id

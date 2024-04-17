@@ -68,6 +68,8 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Models.EnumModels.VehicleType> VehicleTypes { get; set; }
     public DbSet<Models.EnumModels.PortType> PortTypes { get; set; }
     public DbSet<Models.EnumModels.ContractStatus> ContractStatuses { get; set; }
+    public DbSet<Models.EnumModels.ServiceAvailability> ServiceAvailabilities { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -117,6 +119,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
         SeedEnumTable<Models.EnumModels.TransactionType, Domain.Enum.TransactionType>(builder);
         SeedEnumTable<Models.EnumModels.Unit, Domain.Enum.Unit>(builder);
         SeedEnumTable<Models.EnumModels.VehicleType, Domain.Enum.VehicleType>(builder);
+        SeedEnumTable<Models.EnumModels.ServiceAvailability, Domain.Enum.ServiceAvailability>(builder);
     }
 
     private static void SeedEnumTable<TEntity, TEnum>(ModelBuilder modelBuilder)

@@ -104,8 +104,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                     data.Add(new ServiceCostHistory
                     {
                         Id = Guid.NewGuid(),
-                        PricePerAdult = record.PricePerAdult,
-                        PricePerChild = record.PricePerChild,
+                        //PricePerAdult = record.PricePerAdult,
+                       // PricePerChild = record.PricePerChild,
                         MOQ = record.MOQ,
                     //    Unit = (Domain.Enum.Unit)SD.EnumType.ServiceCostUnit[record.Unit],
                         Date = date,

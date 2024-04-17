@@ -11,10 +11,17 @@ public class Service
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
     public Guid ServiceRatingId { get; set; }
+
     [ForeignKey(nameof(ServiceRatingId))]
     public ServiceRating? ServiceRating { get; set; }
+
+    public ServiceAvailability ServiceAvailabilityId { get; set; }
+    [ForeignKey(nameof(ServiceAvailabilityId))]
+    public Models.EnumModels.ServiceAvailability? ServiceAvailability {get;set;}
     public bool IsActive { get; set; }
     public string Address { get; set; }=null!;
+    public int ServingQuantity { get; set; }
+    public double SurchargePercent { get; set; } = 0;
     public Guid CommunceId { get; set; }
 
     [ForeignKey(nameof(CommunceId))]
