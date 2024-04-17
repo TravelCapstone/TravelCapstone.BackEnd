@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240416131603_AddPort")]
+    partial class AddPort
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -845,37 +847,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.ServiceAvailability", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ServiceAvailabilities");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "ADULT"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "CHILD"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "BOTH"
-                        });
-                });
-
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.ServiceType", b =>
                 {
                     b.Property<int>("Id")
@@ -1078,36 +1049,26 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "COACH"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "LIMOUSINE"
-                        },
-                        new
-                        {
-                            Id = 3,
                             Name = "CAR"
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 2,
                             Name = "PLANE"
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 3,
                             Name = "BOAT"
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 4,
                             Name = "BICYCLE"
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 5,
                             Name = "HELICOPTER"
                         });
                 });
@@ -1490,20 +1451,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid>("DepartureId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ProviderName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ServiceRatingId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ArrivalId");
 
                     b.HasIndex("DepartureId");
-
-                    b.HasIndex("ServiceRatingId");
 
                     b.ToTable("ReferenceTransportPrices");
                 });
@@ -1584,7 +1536,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<int>("MOQ")
                         .HasColumnType("int");
 
-                    b.Property<double>("Price")
+                    b.Property<double>("PricePerAdult")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PricePerChild")
                         .HasColumnType("float");
 
                     b.Property<Guid>("ServiceId")
@@ -1621,26 +1576,15 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ServiceAvailabilityId")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("ServiceProviderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ServiceRatingId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ServingQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<double>("SurchargePercent")
-                        .HasColumnType("float");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CommunceId");
-
-                    b.HasIndex("ServiceAvailabilityId");
 
                     b.HasIndex("ServiceProviderId");
 
@@ -1661,7 +1605,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<int>("MOQ")
                         .HasColumnType("int");
 
-                    b.Property<double>("Price")
+                    b.Property<double>("PricePerAdult")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PricePerChild")
                         .HasColumnType("float");
 
                     b.Property<Guid>("ServiceId")
@@ -2342,17 +2289,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.ServiceRating", "ServiceRating")
-                        .WithMany()
-                        .HasForeignKey("ServiceRatingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Arrival");
 
                     b.Navigation("Departure");
-
-                    b.Navigation("ServiceRating");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.RequestedLocation", b =>
@@ -2424,12 +2363,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.ServiceAvailability", "ServiceAvailability")
-                        .WithMany()
-                        .HasForeignKey("ServiceAvailabilityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.ServiceProvider", "ServiceProvider")
                         .WithMany()
                         .HasForeignKey("ServiceProviderId")
@@ -2443,8 +2376,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .IsRequired();
 
                     b.Navigation("Communce");
-
-                    b.Navigation("ServiceAvailability");
 
                     b.Navigation("ServiceProvider");
 

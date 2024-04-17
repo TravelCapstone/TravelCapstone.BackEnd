@@ -10,7 +10,8 @@ namespace TravelCapstone.BackEnd.Application.IServices
     public interface IFakeDataGenerator
     {
         public Task<List<ServiceProvider>> GenerateServiceProviders(int count);
-        public Task<List<Service>> GenerateServices(List<ServiceProvider> serviceProviders, int count);
+        public Task<List<ServiceRating>> GenerateServiceRatings(int count);
+        public Task<List<Service>> GenerateServices(List<ServiceProvider> serviceProviders, List<ServiceRating> serviceRatings, int count);
         public Task<List<ServiceCostHistory>> GenerateServiceCostHistories(List<Service> services, int count);
         public Task<List<SellPriceHistory>> GenerateSellPriceHistories(List<Service> services, int count);
         public  Task<List<Tour>> GenerateFakeTours(int count);

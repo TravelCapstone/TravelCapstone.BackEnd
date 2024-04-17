@@ -3,6 +3,8 @@
 public enum VehicleType
 {
     BUS,
+    COACH,
+    LIMOUSINE,
     CAR,
     PLANE,
     BOAT,

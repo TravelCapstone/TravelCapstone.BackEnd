@@ -7,4 +7,5 @@ public interface IMapService
     public Task<AppActionResult> Geocode(string address);
 
     public Task<AppActionResult> AutoComplete(string address);
+    public Task<AppActionResult> GetVehicle(Guid startPoint, Guid endPoint);
 }

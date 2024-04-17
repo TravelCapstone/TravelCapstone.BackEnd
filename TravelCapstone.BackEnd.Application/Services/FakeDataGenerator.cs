@@ -10,20 +10,23 @@ using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
 using Bogus;
 using TravelCapstone.BackEnd.Application.Services;
+using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
 {
 
     private IRepository<ServiceProvider> _serviceProviderRepository;
+    private IRepository<ServiceRating> _serviceRatingRepository;
     private IRepository<Service> _serviceRepository;
     private IRepository<ServiceCostHistory> _serviceCostHistoryRepository;
     private IRepository<SellPriceHistory> _sellPriceHistoryRepository;
     private IRepository<Commune> _communeRepository;
     private IUnitOfWork _unitOfWork;
 
-    public FakeDataGenerator(IRepository<ServiceProvider> serviceProviderRepository, IRepository<Service> serviceRepository, IRepository<ServiceCostHistory> serviceCostHistoryRepository, IRepository<SellPriceHistory> sellPriceHistoryRepository, IUnitOfWork unitOfWork, IRepository<Commune> communeRepository, IServiceProvider serviceProvider) : base(serviceProvider)
+    public FakeDataGenerator(IRepository<ServiceProvider> serviceProviderRepository, IRepository<ServiceRating> serviceRatingRepository, IRepository<Service> serviceRepository, IRepository<ServiceCostHistory> serviceCostHistoryRepository, IRepository<SellPriceHistory> sellPriceHistoryRepository, IUnitOfWork unitOfWork, IRepository<Commune> communeRepository, IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _serviceProviderRepository = serviceProviderRepository;
+        _serviceRatingRepository = serviceRatingRepository;
         _serviceRepository = serviceRepository;
         _serviceCostHistoryRepository = serviceCostHistoryRepository;
         _sellPriceHistoryRepository = sellPriceHistoryRepository;
@@ -49,7 +52,27 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
         return serviceProviders;
     }
 
-    public async Task<List<Service>> GenerateServices(List<ServiceProvider> serviceProviders, int count)
+    public async Task<List<ServiceRating>> GenerateServiceRatings(int count)
+    {
+        var serviceRatings = new List<ServiceRating>();
+        var random = new Random();
+        for (var i = 0; i < count; i++)
+        {
+            var serviceRating = new ServiceRating
+            {
+                Id = Guid.NewGuid(),
+                ServiceTypeId = (TravelCapstone.BackEnd.Domain.Enum.ServiceType)random.Next(System.Enum.GetValues(typeof(TravelCapstone.BackEnd.Domain.Enum.ServiceType)).Length),
+                Rating = random.Next(0, 4)
+            };
+            serviceRatings.Add(serviceRating);
+
+        }
+        await _serviceRatingRepository.InsertRange(serviceRatings);
+        await _unitOfWork.SaveChangesAsync();
+        return serviceRatings;
+    }
+
+    public async Task<List<Service>> GenerateServices(List<ServiceProvider> serviceProviders, List<ServiceRating> serviceRatings , int count)
     {
         var services = new List<Service>();
         var random = new Random();
@@ -58,6 +81,7 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
         for (var i = 0; i < count; i++)
         {
             var serviceProvider = serviceProviders[random.Next(serviceProviders.Count)];
+            var serviceRating = serviceRatings[random.Next(serviceRatings.Count)];
             var service = new Service
             {
                 Id = Guid.NewGuid(),
@@ -67,7 +91,8 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
                 IsActive = true,
                 Address = Faker.Address.StreetAddress(),
                 CommunceId = communes.Items[random.Next(communes.Items.Count)].Id, // Chọn một Commune ngẫu nhiên từ danh sách
-                ServiceProviderId = serviceProvider.Id
+                ServiceProviderId = serviceProvider.Id,
+                ServiceRatingId = serviceRating.Id
             };
             services.Add(service);
 
@@ -88,10 +113,11 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
                 var serviceCostHistory = new ServiceCostHistory
                 {
                     Id = Guid.NewGuid(),
-                    PricePerAdult = Convert.ToDouble(random.Next(50, 500)),
-                    PricePerChild = Convert.ToDouble(random.Next(20, 250)),
+                //    PricePerAdult = Convert.ToDouble(random.Next(50, 500)),
+                 //   PricePerChild = Convert.ToDouble(random.Next(20, 250)),
                     MOQ = random.Next(1, 100),
-                //    Unit = Unit.PERSON,
+                    UnitId = (TravelCapstone.BackEnd.Domain.Enum.Unit)random.Next(System.Enum.GetValues(typeof(TravelCapstone.BackEnd.Domain.Enum.Unit)).Length),
+                    //    Unit = Unit.PERSON,
                     Date = DateTime.Now,
                     ServiceId = service.Id
                 };
@@ -115,8 +141,8 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
                 var sellPriceHistory = new SellPriceHistory
                 {
                     Id = Guid.NewGuid(),
-                    PricePerAdult = Convert.ToDouble(random.Next(50, 500)),
-                    PricePerChild = Convert.ToDouble(random.Next(20, 250)),
+                  //  PricePerAdult = Convert.ToDouble(random.Next(50, 500)),
+                //    PricePerChild = Convert.ToDouble(random.Next(20, 250)),
                     MOQ = random.Next(1, 100),
                     Date = DateTime.Now,
                     ServiceId = service.Id
@@ -144,15 +170,15 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
                 Id = Guid.NewGuid(),
                 Name = Faker.Company.Name(),
                 Description = Lorem.Paragraph(),
-                //MainVehicle = (VehicleType)random.Next(System.Enum.GetValues(typeof(VehicleType)).Length),
+                VehicleTypeId = (VehicleType)random.Next(System.Enum.GetValues(typeof(VehicleType)).Length),
                 TotalPrice = random.NextDouble() * 1000,
                 PricePerAdult = random.NextDouble() * 500,
                 PricePerChild = random.NextDouble() * 200,
                 StartDate = DateTime.Now.AddDays(random.Next(30)), // Random date within next 30 days
                 EndDate = DateTime.Now.AddDays(random.Next(31, 60)), // Random date between 31st and 60th day from now
-         //       TourType = (TourType)random.Next(System.Enum.GetValues(typeof(TourType)).Length),
+                TourTypeId = (TourType)random.Next(System.Enum.GetValues(typeof(TourType)).Length),
                 QRCode = null,
-             //   TourStatus = (TourStatus)random.Next(System.Enum.GetValues(typeof(TourStatus)).Length),
+                TourStatusId = (TourStatus)random.Next(System.Enum.GetValues(typeof(TourStatus)).Length),
                 BasedOnTourId = null, // Cần điều chỉnh nếu cần thiết
                 TourGuideId = "e392d0b3-1ffe-4bfe-81cb-c3f80c402ea5"
             };

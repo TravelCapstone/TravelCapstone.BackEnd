@@ -8,8 +8,7 @@ public class ServiceCostHistory
 {
     [Key] public Guid Id { get; set; }
 
-    public double PricePerAdult { get; set; }
-    public double PricePerChild { get; set; }
+    public double Price { get; set; }
     public int MOQ { get; set; }
     public Enum.Unit UnitId { get; set; }
     [ForeignKey(nameof(UnitId))]

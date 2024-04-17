@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240414153230_UndoEnumMigration")]
+    partial class UndoEnumMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -367,68 +369,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.ToTable("Configurations");
                 });
 
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Contract", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ContractStatus")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ContractUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreateBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CustomerId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("DateOfContract")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Deposit")
-                        .HasColumnType("float");
-
-                    b.Property<int>("NumOfAdult")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumOfChild")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Total")
-                        .HasColumnType("float");
-
-                    b.Property<Guid?>("TourId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UpdateBy")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreateBy");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("TourId");
-
-                    b.HasIndex("UpdateBy");
-
-                    b.ToTable("Contracts");
-                });
-
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Customer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -582,18 +522,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AttendanceRouteTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "IN"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "OUT"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.AttendanceType", b =>
@@ -608,37 +536,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AttendanceTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NOTYET"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "ATTENDEDED"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "ABSENT"
-                        });
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.ContractStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ContractStatuses");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.JoinTourStatus", b =>
@@ -653,23 +550,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("JoinTourStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NEW"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "APPROVED"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "REJECTED"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.MainVehicleTour", b =>
@@ -698,13 +578,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MaterialTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "PASSPORT"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.OptionClass", b =>
@@ -719,23 +592,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OptionClasses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "ECONOMY"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "MIDDLE"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "PREMIUM"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.OptionQuotationStatus", b =>
@@ -750,23 +606,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OptionQuotationStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NEW"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "ACTIVE"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "IN_ACTIVE"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.OrderStatus", b =>
@@ -781,32 +620,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NEW"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "PAID"
-                        });
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.PortType", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PortTypes");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.PrivateTourStatus", b =>
@@ -821,59 +634,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PrivateTourStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NEW"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "WAITINGFORCUSTOMER"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "APPROVED"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "REJECTED"
-                        });
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.ServiceAvailability", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ServiceAvailabilities");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "ADULT"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "CHILD"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "BOTH"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.ServiceType", b =>
@@ -888,33 +648,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ServiceTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "HOTEL"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "RESTAURANTS"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "ENTERTAINMENT"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "VEHICLE_SUPPLY"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "AIR_TICKET_SUPPLY"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.TourStatus", b =>
@@ -929,38 +662,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TourStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "NEW"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "PENDING"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "SUFFICIENT"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "SCHEDULING_COMPLETED"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "STARTING"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "COMPLETED"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.TourType", b =>
@@ -975,23 +676,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TourTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "PUBLIC"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "CUSTOM"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "ENTERPRISE"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.TransactionType", b =>
@@ -1006,23 +690,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TransactionTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "RECHARGE_FROM_VNPAY"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "RECHARGE_FROM_MOMO"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "PAYMENT_FOR_SERVICES"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.Unit", b =>
@@ -1037,23 +704,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Units");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "DAY"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "ROOM"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "PERSON"
-                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.VehicleType", b =>
@@ -1068,73 +718,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VehicleTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "BUS"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "COACH"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "LIMOUSINE"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "CAR"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "PLANE"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "BOAT"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "BICYCLE"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "HELICOPTER"
-                        });
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.FlightInformation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("EndPoint")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("QuotationDetailId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("StartPoint")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuotationDetailId")
-                        .IsUnique();
-
-                    b.ToTable("FlightInformations");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Material", b =>
@@ -1167,11 +750,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("MaxTotal")
-                        .HasColumnType("float");
-
-                    b.Property<double>("MinTotal")
-                        .HasColumnType("float");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OptionClassId")
                         .HasColumnType("int");
@@ -1181,6 +762,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.Property<Guid>("PrivateTourRequestId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Total")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -1268,33 +852,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.ToTable("PlanServiceCostDetails");
                 });
 
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Port", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CommuneId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PortType")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommuneId");
-
-                    b.ToTable("Ports");
-                });
-
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.PrivateJoinTourRequest", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1353,6 +910,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<string>("AccountId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("CreateBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -1361,6 +921,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndDate")
@@ -1369,22 +930,17 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<bool>("IsEnterprise")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("MainDestinationId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("MainVehicleId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NumOfAdult")
                         .HasColumnType("int");
 
                     b.Property<int>("NumOfChildren")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumOfDay")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumOfNight")
                         .HasColumnType("int");
 
                     b.Property<int>("PrivateTourStatusId")
@@ -1407,8 +963,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasIndex("AccountId");
 
                     b.HasIndex("CreateBy");
-
-                    b.HasIndex("MainDestinationId");
 
                     b.HasIndex("MainVehicleId");
 
@@ -1467,45 +1021,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasIndex("ServiceRatingId");
 
                     b.ToTable("QuotationDetails");
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.ReferenceTransportPrice", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("AdultPrice")
-                        .HasColumnType("float");
-
-                    b.Property<Guid>("ArrivalId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("ChildPrice")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("DepartureDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("DepartureId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ProviderName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ServiceRatingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArrivalId");
-
-                    b.HasIndex("DepartureId");
-
-                    b.HasIndex("ServiceRatingId");
-
-                    b.ToTable("ReferenceTransportPrices");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.RequestedLocation", b =>
@@ -1584,7 +1099,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<int>("MOQ")
                         .HasColumnType("int");
 
-                    b.Property<double>("Price")
+                    b.Property<double>("PricePerAdult")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PricePerChild")
                         .HasColumnType("float");
 
                     b.Property<Guid>("ServiceId")
@@ -1621,26 +1139,15 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ServiceAvailabilityId")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("ServiceProviderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ServiceRatingId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ServingQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<double>("SurchargePercent")
-                        .HasColumnType("float");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CommunceId");
-
-                    b.HasIndex("ServiceAvailabilityId");
 
                     b.HasIndex("ServiceProviderId");
 
@@ -1661,7 +1168,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<int>("MOQ")
                         .HasColumnType("int");
 
-                    b.Property<double>("Price")
+                    b.Property<double>("PricePerAdult")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PricePerChild")
                         .HasColumnType("float");
 
                     b.Property<Guid>("ServiceId")
@@ -2026,35 +1536,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("District");
                 });
 
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Contract", b =>
-                {
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "CreateByAccount")
-                        .WithMany()
-                        .HasForeignKey("CreateBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId");
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Project")
-                        .WithMany()
-                        .HasForeignKey("TourId");
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "UpdateByAccount")
-                        .WithMany()
-                        .HasForeignKey("UpdateBy");
-
-                    b.Navigation("CreateByAccount");
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Project");
-
-                    b.Navigation("UpdateByAccount");
-                });
-
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Customer", b =>
                 {
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "Account")
@@ -2095,17 +1576,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .IsRequired();
 
                     b.Navigation("Province");
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.FlightInformation", b =>
-                {
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.QuotationDetail", "QuotationDetail")
-                        .WithOne("FlightInformation")
-                        .HasForeignKey("TravelCapstone.BackEnd.Domain.Models.FlightInformation", "QuotationDetailId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("QuotationDetail");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Material", b =>
@@ -2202,17 +1672,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("Tour");
                 });
 
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Port", b =>
-                {
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Commune", "Commune")
-                        .WithMany()
-                        .HasForeignKey("CommuneId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Commune");
-                });
-
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.PrivateJoinTourRequest", b =>
                 {
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "CreateByAccount")
@@ -2266,12 +1725,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Province", "Province")
-                        .WithMany()
-                        .HasForeignKey("MainDestinationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.VehicleType", "VehicleType")
                         .WithMany()
                         .HasForeignKey("MainVehicleId")
@@ -2300,8 +1753,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.Navigation("PrivateTourStatus");
 
-                    b.Navigation("Province");
-
                     b.Navigation("Tour");
 
                     b.Navigation("UpdateByAccount");
@@ -2324,33 +1775,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .IsRequired();
 
                     b.Navigation("OptionQuotation");
-
-                    b.Navigation("ServiceRating");
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.ReferenceTransportPrice", b =>
-                {
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Port", "Arrival")
-                        .WithMany()
-                        .HasForeignKey("ArrivalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Port", "Departure")
-                        .WithMany()
-                        .HasForeignKey("DepartureId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.ServiceRating", "ServiceRating")
-                        .WithMany()
-                        .HasForeignKey("ServiceRatingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Arrival");
-
-                    b.Navigation("Departure");
 
                     b.Navigation("ServiceRating");
                 });
@@ -2424,12 +1848,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.ServiceAvailability", "ServiceAvailability")
-                        .WithMany()
-                        .HasForeignKey("ServiceAvailabilityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.ServiceProvider", "ServiceProvider")
                         .WithMany()
                         .HasForeignKey("ServiceProviderId")
@@ -2443,8 +1861,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .IsRequired();
 
                     b.Navigation("Communce");
-
-                    b.Navigation("ServiceAvailability");
 
                     b.Navigation("ServiceProvider");
 
@@ -2619,11 +2035,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("Route");
 
                     b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.QuotationDetail", b =>
-                {
-                    b.Navigation("FlightInformation");
                 });
 #pragma warning restore 612, 618
         }
