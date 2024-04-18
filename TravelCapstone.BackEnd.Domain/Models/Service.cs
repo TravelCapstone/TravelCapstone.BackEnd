@@ -17,7 +17,10 @@ public class Service
 
     public ServiceAvailability ServiceAvailabilityId { get; set; }
     [ForeignKey(nameof(ServiceAvailabilityId))]
-    public Models.EnumModels.ServiceAvailability? ServiceAvailability {get;set;}
+    public Models.EnumModels.ServiceAvailability? ServiceAvailability {get;set; }
+    public Enum.Unit UnitId { get; set; }
+    [ForeignKey(nameof(UnitId))]
+    public Models.EnumModels.Unit? Unit { get; set; }
     public bool IsActive { get; set; }
     public string Address { get; set; }=null!;
     public int ServingQuantity { get; set; }
