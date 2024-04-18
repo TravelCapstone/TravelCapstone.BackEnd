@@ -115,7 +115,7 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
                 //    PricePerAdult = Convert.ToDouble(random.Next(50, 500)),
                  //   PricePerChild = Convert.ToDouble(random.Next(20, 250)),
                     MOQ = random.Next(1, 100),
-                    UnitId = (TravelCapstone.BackEnd.Domain.Enum.Unit)random.Next(System.Enum.GetValues(typeof(TravelCapstone.BackEnd.Domain.Enum.Unit)).Length),
+                   // UnitId = (TravelCapstone.BackEnd.Domain.Enum.Unit)random.Next(System.Enum.GetValues(typeof(TravelCapstone.BackEnd.Domain.Enum.Unit)).Length),
                     //    Unit = Unit.PERSON,
                     Date = DateTime.Now,
                     ServiceId = service.Id
