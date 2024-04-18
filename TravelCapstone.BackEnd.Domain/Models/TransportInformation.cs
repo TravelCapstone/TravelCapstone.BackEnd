@@ -8,12 +8,16 @@ using System.Threading.Tasks;
 
 namespace TravelCapstone.BackEnd.Domain.Models
 {
-    public class FlightInformation
+    public class TransportInformation
     {
         [Key]
         public Guid Id { get; set; }
-        public string StartPoint { get; set; } = null!;
-        public string EndPoint { get; set; } = null!;
+        public Guid StartPointId { get; set; } 
+        [ForeignKey(nameof(StartPointId))]
+        public Province? StartPoint { get; set; }
+        public Guid EndPointId { get; set; } 
+        [ForeignKey(nameof(EndPointId))]
+        public Province? EndPoint { get; set; }
         public Guid QuotationDetailId { get; set; } 
         [ForeignKey(nameof(QuotationDetailId))]
         public QuotationDetail QuotationDetail { get; set; } = null!;

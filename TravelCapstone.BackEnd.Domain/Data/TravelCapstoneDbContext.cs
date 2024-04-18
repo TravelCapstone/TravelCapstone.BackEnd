@@ -48,7 +48,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<VehicleRoute> VehicleRoutes { get; set; }
     public DbSet<ServiceRating> ServiceRatings { get; set; }    
-    public DbSet<FlightInformation> FlightInformations { get; set; }
+    public DbSet<TransportInformation> TransportInformations { get; set; }
     public DbSet<Port> Ports { get; set; }
     public DbSet<Contract> Contracts { get; set; }
     public DbSet<ReferenceTransportPrice> ReferenceTransportPrices { get; set; }
