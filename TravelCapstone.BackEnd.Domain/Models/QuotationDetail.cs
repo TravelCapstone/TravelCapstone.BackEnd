@@ -11,11 +11,13 @@ public class QuotationDetail
     public Guid ServiceRatingId { get; set; }
     [ForeignKey(nameof(ServiceRatingId))]
     public ServiceRating? ServiceRating { get; set; }
-    public int MinPrice { get; set; }   
-    public int MaxPrice { get; set; }
+    public DateTime? StartDate {  get; set; }    
+    public DateTime? EndDate {  get; set; }
+    public double MinPrice { get; set; }   
+    public double MaxPrice { get; set; }
     public Guid OptionQuotationId { get; set; }
     [ForeignKey(nameof(OptionQuotationId))]
     public OptionQuotation? OptionQuotation { get; set; }
 
-    public TransportInformation? FlightInformation { get; set; }
+    public TransportInformation? TransportInformation { get; set; }
 }
