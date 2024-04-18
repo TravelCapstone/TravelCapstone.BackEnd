@@ -32,6 +32,7 @@ public class MappingConfig
                 .ForMember(desc => desc.IsEnterprise, act => act.MapFrom(src => src.IsEnterprise))
                 .ForMember(desc => desc.Note, act => act.MapFrom(src => src.Note))
                 .ForMember(desc => desc.RecommnendedTourUrl, act => act.MapFrom(src => src.RecommnendedTourUrl))
+                .ForMember(desc => desc.StartLocation, act => act.MapFrom(src => src.StartLocation))
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
                 .ReverseMap()
                 ;

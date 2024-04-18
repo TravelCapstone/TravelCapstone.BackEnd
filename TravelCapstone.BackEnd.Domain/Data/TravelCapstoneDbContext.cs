@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Reflection.Emit;
 using TravelCapstone.BackEnd.Domain.Models;
 
@@ -47,7 +48,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<VehicleRoute> VehicleRoutes { get; set; }
     public DbSet<ServiceRating> ServiceRatings { get; set; }    
-    public DbSet<FlightInformation> FlightInformations { get; set; }
+    public DbSet<TransportInformation> TransportInformations { get; set; }
     public DbSet<Port> Ports { get; set; }
     public DbSet<Contract> Contracts { get; set; }
     public DbSet<ReferenceTransportPrice> ReferenceTransportPrices { get; set; }
@@ -147,7 +148,17 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(
-            "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+        //optionsBuilder.UseSqlServer(
+        //    "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+        IConfiguration config = new ConfigurationBuilder()
+                       .SetBasePath(Directory.GetCurrentDirectory())
+                       .AddJsonFile("appsettings.json", true, true)
+                       .Build();
+        string cs = config["ConnectionStrings:DB"];
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer(cs);
+        }
+
     }
 }

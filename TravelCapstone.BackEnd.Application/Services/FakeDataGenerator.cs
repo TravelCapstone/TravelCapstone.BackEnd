@@ -10,7 +10,6 @@ using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
 using Bogus;
 using TravelCapstone.BackEnd.Application.Services;
-using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
 {
