@@ -18,6 +18,6 @@ public interface IPrivateTourRequestService
     Task<AppActionResult> ConfirmOptionPrivateTour(Guid optionId, string accountId);
     Task<AppActionResult> GetServiceRatingListByServiceType(Guid provinceId, Domain.Enum.ServiceType serviceTypeId);
 
-    Task<AppActionResult> GetServicePriceRangeOfCommune(Guid provinceId, Guid serviceRatingId, int adultQuantity);
-    Task<AppActionResult> GetServicePriceRange(Guid provinceId, Domain.Enum.ServiceType serviceTypeId, Guid requestTourId);
+    //Task<AppActionResult> GetServicePriceRangeOfCommune(Guid provinceId, Guid serviceRatingId, int adultQuantity);
+    //Task<AppActionResult> GetServicePriceRange(Guid provinceId, Domain.Enum.ServiceType serviceTypeId, Guid requestTourId);
 }

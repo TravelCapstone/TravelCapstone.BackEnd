@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240419090532_AddFieldAddressToRequestedLocation")]
+    partial class AddFieldAddressToRequestedLocation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1421,14 +1423,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("MaxPrice")
+                        .HasColumnType("int");
 
-                    b.Property<double>("MaxPrice")
-                        .HasColumnType("float");
-
-                    b.Property<double>("MinPrice")
-                        .HasColumnType("float");
+                    b.Property<int>("MinPrice")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("OptionQuotationId")
                         .HasColumnType("uniqueidentifier");
@@ -1441,9 +1440,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.Property<Guid>("ServiceRatingId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("StartDate")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -2589,7 +2585,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.QuotationDetail", "QuotationDetail")
-                        .WithOne("TransportInformation")
+                        .WithOne("FlightInformation")
                         .HasForeignKey("TravelCapstone.BackEnd.Domain.Models.TransportInformation", "QuotationDetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2647,7 +2643,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.QuotationDetail", b =>
                 {
-                    b.Navigation("TransportInformation");
+                    b.Navigation("FlightInformation");
                 });
 #pragma warning restore 612, 618
         }

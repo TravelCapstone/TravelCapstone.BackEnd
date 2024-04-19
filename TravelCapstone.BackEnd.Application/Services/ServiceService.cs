@@ -29,7 +29,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AppActionResult> GetServiceByProvinceId(Guid Id, Guid requestId)
+        public async Task<AppActionResult> GetServiceByProvinceIdAndRequestId(Guid Id, Guid requestId)
         {
             AppActionResult result = new AppActionResult();
             try
@@ -73,12 +73,10 @@ namespace TravelCapstone.BackEnd.Application.Services
                     var restaurantPrice = await GetTypePriceReference(ServiceType.RESTAURANTS, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
                     var entertainmentPrice = await GetTypePriceReference(ServiceType.ENTERTAINMENT, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
                     var vehicleSupplyPrice = await GetTypePriceReference(ServiceType.VEHICLE_SUPPLY, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    var airTicketSupplyPrice = await GetTypePriceReference(ServiceType.AIR_TICKET_SUPPLY, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
                     data.HotelPrice = hotelPrice;
                     data.RestaurantPrice = restaurantPrice;
                     data.EntertainmentPrice = entertainmentPrice;
                     data.VehicleSupplyPrice = vehicleSupplyPrice;
-                    data.AirTicketSupplyPrice = airTicketSupplyPrice;
                 }
 
                 result.Result = data;
