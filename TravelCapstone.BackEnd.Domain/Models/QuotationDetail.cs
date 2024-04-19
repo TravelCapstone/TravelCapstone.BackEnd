@@ -19,5 +19,4 @@ public class QuotationDetail
     [ForeignKey(nameof(OptionQuotationId))]
     public OptionQuotation? OptionQuotation { get; set; }
 
-    public TransportInformation? TransportInformation { get; set; }
 }

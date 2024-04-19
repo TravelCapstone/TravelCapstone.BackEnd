@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using NPOI.SS.Formula;
 using System.ComponentModel.Design;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
@@ -7,6 +8,7 @@ using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Common.Utils;
 using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
+using static TravelCapstone.BackEnd.Common.DTO.Response.MapInfo;
 
 namespace TravelCapstone.BackEnd.Application.Services;
 
@@ -184,7 +186,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             {
                 OptionResponseDto option = new OptionResponseDto();
                 option.OptionQuotation = item;
-                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, q => q.TransportInformation);
+                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null);
                 option.QuotationDetails = quotationDetailDb.Items!.ToList();
                 //Option to order of OptionClass
                 if (item.OptionClassId == OptionClass.ECONOMY)
@@ -213,6 +215,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         var serviceRepository = Resolve<IRepository<Service>>();
         var serviceRatingRepository = Resolve<IRepository<ServiceRating>>();
         var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
+        var vehicleQuotationDetailRepository = Resolve<IRepository<VehicleQuotationDetail>>();
+        var referenceTransportPriceRepository = Resolve<IRepository<ReferenceTransportPrice>>();
         var serviceService = Resolve<IServiceService>();
         try
         {
@@ -302,6 +306,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 };
 
                 List<QuotationDetail> quotationDetails = new List<QuotationDetail>();
+                List<VehicleQuotationDetail> vehicleQuotationDetails = new List<VehicleQuotationDetail>();
 
                 foreach (var location in dto.Locations)
                 {
@@ -398,15 +403,15 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
 
                     var serviceEntertaimentRating = await serviceRatingRepository!.GetByExpression(a => a.ServiceTypeId == ServiceType.ENTERTAINMENT);
-                    var sellPriceAdultEntertainment = estimate.EntertainmentPrice.DetailedPriceReferences.Where(a => a.ServiceRating.ServiceTypeId == ServiceType.ENTERTAINMENT &&
+                    var sellPriceAdultEntertainment = estimate.EntertainmentPrice.DetailedPriceReferences.Where(a => a.ServiceRating.ServiceTypeId == ServiceType.ENTERTAINMENT 
 
                 && a.ServingQuantity == 1 && a.ServiceAvailability == ServiceAvailability.ADULT).FirstOrDefault();
-                    var sellPriceChildrenEntertainment = estimate.EntertainmentPrice.DetailedPriceReferences.Where(a => a.ServiceRating.ServiceTypeId == ServiceType.ENTERTAINMENT &&
+                    var sellPriceChildrenEntertainment = estimate.EntertainmentPrice.DetailedPriceReferences.Where(a => a.ServiceRating.ServiceTypeId == ServiceType.ENTERTAINMENT
 
                   && a.ServingQuantity == 1 && a.ServiceAvailability == ServiceAvailability.CHILD).FirstOrDefault();
 
-                    double minQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment.MinPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MinPrice;
-                    double maxQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment.MaxPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MaxPrice;
+                    double minQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MinPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MinPrice;
+                    double maxQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MaxPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MaxPrice;
 
                     quotationDetails.Add(new QuotationDetail
                     {
@@ -421,12 +426,36 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         EndDate = null,
                     });
 
-
+                
                 }
-                option.MinTotal = quotationDetails.Min(a => a.MinPrice);
-                option.MaxTotal = quotationDetails.Min(a => a.MaxPrice);
+
+                foreach (var vehicle in dto.Vehicles)
+                {
+                    var price = await referenceTransportPriceRepository!.GetAllDataByExpression(a => a.Departure!.Commune!.District!.ProvinceId == vehicle.StartPoint && a.Arrival.Commune.District.ProvinceId == vehicle.EndPoint
+                    || a.Departure.Commune.District.ProvinceId == vehicle.EndPoint && a.Arrival!.Commune!.District!.ProvinceId == vehicle.StartPoint
+                    , 0, 0, null
+                    );
+                    if (price.Items!.Any())
+                    {
+                        vehicleQuotationDetails.Add(new VehicleQuotationDetail
+                        {
+                            Id = Guid.NewGuid(),
+                            OptionQuotationId = option.Id,
+                            MinPrice = totalPeople * price.Items!.Min(a => a.AdultPrice),
+                            MaxPrice = totalPeople * price.Items!.Max(a => a.AdultPrice),
+                            StartPointId = vehicle.StartPoint,
+                            EndPointId= vehicle.EndPoint,
+                            VehicleType = vehicle.VehicleType,
+                        });
+
+                    }
+                }
+
+                    option.MinTotal = quotationDetails.Min(a => a.MinPrice) + vehicleQuotationDetails.Min(a=> a.MinPrice);
+                option.MaxTotal = quotationDetails.Min(a => a.MaxPrice) + vehicleQuotationDetails.Max(a => a.MaxPrice);
                 await optionQuotationRepository!.Insert(option);
                 await quotationDetailRepository!.InsertRange(quotationDetails);
+                await vehicleQuotationDetailRepository!.InsertRange(vehicleQuotationDetails);
                 await _unitOfWork.SaveChangesAsync();
             }
         }
