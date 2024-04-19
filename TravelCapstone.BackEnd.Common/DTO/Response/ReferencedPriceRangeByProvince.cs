@@ -16,18 +16,6 @@ namespace TravelCapstone.BackEnd.Common.DTO.Response
         public PriceReference VehicleSupplyPrice = null!;
     }
 
-    public class DetailedPriceReference
-    {
-        public ServiceRating ServiceRating = null!;
-        public ServiceAvailability ServiceAvailability;
-        public Unit Unit;
-        public int ServiceQuantity;
-        public double MaxSurChange;
-        public double MinSurChange;
-        public double MaxPrice;
-        public double MinPrice;
-    }
-
     public class PriceReference
     {
         public ServiceType ServiceType;
@@ -37,5 +25,16 @@ namespace TravelCapstone.BackEnd.Common.DTO.Response
             this.ServiceType = serviceType;
             DetailedPriceReferences = new List<DetailedPriceReference>();
         }
+    }
+    public class DetailedPriceReference
+    {
+        public ServiceRating ServiceRating = null!;
+        public ServiceAvailability ServiceAvailability;
+        public Unit Unit;
+        public int ServingQuantity;
+        public double MaxSurChange;
+        public double MinSurChange;
+        public double MaxPrice;
+        public double MinPrice;
     }
 }

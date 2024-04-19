@@ -87,7 +87,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
-        public async Task<List<Guid>> GetServiceRatingByServiceTypeAndCommuneId(ServiceType serviceType, IEnumerable<Service> services)
+        public Task<List<Guid>> GetServiceRatingByServiceTypeAndCommuneId(ServiceType serviceType, IEnumerable<Service> services)
         {
             List<Guid> serviceRatings = null;
             try
@@ -97,7 +97,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             {
                 serviceRatings = new List<Guid>();
             }
-            return serviceRatings;
+            return Task.FromResult(serviceRatings);
         }
 
 
@@ -131,7 +131,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         {
                             detailedPriceReference.ServiceRating = item.ServiceRating;
                             detailedPriceReference.ServiceAvailability = item.ServiceAvailabilityId;
-                            detailedPriceReference.ServiceQuantity = item.ServingQuantity;
+                            detailedPriceReference.ServingQuantity = item.ServingQuantity;
                             detailedPriceReference.Unit = item.UnitId;
                             i++;
                         }
