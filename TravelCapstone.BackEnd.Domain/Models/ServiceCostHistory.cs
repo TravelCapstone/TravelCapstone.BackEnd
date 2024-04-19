@@ -10,9 +10,6 @@ public class ServiceCostHistory
 
     public double Price { get; set; }
     public int MOQ { get; set; }
-    public Enum.Unit UnitId { get; set; }
-    [ForeignKey(nameof(UnitId))]
-    public Models.EnumModels.Unit? Unit { get; set; }
     public DateTime Date { get; set; }
     public Guid ServiceId { get; set; }
 
