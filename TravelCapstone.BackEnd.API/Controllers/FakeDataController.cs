@@ -18,8 +18,7 @@ namespace TravelCapstone.BackEnd.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var serviceProviders = await _fakeDataGenerator.GenerateServiceProviders(50);
-            //var serviceRatings = await _fakeDataGenerator.GenerateServiceRatings(50);
+            var serviceRatings = await _fakeDataGenerator.GenerateServiceRatings(50);
             //var services = await _fakeDataGenerator.GenerateServices(serviceProviders, serviceRatings, 50);
             //var serviceCostHistories = await _fakeDataGenerator.GenerateServiceCostHistories(services, 50);
             //var sellPriceHistories = await _fakeDataGenerator.GenerateSellPriceHistories(services, 50);

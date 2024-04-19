@@ -22,7 +22,7 @@ namespace TravelCapstone.BackEnd.API.Controllers
         [HttpGet("get-service-by-province-id-and-tour-request-id/{provinceId}/{requestId}")]
         public async Task<AppActionResult> GetServiceByProvinceIdAndPrivateTourRequestId(Guid provinceId, Guid requestId)
         {
-            return await _service.GetServiceByProvinceId(provinceId, requestId);
+            return await _service.GetServiceByProvinceIdAndRequestId(provinceId, requestId);
         }
     }
 }
