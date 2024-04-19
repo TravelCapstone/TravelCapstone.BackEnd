@@ -213,6 +213,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         var serviceRepository = Resolve<IRepository<Service>>();
         var serviceRatingRepository = Resolve<IRepository<ServiceRating>>();
         var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
+        var serviceService = Resolve<IServiceService>();
         try
         {
 
@@ -287,6 +288,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             if (!BuildAppActionResultIsError(result))
             {
                 var privateTourRequest = await _repository.GetById(dto.PrivateTourRequestId);
+                var totalPeople = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren;
 
 
                 OptionQuotation option = new OptionQuotation
@@ -303,19 +305,80 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 foreach (var location in dto.Locations)
                 {
+                    var estimateService = await serviceService!.GetServiceByProvinceIdAndRequestId(location.ProvinceId, dto.PrivateTourRequestId);
+                    var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
                     foreach (var hotel in location.Hotels)
                     {
                         var serviceRating = await serviceRatingRepository!.GetByExpression(a => a.ServiceTypeId == ServiceType.HOTEL && a.Rating == hotel.Rating);
-                        double min = 0;
-                        double max = 0;
-                        var sellHotel = await sellPriceRepository!.GetAllDataByExpression(
-                        a => a.Service!.Communce!.District!.ProvinceId == location.ProvinceId
-                        && a.Service.ServiceRating!.ServiceTypeId == ServiceType.HOTEL &&
-                        a.Service.ServiceRating.Rating == hotel.Rating,
-                        0, 0, null
-                        );
-                        min = sellHotel.Items!.Min(a => a.Price);
-                        max = sellHotel.Items!.Max(a => a.Price);
+                        var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                            a => a.ServiceRating.ServiceTypeId == ServiceType.HOTEL && a.ServiceRating.Rating == hotel.Rating
+                            && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
+
+                            ).FirstOrDefault();
+                        double min = sellPriceHotel!.MinPrice;
+
+                        double max = sellPriceHotel!.MaxPrice;
+                        double minQuotation = 0;
+                        double maxQuotation = 0;
+
+                        if (privateTourRequest.NumOfChildren == 0)
+                        {
+                            if (privateTourRequest.NumOfAdult % sellPriceHotel.ServingQuantity == 0)
+                            {
+                                minQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min;
+                                maxQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max;
+
+                            }
+                            else
+                            {
+                                minQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * min;
+                                maxQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * max;
+                            }
+
+                        }
+                        else if (privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren == sellPriceHotel.ServingQuantity)
+                        {
+                            minQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min;
+                            maxQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max;
+
+                        }
+                        else
+                        {
+                            if (privateTourRequest.NumOfAdult % sellPriceHotel.ServingQuantity == 0)
+                            {
+                                minQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min) +
+                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min) * (privateTourRequest.NumOfChildren * sellPriceHotel.MinSurChange);
+                                maxQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max +
+                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max) * (privateTourRequest.NumOfChildren * sellPriceHotel.MaxSurChange);
+
+                            }
+                            else
+                            {
+                                minQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * min +
+                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min) * (privateTourRequest.NumOfChildren * sellPriceHotel.MinSurChange);
+                                maxQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * max +
+                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max) * (privateTourRequest.NumOfChildren * sellPriceHotel.MaxSurChange);
+                            }
+                        }
+                        quotationDetails.Add(new QuotationDetail
+                        {
+                            Id = Guid.NewGuid(),
+                            OptionQuotationId = option.Id,
+                            QuantityOfAdult = privateTourRequest.NumOfAdult,
+                            QuantityOfChild = privateTourRequest.NumOfChildren,
+                            MinPrice = minQuotation,
+                            MaxPrice = maxQuotation,
+                            ServiceRatingId = serviceRating!.Id,
+                            StartDate = hotel.StartDate,
+                            EndDate = hotel.EndDate,
+
+                        });
+                    }
+                    foreach (var restaurent in location.Restaurants)
+                    {
+                        var serviceRating = await serviceRatingRepository!.GetByExpression(a => a.ServiceTypeId == ServiceType.RESTAURANTS && a.Rating == restaurent.Rating);
+                        var sellPriceRestaurent = estimate.RestaurantPrice.DetailedPriceReferences.Where(a => a.ServiceRating.ServiceTypeId == ServiceType.RESTAURANTS &&
+                        a.ServiceRating.Rating == restaurent.Rating && a.ServingQuantity == 1 && a.ServiceAvailability == ServiceAvailability.BOTH).FirstOrDefault();
 
                         quotationDetails.Add(new QuotationDetail
                         {
@@ -323,14 +386,42 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             OptionQuotationId = option.Id,
                             QuantityOfAdult = privateTourRequest.NumOfAdult,
                             QuantityOfChild = privateTourRequest.NumOfChildren,
-                            MinPrice = min,
-                            MaxPrice = max,
+                            MinPrice = totalPeople * sellPriceRestaurent!.MinPrice,
+                            MaxPrice = totalPeople * sellPriceRestaurent!.MaxPrice,
                             ServiceRatingId = serviceRating!.Id,
-                            StartDate = hotel.StartDate,
-                            EndDate = hotel.EndDate,
-
+                            StartDate = restaurent.StartDate,
+                            EndDate = restaurent.EndDate,
                         });
+
                     }
+
+
+
+                    var serviceEntertaimentRating = await serviceRatingRepository!.GetByExpression(a => a.ServiceTypeId == ServiceType.ENTERTAINMENT);
+                    var sellPriceAdultEntertainment = estimate.EntertainmentPrice.DetailedPriceReferences.Where(a => a.ServiceRating.ServiceTypeId == ServiceType.ENTERTAINMENT &&
+
+                && a.ServingQuantity == 1 && a.ServiceAvailability == ServiceAvailability.ADULT).FirstOrDefault();
+                    var sellPriceChildrenEntertainment = estimate.EntertainmentPrice.DetailedPriceReferences.Where(a => a.ServiceRating.ServiceTypeId == ServiceType.ENTERTAINMENT &&
+
+                  && a.ServingQuantity == 1 && a.ServiceAvailability == ServiceAvailability.CHILD).FirstOrDefault();
+
+                    double minQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment.MinPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MinPrice;
+                    double maxQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment.MaxPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MaxPrice;
+
+                    quotationDetails.Add(new QuotationDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        OptionQuotationId = option.Id,
+                        QuantityOfAdult = privateTourRequest.NumOfAdult,
+                        QuantityOfChild = privateTourRequest.NumOfChildren,
+                        MinPrice = minQuotationEntertaiment,
+                        MaxPrice = maxQuotationEntertaiment,
+                        ServiceRatingId = serviceEntertaimentRating!.Id,
+                        StartDate = null,
+                        EndDate = null,
+                    });
+
+
                 }
                 option.MinTotal = quotationDetails.Min(a => a.MinPrice);
                 option.MaxTotal = quotationDetails.Min(a => a.MaxPrice);
@@ -538,7 +629,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
     //                // Element selector function, you can choose what you want to store in the dictionary
     //                group => group.ToList()
     //            );
-                
+
     //            var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
     //            PagedResult<SellPriceHistory> serviceSellPriceListDb = null;
     //            SellPriceHistory serviceSellPriceDb = null;
