@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240418123127_changeFieldQuotaionDetail")]
+    partial class changeFieldQuotaionDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1499,10 +1501,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("PrivateTourRequestId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1625,9 +1623,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<double>("SurchargePercent")
                         .HasColumnType("float");
 
-                    b.Property<int>("UnitId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CommunceId");
@@ -1637,8 +1632,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasIndex("ServiceProviderId");
 
                     b.HasIndex("ServiceRatingId");
-
-                    b.HasIndex("UnitId");
 
                     b.ToTable("Services");
                 });
@@ -1661,9 +1654,14 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid>("ServiceId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ServiceId");
+
+                    b.HasIndex("UnitId");
 
                     b.ToTable("ServiceCostHistorys");
                 });
@@ -2439,12 +2437,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.Unit", "Unit")
-                        .WithMany()
-                        .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Communce");
 
                     b.Navigation("ServiceAvailability");
@@ -2452,8 +2444,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("ServiceProvider");
 
                     b.Navigation("ServiceRating");
-
-                    b.Navigation("Unit");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.ServiceCostHistory", b =>
@@ -2464,7 +2454,15 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.Unit", "Unit")
+                        .WithMany()
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Service");
+
+                    b.Navigation("Unit");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.ServiceRating", b =>
