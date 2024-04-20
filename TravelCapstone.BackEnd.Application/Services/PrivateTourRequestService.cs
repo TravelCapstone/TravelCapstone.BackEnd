@@ -169,6 +169,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             data.PrivateTourRespone = _mapper.Map<PrivateTourResponeDto>(privateTourRequestDb);
             var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
             var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
+            var vehicleQuotationDetailRepository = Resolve<IRepository<VehicleQuotationDetail>>();
             var optionsDb = await optionQuotationRepository!.GetAllDataByExpression(q => q.PrivateTourRequestId == id, 0, 0);
             if (optionsDb.Items!.Count != 3)
             {
@@ -187,7 +188,9 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 OptionResponseDto option = new OptionResponseDto();
                 option.OptionQuotation = item;
                 var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null);
+                var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null);
                 option.QuotationDetails = quotationDetailDb.Items!.ToList();
+                option.VehicleQuotationDetails = vehicleQuotationDetailDb.Items!.ToList();
                 //Option to order of OptionClass
                 if (item.OptionClassId == OptionClass.ECONOMY)
                     data.Option1 = option;
@@ -195,9 +198,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     data.Option2 = option;
                 else data.Option3 = option;
             }
-
             result.Result = data;
-
         }
         catch (Exception e)
         {

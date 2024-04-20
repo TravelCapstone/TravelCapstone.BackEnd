@@ -12,5 +12,6 @@ namespace TravelCapstone.BackEnd.Common.DTO.Response
     {
         public OptionQuotation? OptionQuotation { get; set; }
         public List<QuotationDetail>? QuotationDetails { get; set; }
+        public List<VehicleQuotationDetail>? VehicleQuotationDetails { get; set; }
     }
 }
