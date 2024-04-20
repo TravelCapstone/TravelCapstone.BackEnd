@@ -17,6 +17,7 @@ namespace TravelCapstone.BackEnd.Domain.Models
         [ForeignKey(nameof(ArrivalId))]
         public Port? Arrival { get; set; }
         public DateTime DepartureDate { get; set; }
+        public DateTime ArrivalDate { get; set; }
         public double AdultPrice { get; set; }
         public double ChildPrice { get; set; }
         public Guid ServiceRatingId {  get; set; }
