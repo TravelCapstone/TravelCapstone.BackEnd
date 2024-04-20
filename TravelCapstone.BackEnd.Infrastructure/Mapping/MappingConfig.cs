@@ -31,13 +31,33 @@ public class MappingConfig
                 .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
                 .ForMember(desc => desc.IsEnterprise, act => act.MapFrom(src => src.IsEnterprise))
                 .ForMember(desc => desc.Note, act => act.MapFrom(src => src.Note))
-                .ForMember(desc => desc.RecommnendedTourUrl, act => act.MapFrom(src => src.RecommnendedTourUrl))
+                .ForMember(desc => desc.RecommendedTourUrl, act => act.MapFrom(src => src.RecommnendedTourUrl))
                 .ForMember(desc => desc.StartLocation, act => act.MapFrom(src => src.StartLocation))
-                .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.AccountId))
+                .ForMember(desc => desc.CreateBy, act => act.MapFrom(src => src.AccountId))
+                
                 .ReverseMap()
                 ;
 
-          
+            config.CreateMap<PrivateTourRequest, PrivateTourResponeDto>()
+                .ForMember(desc => desc.StartDate, act => act.MapFrom(src => src.StartDate))
+                .ForMember(desc => desc.EndDate, act => act.MapFrom(src => src.EndDate))
+                .ForMember(desc => desc.CreateDate, act => act.MapFrom(src => src.CreateDate))
+                .ForMember(desc => desc.Description, act => act.MapFrom(src => src.Description))
+                .ForMember(desc => desc.NumOfAdult, act => act.MapFrom(src => src.NumOfAdult))
+                .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
+                .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
+                .ForMember(desc => desc.IsEnterprise, act => act.MapFrom(src => src.IsEnterprise))
+                .ForMember(desc => desc.Note, act => act.MapFrom(src => src.Note))
+                .ForMember(desc => desc.RecommnendedTourUrl, act => act.MapFrom(src => src.RecommendedTourUrl))
+                .ForMember(desc => desc.MainDestination, act => act.MapFrom(src => src.Province))
+                .ForMember(desc => desc.Status, act => act.MapFrom(src => src.PrivateTourStatus))
+                .ForMember(desc => desc.StartLocation, act => act.MapFrom(src => src.StartLocation))
+                .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.CreateBy))
+                .ForMember(desc => desc.Account, act => act.MapFrom(src => src.CreateByAccount))
+                .ForMember(desc => desc.Name, act => act.MapFrom(src => $"{src.CreateByAccount.FirstName} {src.CreateByAccount.LastName}"))
+                ;
+
+
             config.CreateMap<Customer,CustomerDto>()
                  .ForMember(desc => desc.Id, act => act.MapFrom(src => src.Id))
                  .ForMember(desc => desc.LastName, act => act.MapFrom(src => src.LastName))

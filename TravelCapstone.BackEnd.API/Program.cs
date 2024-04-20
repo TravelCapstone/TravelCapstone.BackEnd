@@ -27,7 +27,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-app.UseSwagger(op => op.SerializeAsV2 = false);
+app.UseSwagger(op => op.SerializeAsV2 = true);
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");

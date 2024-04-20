@@ -22,14 +22,11 @@ public class PrivateTourRequest: BaseEntity
     [ForeignKey(nameof(PrivateTourStatusId))]
     public Models.EnumModels.PrivateTourStatus? PrivateTourStatus { get; set; }
     public bool IsEnterprise { get; set; }
-    public string? RecommnendedTourUrl { get; set; }
+    public string? RecommendedTourUrl { get; set; }
     public string? Note { get; set; }
     public string? StartLocation { get; set; }
 
     public Guid MainDestinationId { get; set; }
     [ForeignKey(nameof(MainDestinationId))]
     public Province? Province { get; set; }
-    public string? AccountId { get; set; }
-
-    [ForeignKey(nameof(AccountId))] public Account? Account { get; set; }
 }

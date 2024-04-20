@@ -8,7 +8,6 @@ public class PrivateTourResponeDto
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public string Type { get; set; }
     public DateTime CreateDate { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
@@ -17,6 +16,10 @@ public class PrivateTourResponeDto
     public int NumOfDay { get; set; }
     public int NumOfNight { get; set; }
     public PrivateTourStatus Status { get; set; }
+    public bool IsEnterprise { get; set; }
+    public string? RecommnendedTourUrl { get; set; }
+    public string? Note { get; set; }
+    public string? StartLocation { get; set; }
     public Province MainDestination { get; set; }
     public List<Province>? OtherLocation { get; set; }
     public Guid TourId { get; set; }

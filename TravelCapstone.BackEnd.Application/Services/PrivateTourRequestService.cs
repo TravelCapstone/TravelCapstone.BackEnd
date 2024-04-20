@@ -54,14 +54,14 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 return result;
             }
 
-            if (!IsValidTime(privateTourequestDTO.EndDate, privateTourequestDTO.StartDate, privateTourequestDTO.NumOfDay,
+            if (!IsValidRequestTime(privateTourequestDTO.EndDate, privateTourequestDTO.StartDate, privateTourequestDTO.NumOfDay,
                     privateTourequestDTO.NumOfNight))
             {
                 result = BuildAppActionResultError(result, "Thời gian có thể đi ngắn hơn dộ dài lộ trình yêu cầu");
                 return result;
             }
 
-            if (tourDb.EndDate - tourDb.StartDate <= privateTourequestDTO.EndDate - privateTourequestDTO.StartDate)
+            if (tourDb.EndDate - tourDb.StartDate > privateTourequestDTO.EndDate - privateTourequestDTO.StartDate)
             {
                 result = BuildAppActionResultError(result, "Thời gian có thể đi ngắn hơn lộ trình của tour mẫu");
                 return result;
@@ -107,6 +107,12 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         return result;
     }
 
+    private bool IsValidRequestTime(DateTime cloneEnd, DateTime cloneStart, int numOfDay, int numOfNight)
+    {
+        var cloneResult = GetDaysAndNights(cloneStart, cloneEnd);
+        return cloneResult[0] >= numOfDay && cloneResult[1] >= numOfNight;
+    }
+
     private bool IsValidTime(DateTime cloneEnd, DateTime cloneStart, int numOfDay, int numOfNight)
     {
         var cloneResult = GetDaysAndNights(cloneStart, cloneEnd);
@@ -137,56 +143,28 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
     public async Task<AppActionResult> GetAllTourPrivate(int pageNumber, int pageSize)
     {
         var result = new AppActionResult();
-        List<OptionListResponseDto> dataList = new List<OptionListResponseDto>();
+        var accountRepository = Resolve<IRepository<Account>>();
+        var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
         try
         {
-            var privateTourRequestListDb = await _repository.GetAllDataByExpression(null, 0,0);
-            if(privateTourRequestListDb.Items.Count > 0)
+            var data = await _repository.GetAllDataByExpression
+            (null, pageNumber,
+                pageSize,
+                p => p.Tour, p => p.CreateByAccount!, p => p.Province);
+            
+            var responseList = _mapper.Map<PagedResult<PrivateTourResponeDto>>(data);
+            foreach (var item in responseList.Items!)
             {
-                foreach(var privateTourRequestDb in privateTourRequestListDb.Items)
-                {
-                    var data = new OptionListResponseDto();
-                    data.PrivateTourRespone = _mapper.Map<PrivateTourResponeDto>(privateTourRequestDb);
-                    var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
-                    var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
-                    var vehicleQuotationDetailRepository = Resolve<IRepository<VehicleQuotationDetail>>();
-                    var optionsDb = await optionQuotationRepository!.GetAllDataByExpression(q => q.PrivateTourRequestId == privateTourRequestDb.Id, 0, 0);
-                    if (optionsDb.Items!.Count != 3)
-                    {
-                        result.Messages.Add($"Số lượng lựa chọn hiện tại: {optionsDb.Items.Count} không phù hợp");
-                    }
-                    //Remind: add check 3 optionType
-                    int fullOption = 0;
-                    optionsDb.Items.ForEach(o => fullOption ^= (int)(o.OptionClassId));
-                    if (fullOption != 3)
-                    {
-                        result.Messages.Add("Danh sách lựa chọn không đủ các hạng mục");
-                    }
-
-                    foreach (var item in optionsDb.Items)
-                    {
-                        OptionResponseDto option = new OptionResponseDto();
-                        option.OptionQuotation = item;
-                        var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null);
-                        var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null);
-                        option.QuotationDetails = quotationDetailDb.Items!.ToList();
-                        option.VehicleQuotationDetails = vehicleQuotationDetailDb.Items!.ToList();
-                        //Option to order of OptionClass
-                        if (item.OptionClassId == OptionClass.ECONOMY)
-                            data.Option1 = option;
-                        else if (item.OptionClassId == OptionClass.MIDDLE)
-                            data.Option2 = option;
-                        else data.Option3 = option;
-                    }
-                    dataList.Add(data);
-                }
+                var requestLocationDb = await requestLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, r => r.Province);
+                item.OtherLocation = requestLocationDb.Items!.Select(r => r.Province).ToList()!;
             }
-            result.Result = dataList;
+            result.Result = responseList;
         }
         catch (Exception e)
         {
             result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
         }
+
         return result;
     }
 
