@@ -172,9 +172,10 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
     {
         var result = new AppActionResult();
         OptionListResponseDto data = new OptionListResponseDto();
+        var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
         try
         {
-            var privateTourRequestDb = await _repository.GetById(id);
+            var privateTourRequestDb = await _repository.GetByExpression(a=> a.Id== id, a=> a.CreateByAccount!, a=> a.Province!);
             if (privateTourRequestDb == null)
             {
                 result = BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour riêng tư với id {id}");
@@ -212,6 +213,13 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     data.Option2 = option;
                 else data.Option3 = option;
             }
+            List<Province> provinces= new List<Province>();
+            var list = await requestLocationRepository!.GetAllDataByExpression(a => a.PrivateTourRequestId == id, 0, 0, a => a.Province!);
+           foreach(var item in list.Items!)
+            {
+                provinces.Add(item.Province!);
+            }
+            data.PrivateTourRespone.OtherLocation = provinces;
             result.Result = data;
         }
         catch (Exception e)

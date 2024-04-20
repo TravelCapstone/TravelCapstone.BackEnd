@@ -54,7 +54,7 @@ public class MappingConfig
                 .ForMember(desc => desc.StartLocation, act => act.MapFrom(src => src.StartLocation))
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.CreateBy))
                 .ForMember(desc => desc.Account, act => act.MapFrom(src => src.CreateByAccount))
-                .ForMember(desc => desc.Name, act => act.MapFrom(src => $"{src.CreateByAccount.FirstName} {src.CreateByAccount.LastName}"))
+                .ForMember(desc => desc.Name, act => act.MapFrom(src => $"{src.CreateByAccount!.FirstName} {src.CreateByAccount.LastName}"))
                 ;
 
 
