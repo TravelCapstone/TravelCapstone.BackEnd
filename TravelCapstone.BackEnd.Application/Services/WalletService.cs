@@ -41,13 +41,13 @@ namespace TravelCapstone.BackEnd.Application.Services
 
             try
             {
-                var order = await orderRepository!.GetByExpression(o => o.Id == OrderId, o => o.PrivateTourRequest!.Account!);
+                var order = await orderRepository!.GetByExpression(o => o.Id == OrderId, o => o.PrivateTourRequest!.CreateByAccount!);
                 if (order == null)
                 {
                     result = BuildAppActionResultError(result,
-                        $"Travel companion với id {order!.PrivateTourRequest!.Account!.Id!} không tồn tại");
+                        $"Travel companion với id {order!.PrivateTourRequest!.CreateByAccount!.Id!} không tồn tại");
                 }
-                var travelCompanion = await travelCompanionRepository!.GetByExpression(a => a!.AccountId == order.PrivateTourRequest!.AccountId);
+                var travelCompanion = await travelCompanionRepository!.GetByExpression(a => a!.AccountId == order.PrivateTourRequest!.CreateBy);
                 if (travelCompanion == null)
                 {
                     result = BuildAppActionResultError(result, $"Không tồn tại travel companion trong hệ thống");
@@ -63,9 +63,9 @@ namespace TravelCapstone.BackEnd.Application.Services
                 {
                     PaymentInformationRequest momo = new PaymentInformationRequest
                     {
-                        AccountID = order.PrivateTourRequest!.AccountId!.ToString(),
+                        AccountID = order.PrivateTourRequest!.CreateByAccount!.ToString(),
                         Amount = order.Total,
-                        CustomerName = $"{order!.PrivateTourRequest!.Account!.FirstName} {order!.PrivateTourRequest!.Account!.LastName}",
+                        CustomerName = $"{order!.PrivateTourRequest!.CreateByAccount!.FirstName} {order!.PrivateTourRequest!.CreateByAccount!.LastName}",
                     };
                     var timeZoneById = TimeZoneInfo.FindSystemTimeZoneById(_configuration["TimeZoneId"]);
                     var timeNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneById);
@@ -81,7 +81,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     pay.AddRequestData("vnp_IpAddr", pay.GenerateRandomIPAddress());
                     pay.AddRequestData("vnp_Locale", _vnPayConfiguration.Locale!);
                     pay.AddRequestData("vnp_OrderInfo",
-                        $"Khách hàng: {order!.PrivateTourRequest!.Account!.FirstName} {order!.PrivateTourRequest!.Account!.LastName} thanh toán hóa đơn {order.Id}");
+                        $"Khách hàng: {order!.PrivateTourRequest!.CreateByAccount!.FirstName} {order!.PrivateTourRequest!.CreateByAccount!.LastName} thanh toán hóa đơn {order.Id}");
                     pay.AddRequestData("vnp_OrderType", "other");
                     pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
                     pay.AddRequestData("vnp_TxnRef", $"{order.Id.ToString()} {travelCompanion!.Id.ToString()}");
@@ -105,13 +105,13 @@ namespace TravelCapstone.BackEnd.Application.Services
             var travelCompanionRepository = Resolve<IRepository<Customer>>();
             try
             {
-                var order = await orderRepository!.GetByExpression(o => o.Id == OrderId, o => o.PrivateTourRequest!.Account!);
+                var order = await orderRepository!.GetByExpression(o => o.Id == OrderId, o => o.PrivateTourRequest!.CreateByAccount!);
                 if (order == null)
                 {
                     result = BuildAppActionResultError(result,
-                        $"Travel companion với id {order!.PrivateTourRequest!.Account!.Id!} không tồn tại");
+                        $"Travel companion với id {order!.PrivateTourRequest!.CreateByAccount!.Id!} không tồn tại");
                 }
-                var travelCompanion = await travelCompanionRepository!.GetByExpression(a => a!.AccountId == order.PrivateTourRequest!.AccountId);
+                var travelCompanion = await travelCompanionRepository!.GetByExpression(a => a!.AccountId == order.PrivateTourRequest!.CreateBy);
                 if (travelCompanion == null)
                 {
                     result = BuildAppActionResultError(result, $"Không tồn tại travel companion trong hệ thống");
@@ -127,16 +127,16 @@ namespace TravelCapstone.BackEnd.Application.Services
                 {
                     PaymentInformationRequest momo = new PaymentInformationRequest
                     {
-                        AccountID = order.PrivateTourRequest!.AccountId!.ToString(),
+                        AccountID = order.PrivateTourRequest!.CreateBy!.ToString(),
                         Amount = order.Total,
-                        CustomerName = $"{order!.PrivateTourRequest!.Account!.FirstName} {order!.PrivateTourRequest!.Account!.LastName}",
+                        CustomerName = $"{order!.PrivateTourRequest!.CreateByAccount!.FirstName} {order!.PrivateTourRequest!.CreateByAccount!.LastName}",
                     };
 
                     string endpoint = _momoConfiguration.Api!;
                     string partnerCode = _momoConfiguration.PartnerCode!;
                     string accessKey = _momoConfiguration.AccessKey!;
                     string secretkey = _momoConfiguration.Secretkey!;
-                    string orderInfo = $"Khách hàng: {order!.PrivateTourRequest!.Account!.FirstName} {order!.PrivateTourRequest!.Account!.LastName} thanh toán hóa đơn {order.Id}";
+                    string orderInfo = $"Khách hàng: {order!.PrivateTourRequest!.CreateByAccount!.FirstName} {order!.PrivateTourRequest!.CreateByAccount!.LastName} thanh toán hóa đơn {order.Id}";
 
                     string redirectUrl = $"{_momoConfiguration.RedirectUrl}";
                     string ipnUrl = _momoConfiguration.IPNUrl!;

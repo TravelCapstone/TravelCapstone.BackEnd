@@ -54,14 +54,14 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 return result;
             }
 
-            if (!IsValidTime(privateTourequestDTO.EndDate, privateTourequestDTO.StartDate, privateTourequestDTO.NumOfDay,
+            if (!IsValidRequestTime(privateTourequestDTO.EndDate, privateTourequestDTO.StartDate, privateTourequestDTO.NumOfDay,
                     privateTourequestDTO.NumOfNight))
             {
                 result = BuildAppActionResultError(result, "Thời gian có thể đi ngắn hơn dộ dài lộ trình yêu cầu");
                 return result;
             }
 
-            if (tourDb.EndDate - tourDb.StartDate <= privateTourequestDTO.EndDate - privateTourequestDTO.StartDate)
+            if (tourDb.EndDate - tourDb.StartDate > privateTourequestDTO.EndDate - privateTourequestDTO.StartDate)
             {
                 result = BuildAppActionResultError(result, "Thời gian có thể đi ngắn hơn lộ trình của tour mẫu");
                 return result;
@@ -107,6 +107,12 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         return result;
     }
 
+    private bool IsValidRequestTime(DateTime cloneEnd, DateTime cloneStart, int numOfDay, int numOfNight)
+    {
+        var cloneResult = GetDaysAndNights(cloneStart, cloneEnd);
+        return cloneResult[0] >= numOfDay && cloneResult[1] >= numOfNight;
+    }
+
     private bool IsValidTime(DateTime cloneEnd, DateTime cloneStart, int numOfDay, int numOfNight)
     {
         var cloneResult = GetDaysAndNights(cloneStart, cloneEnd);
@@ -138,13 +144,21 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
     {
         var result = new AppActionResult();
         var accountRepository = Resolve<IRepository<Account>>();
+        var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
         try
         {
             var data = await _repository.GetAllDataByExpression
             (null, pageNumber,
                 pageSize,
-                p => p.Tour, p => p.Account!);
-            result.Result = _mapper.Map<PagedResult<PrivateTourResponeDto>>(data);
+                p => p.Tour, p => p.CreateByAccount!, p => p.Province);
+            
+            var responseList = _mapper.Map<PagedResult<PrivateTourResponeDto>>(data);
+            foreach (var item in responseList.Items!)
+            {
+                var requestLocationDb = await requestLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, r => r.Province);
+                item.OtherLocation = requestLocationDb.Items!.Select(r => r.Province).ToList()!;
+            }
+            result.Result = responseList;
         }
         catch (Exception e)
         {
@@ -169,6 +183,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             data.PrivateTourRespone = _mapper.Map<PrivateTourResponeDto>(privateTourRequestDb);
             var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
             var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
+            var vehicleQuotationDetailRepository = Resolve<IRepository<VehicleQuotationDetail>>();
             var optionsDb = await optionQuotationRepository!.GetAllDataByExpression(q => q.PrivateTourRequestId == id, 0, 0);
             if (optionsDb.Items!.Count != 3)
             {
@@ -187,7 +202,9 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 OptionResponseDto option = new OptionResponseDto();
                 option.OptionQuotation = item;
                 var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null);
+                var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null);
                 option.QuotationDetails = quotationDetailDb.Items!.ToList();
+                option.VehicleQuotationDetails = vehicleQuotationDetailDb.Items!.ToList();
                 //Option to order of OptionClass
                 if (item.OptionClassId == OptionClass.ECONOMY)
                     data.Option1 = option;
@@ -195,9 +212,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     data.Option2 = option;
                 else data.Option3 = option;
             }
-
             result.Result = data;
-
         }
         catch (Exception e)
         {

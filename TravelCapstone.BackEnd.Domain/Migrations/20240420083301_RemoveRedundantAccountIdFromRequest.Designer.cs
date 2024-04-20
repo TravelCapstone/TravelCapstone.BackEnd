@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240420083301_RemoveRedundantAccountIdFromRequest")]
+    partial class RemoveRedundantAccountIdFromRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1366,7 +1368,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<int>("PrivateTourStatusId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RecommendedTourUrl")
+                    b.Property<string>("RecommnendedTourUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")

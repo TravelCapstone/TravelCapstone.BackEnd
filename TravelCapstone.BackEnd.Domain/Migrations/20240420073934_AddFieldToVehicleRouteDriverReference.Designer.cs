@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240420073934_AddFieldToVehicleRouteDriverReference")]
+    partial class AddFieldToVehicleRouteDriverReference
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1329,6 +1331,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AccountId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CreateBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -1366,7 +1371,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<int>("PrivateTourStatusId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RecommendedTourUrl")
+                    b.Property<string>("RecommnendedTourUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
@@ -1385,6 +1390,8 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
 
                     b.HasIndex("CreateBy");
 
@@ -2281,6 +2288,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.PrivateTourRequest", b =>
                 {
+                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId");
+
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "CreateByAccount")
                         .WithMany()
                         .HasForeignKey("CreateBy")
@@ -2308,6 +2319,8 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "UpdateByAccount")
                         .WithMany()
                         .HasForeignKey("UpdateBy");
+
+                    b.Navigation("Account");
 
                     b.Navigation("CreateByAccount");
 
