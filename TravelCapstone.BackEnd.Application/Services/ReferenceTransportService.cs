@@ -54,7 +54,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
                 if (!BuildAppActionResultIsError(result))
                 {
-                    result.Result = _repository.GetAllDataByExpression(p => p!.Departure!.Commune!.District!.ProvinceId == firstProvince && p!.Arrival!.Commune!.District!.ProvinceId == secondProvince 
+                    result.Result = await _repository.GetAllDataByExpression(p => p!.Departure!.Commune!.District!.ProvinceId == firstProvince && p!.Arrival!.Commune!.District!.ProvinceId == secondProvince 
                     || p.Departure.Commune.District.ProvinceId == secondProvince && p.Arrival!.Commune!.District!.ProvinceId == firstProvince, pageIndex, pageSize, p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!); 
                 }
             } catch (Exception e)
