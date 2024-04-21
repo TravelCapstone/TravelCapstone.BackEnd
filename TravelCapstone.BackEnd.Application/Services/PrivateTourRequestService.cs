@@ -80,16 +80,17 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             request.Id = Guid.NewGuid();
             request.PrivateTourStatusId = PrivateTourStatus.NEW;
             await _repository.Insert(request);
-            if (privateTourequestDTO.OtherLocationIds != null && privateTourequestDTO.OtherLocationIds.Count > 0)
+            if (privateTourequestDTO.OtherLocation != null && privateTourequestDTO.OtherLocation.Count > 0)
             {
                 var requestedLocationRepository = Resolve<IRepository<RequestedLocation>>();
-                foreach (var requestedLocationId in privateTourequestDTO.OtherLocationIds)
+                foreach (var requestedLocationId in privateTourequestDTO.OtherLocation)
                 {
                     await requestedLocationRepository!.Insert(new RequestedLocation
                     {
                         Id = Guid.NewGuid(),
                         PrivateTourRequestId = request.Id,
-                        ProvinceId = requestedLocationId
+                        ProvinceId = requestedLocationId.ProvinceId,
+                        Address= requestedLocationId.Address,
                     });
                 }
             }

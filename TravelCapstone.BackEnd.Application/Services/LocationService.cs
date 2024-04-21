@@ -103,4 +103,18 @@ public class LocationService : GenericBackendService, ILocationService
 
         return result;
     }
+
+    public async Task<AppActionResult> GetProvinceByName(string provinceName)
+    {
+        AppActionResult result = new();
+        try
+        {
+            result.Result = await _provinceRepository.GetByExpression(a => a!.Name.ToLower().Contains(provinceName.ToLower()));
+        }
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+        }
+        return result;
+    }
 }

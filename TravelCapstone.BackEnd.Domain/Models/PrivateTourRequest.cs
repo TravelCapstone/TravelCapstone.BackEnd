@@ -25,7 +25,9 @@ public class PrivateTourRequest: BaseEntity
     public string? RecommendedTourUrl { get; set; }
     public string? Note { get; set; }
     public string? StartLocation { get; set; }
-
+    public Guid StartLocationCommuneId { get; set; }
+    [ForeignKey(nameof(StartLocationCommuneId))]   
+    public Commune? Commune { get; set; }
     public Guid MainDestinationId { get; set; }
     [ForeignKey(nameof(MainDestinationId))]
     public Province? Province { get; set; }

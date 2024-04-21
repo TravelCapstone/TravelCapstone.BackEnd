@@ -20,6 +20,11 @@ public class LocationController : ControllerBase
     {
         return await _service.GetAllProvince();
     }
+    [HttpGet("get-province-by-name/{provinceName}")]
+    public async Task<AppActionResult> GetProvinceByName(string provinceName)
+    {
+        return await _service.GetProvinceByName(provinceName);
+    }
 
     [HttpGet("get-all-district-by-provinceId/{provinceId}")]
     public async Task<AppActionResult> GetAllDistrictByProvinceId(Guid provinceId)

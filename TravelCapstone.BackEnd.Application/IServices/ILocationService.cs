@@ -9,6 +9,6 @@ public interface ILocationService
     Task<AppActionResult> GetAllDistrictByProvinceId(Guid provinceId);
 
     Task<AppActionResult> GetAllCommuneByDistrictId(Guid districtId);
-
+    Task<AppActionResult> GetProvinceByName(string provinceName);
     Task<AppActionResult> GetAllCommuneByDistrictNameAndCommuneName(string districtName, string communeName);
 }

@@ -13,12 +13,18 @@ public class PrivateTourRequestDTO
     public int NumOfDay { get; set; }
     public int NumOfNight { get; set; }
     public string? StartLocation { get; set; }
-    public Guid CommuneId { get; set; }
+    public Guid? StartCommuneId { get; set; }
     public Guid TourId { get; set; }
-    public string? RecommnendedTourUrl {  get; set; } 
+    public string? RecommnendedTourUrl { get; set; }
     public string? Note { get; set; }
     public bool IsEnterprise { get; set; }
-    public Guid MainDestinationId {  get; set; }
-    public List<Guid>? OtherLocationIds { get; set; }
+    public Guid MainDestinationId { get; set; }
+    public List<RequestedLocationDTO>? OtherLocation { get; set; }
     public string? AccountId { get; set; }
+}
+
+public class RequestedLocationDTO
+{
+    public string Address { get; set; }
+    public Guid ProvinceId { get; set; }
 }
