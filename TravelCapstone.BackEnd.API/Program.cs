@@ -30,7 +30,7 @@ var app = builder.Build();
 app.UseSwagger(op => op.SerializeAsV2 = true);
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    options.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
     options.RoutePrefix = string.Empty;
 });
 app.UseCors(MyAllowSpecificOrigins);
