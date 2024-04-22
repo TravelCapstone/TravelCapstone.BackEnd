@@ -15,8 +15,8 @@ namespace TravelCapstone.BackEnd.Application.Services;
 public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequestService
 {
     private readonly IMapper _mapper;
-    private readonly IRepository<PrivateTourRequest> _repository;
-    private readonly IUnitOfWork _unitOfWork;
+    private  IRepository<PrivateTourRequest> _repository;
+    private  IUnitOfWork _unitOfWork;
 
     public PrivateTourRequestService(
         IRepository<PrivateTourRequest> repository,
@@ -151,12 +151,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             var data = await _repository.GetAllDataByExpression
             (null, pageNumber,
                 pageSize,
-                p => p.Tour, p => p.CreateByAccount!, p => p.Province);
-            
+                p => p.Tour, p => p.CreateByAccount!, p => p.Province!);
             var responseList = _mapper.Map<PagedResult<PrivateTourResponeDto>>(data);
             foreach (var item in responseList.Items!)
             {
-                var requestLocationDb = await requestLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, r => r.Province);
+                var requestLocationDb = await requestLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, r => r.Province!);
                 item.OtherLocation = requestLocationDb.Items!.Select(r => r.Province).ToList()!;
             }
             result.Result = responseList;

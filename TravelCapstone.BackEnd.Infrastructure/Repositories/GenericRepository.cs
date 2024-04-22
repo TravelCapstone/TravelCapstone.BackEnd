@@ -42,11 +42,17 @@ public class GenericRepository<T> : IRepository<T> where T : class
     {
         IQueryable<T> query = _dbSet;
 
-        if (filter != null) query = query.Where(filter);
-
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
         if (includes != null)
+        {
             foreach (var include in includes)
+            {
                 query = query.Include(include);
+            }
+        }
 
         var totalItems = await query.CountAsync();
         var result = new PagedResult<T>
