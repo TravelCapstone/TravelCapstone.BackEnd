@@ -11,7 +11,13 @@ public class ServiceCostHistory
     public double Price { get; set; }
     public int MOQ { get; set; }
     public DateTime Date { get; set; }
-    public Guid ServiceId { get; set; }
+    public Guid? FacilityServiceId { get; set; }
+    [ForeignKey(nameof(FacilityServiceId))] public FacilityService? FacilityService { get; set; }
 
-    [ForeignKey(nameof(ServiceId))] public Service? Service { get; set; }
+    public Guid? MenuId { get; set; }
+    [ForeignKey(nameof(MenuId))] public Menu? Menu { get; set; }
+    public Guid? TransportServiceDetailId { get; set; }
+    [ForeignKey(nameof(TransportServiceDetailId))]
+    public TransportServiceDetail? Transport { get; set;}
+    
 }

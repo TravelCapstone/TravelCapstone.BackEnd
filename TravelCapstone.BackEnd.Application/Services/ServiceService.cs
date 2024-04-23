@@ -1,210 +1,210 @@
-﻿using AutoMapper;
-using Bogus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TravelCapstone.BackEnd.Application.IRepositories;
-using TravelCapstone.BackEnd.Application.IServices;
-using TravelCapstone.BackEnd.Common.DTO;
-using TravelCapstone.BackEnd.Common.DTO.Response;
-using TravelCapstone.BackEnd.Domain.Enum;
-using TravelCapstone.BackEnd.Domain.Models;
+﻿//using AutoMapper;
+//using Bogus;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Threading.Tasks;
+//using TravelCapstone.BackEnd.Application.IRepositories;
+//using TravelCapstone.BackEnd.Application.IServices;
+//using TravelCapstone.BackEnd.Common.DTO;
+//using TravelCapstone.BackEnd.Common.DTO.Response;
+//using TravelCapstone.BackEnd.Domain.Enum;
+//using TravelCapstone.BackEnd.Domain.Models;
 
-namespace TravelCapstone.BackEnd.Application.Services
-{
-    public class ServiceService : GenericBackendService, IServiceService
-    {
-        private readonly IRepository<Service> _repository;
-        private readonly IUnitOfWork _unitOfWork;
+//namespace TravelCapstone.BackEnd.Application.Services
+//{
+//    public class ServiceService : GenericBackendService, IServiceService
+//    {
+//        private readonly IRepository<Facility> _repository;
+//        private readonly IUnitOfWork _unitOfWork;
 
-        public ServiceService(
-            IRepository<Service> repository,
-            IUnitOfWork unitOfWork,
-            IServiceProvider serviceProvider
-        ) : base(serviceProvider)
-        {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
-        }
+//        public ServiceService(
+//            IRepository<Facility> repository,
+//            IUnitOfWork unitOfWork,
+//            IServiceProvider serviceProvider
+//        ) : base(serviceProvider)
+//        {
+//            _repository = repository;
+//            _unitOfWork = unitOfWork;
+//        }
 
-        public async Task<AppActionResult> GetServiceByProvinceIdAndRequestId(Guid Id, Guid requestId)
-        {
-            AppActionResult result = new AppActionResult();
-            try
-            {
-                var tourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
-                var tourRequestDb = await tourRequestRepository!.GetById(requestId);
-                if (tourRequestDb == null)
-                {
-                    result.Result = null;
-                    result.Messages.Add($"Không tìm thấy yêu cầu tạo tour với id {requestId}");
-                    return result;
-                }
-                ReferencedPriceRangeByProvince data = new ReferencedPriceRangeByProvince();
-                var districtRepository = Resolve<IRepository<District>>();
-                var districtDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 0, 0, null, false,null);
-                if(districtDb.Items == null || districtDb.Items.Count <= 0 )
-                {
-                    result.Result = null;
-                    result.Messages.Add($"Không tìm thấy danh sách huyện");
-                    return result;
-                }
+//        public async Task<AppActionResult> GetServiceByProvinceIdAndRequestId(Guid Id, Guid requestId)
+//        {
+//            AppActionResult result = new AppActionResult();
+//            try
+//            {
+//                var tourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
+//                var tourRequestDb = await tourRequestRepository!.GetById(requestId);
+//                if (tourRequestDb == null)
+//                {
+//                    result.Result = null;
+//                    result.Messages.Add($"Không tìm thấy yêu cầu tạo tour với id {requestId}");
+//                    return result;
+//                }
+//                ReferencedPriceRangeByProvince data = new ReferencedPriceRangeByProvince();
+//                var districtRepository = Resolve<IRepository<District>>();
+//                var districtDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 0, 0);
+//                if(districtDb.Items == null || districtDb.Items.Count <= 0 )
+//                {
+//                    result.Result = null;
+//                    result.Messages.Add($"Không tìm thấy danh sách huyện");
+//                    return result;
+//                }
 
-                var communeRepository = Resolve<IRepository<Commune>>();
-                var districtIds = districtDb.Items.Select(s => s.Id);
-                var communeDb = await communeRepository!.GetAllDataByExpression(d => districtIds.Contains(d.DistrictId), 0, 0, null, false,null);
-                if (communeDb.Items == null || communeDb.Items.Count <= 0)
-                {
-                    result.Result = null;
-                    result.Messages.Add($"Không tìm thấy danh sách xã");
-                    return result;
-                }
+//                var communeRepository = Resolve<IRepository<Commune>>();
+//                var districtIds = districtDb.Items.Select(s => s.Id);
+//                var communeDb = await communeRepository!.GetAllDataByExpression(d => districtIds.Contains(d.DistrictId), 0, 0);
+//                if (communeDb.Items == null || communeDb.Items.Count <= 0)
+//                {
+//                    result.Result = null;
+//                    result.Messages.Add($"Không tìm thấy danh sách xã");
+//                    return result;
+//                }
 
-                var communeIds = communeDb.Items.Select(s => s.Id);
+//                var communeIds = communeDb.Items.Select(s => s.Id);
 
-                var serviceDb = await _repository.GetAllDataByExpression(g => communeIds.Contains(g.CommunceId) && g.IsActive, 0, 0, null, false, g => g.ServiceRating!);
+//                var serviceDb = await _repository.GetAllDataByExpression(g => communeIds.Contains(g.CommunceId) && g.IsActive, 0, 0, g => g.ServiceRating);
 
                 
 
-                if(serviceDb.Items != null && serviceDb.Items.Count > 0) {
-                    var hotelPrice = await GetTypePriceReference(ServiceType.HOTEL, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren,serviceDb.Items);
-                    var restaurantPrice = await GetTypePriceReference(ServiceType.RESTAURANTS, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    var entertainmentPrice = await GetTypePriceReference(ServiceType.ENTERTAINMENT, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    var vehicleSupplyPrice = await GetTypePriceReference(ServiceType.VEHICLE_SUPPLY, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    data.HotelPrice = hotelPrice;
-                    data.RestaurantPrice = restaurantPrice;
-                    data.EntertainmentPrice = entertainmentPrice;
-                    data.VehicleSupplyPrice = vehicleSupplyPrice;
-                }
+//                if(serviceDb.Items != null && serviceDb.Items.Count > 0) {
+//                    var hotelPrice = await GetTypePriceReference(ServiceType.HOTEL, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren,serviceDb.Items);
+//                    var restaurantPrice = await GetTypePriceReference(ServiceType.RESTAURANTS, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+//                    var entertainmentPrice = await GetTypePriceReference(ServiceType.ENTERTAINMENT, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+//                    var vehicleSupplyPrice = await GetTypePriceReference(ServiceType.VEHICLE_SUPPLY, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+//                    data.HotelPrice = hotelPrice;
+//                    data.RestaurantPrice = restaurantPrice;
+//                    data.EntertainmentPrice = entertainmentPrice;
+//                    data.VehicleSupplyPrice = vehicleSupplyPrice;
+//                }
 
-                result.Result = data;
-            } catch ( Exception ex )
-            {
+//                result.Result = data;
+//            } catch ( Exception ex )
+//            {
 
-            }
-            return result;
-        }
+//            }
+//            return result;
+//        }
 
-        public Task<List<Guid>> GetServiceRatingByServiceTypeAndCommuneId(ServiceType serviceType, IEnumerable<Service> services)
-        {
-            List<Guid> serviceRatings = null;
-            try
-            {
-                serviceRatings = services.Where(s => s.ServiceRating!.ServiceTypeId == serviceType).Select(s => s.ServiceRatingId).ToList();
-            } catch ( Exception ex )
-            {
-                serviceRatings = new List<Guid>();
-            }
-            return Task.FromResult(serviceRatings);
-        }
+//        public Task<List<Guid>> GetServiceRatingByServiceTypeAndCommuneId(ServiceType serviceType, IEnumerable<Facility> services)
+//        {
+//            List<Guid> serviceRatings = null;
+//            try
+//            {
+//                serviceRatings = services.Where(s => s.ServiceRating!.ServiceTypeId == serviceType).Select(s => s.ServiceRatingId).ToList();
+//            } catch ( Exception ex )
+//            {
+//                serviceRatings = new List<Guid>();
+//            }
+//            return Task.FromResult(serviceRatings);
+//        }
 
 
-        public async Task<PriceReference> GetTypePriceReference(ServiceType type, int NumOfAdult, int NumOfChild, IEnumerable<Service> serviceDb)
-        {
-            PriceReference priceReference = null;
-            try
-            {
-                var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
-                priceReference = new PriceReference(type);
-                var hotelServiceRating = await GetServiceRatingByServiceTypeAndCommuneId(priceReference.ServiceType, serviceDb);
-                var hotelService = serviceDb
-                    .Where(s => hotelServiceRating.Contains(s.ServiceRatingId))
-                    .GroupBy(s => new { s.ServiceAvailabilityId, s.ServiceRatingId, s.ServingQuantity }) // Group by ServiceRating
-                    .ToDictionary(g => g.Key, g => g.ToList());
+//        public async Task<PriceReference> GetTypePriceReference(ServiceType type, int NumOfAdult, int NumOfChild, IEnumerable<Facility> serviceDb)
+//        {
+//            PriceReference priceReference = null;
+//            try
+//            {
+//                var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
+//                priceReference = new PriceReference(type);
+//                var hotelServiceRating = await GetServiceRatingByServiceTypeAndCommuneId(priceReference.ServiceType, serviceDb);
+//                var hotelService = serviceDb
+//                    .Where(s => hotelServiceRating.Contains(s.ServiceRatingId))
+//                    .GroupBy(s => new { s.ServiceAvailabilityId, s.ServiceRatingId, s.ServingQuantity }) // Group by ServiceRating
+//                    .ToDictionary(g => g.Key, g => g.ToList());
 
-                foreach (var kvp in hotelService)
-                {
-                    var serviceRating = kvp.Key;
-                    double MinPrice = Double.MaxValue;
-                    double MaxPrice = 0;
-                    double MinSurchange = Double.MaxValue;
-                    double MaxSurchange = 0;
-                    double currentPrice;
-                    int total = 0;
-                    DetailedPriceReference detailedPriceReference = new DetailedPriceReference();
-                    int i = 0;
-                    foreach (var item in kvp.Value)
-                    {
-                        if (i == 0)
-                        {
-                            detailedPriceReference.ServiceRating = item.ServiceRating;
-                            detailedPriceReference.ServiceAvailability = item.ServiceAvailabilityId;
-                            detailedPriceReference.ServingQuantity = item.ServingQuantity;
-                            detailedPriceReference.Unit = item.UnitId;
-                            i++;
-                        }
-                        total = detailedPriceReference.ServiceAvailability == ServiceAvailability.BOTH ? NumOfAdult + NumOfChild :
-                                detailedPriceReference.ServiceAvailability == ServiceAvailability.ADULT ? NumOfAdult : NumOfChild;
-                        var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.ServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, null);
-                        if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
-                        {
-                            currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
-                                                                .ThenByDescending(s => s.MOQ)
-                                                                .FirstOrDefault()!.Price;
-                            if (currentPrice > MaxPrice)
-                            {
-                                MaxPrice = currentPrice;
-                            }
-                            else if (currentPrice < MinPrice)
-                            {
-                                MinPrice = currentPrice;
-                            }
+//                foreach (var kvp in hotelService)
+//                {
+//                    var serviceRating = kvp.Key;
+//                    double MinPrice = Double.MaxValue;
+//                    double MaxPrice = 0;
+//                    double MinSurchange = Double.MaxValue;
+//                    double MaxSurchange = 0;
+//                    double currentPrice;
+//                    int total = 0;
+//                    DetailedPriceReference detailedPriceReference = new DetailedPriceReference();
+//                    int i = 0;
+//                    foreach (var item in kvp.Value)
+//                    {
+//                        if (i == 0)
+//                        {
+//                            detailedPriceReference.ServiceRating = item.ServiceRating;
+//                            detailedPriceReference.ServiceAvailability = item.ServiceAvailabilityId;
+//                            detailedPriceReference.ServingQuantity = item.ServingQuantity;
+//                            detailedPriceReference.Unit = item.UnitId;
+//                            i++;
+//                        }
+//                        total = detailedPriceReference.ServiceAvailability == ServiceAvailability.BOTH ? NumOfAdult + NumOfChild :
+//                                detailedPriceReference.ServiceAvailability == ServiceAvailability.ADULT ? NumOfAdult : NumOfChild;
+//                        var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.ServiceId == item.Id && s.MOQ <= total, 0, 0);
+//                        if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
+//                        {
+//                            currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
+//                                                                .ThenByDescending(s => s.MOQ)
+//                                                                .FirstOrDefault()!.Price;
+//                            if (currentPrice > MaxPrice)
+//                            {
+//                                MaxPrice = currentPrice;
+//                            }
+//                            else if (currentPrice < MinPrice)
+//                            {
+//                                MinPrice = currentPrice;
+//                            }
 
-                            if (MinSurchange < currentPrice * item.SurchargePercent)
-                            {
-                                MinSurchange = currentPrice * item.SurchargePercent;
-                            }
-                            else
-                            {
-                                MaxSurchange = currentPrice * item.SurchargePercent;
-                            }
-                        }
-                    }
+//                            if (MinSurchange < currentPrice * item.SurchargePercent)
+//                            {
+//                                MinSurchange = currentPrice * item.SurchargePercent;
+//                            }
+//                            else
+//                            {
+//                                MaxSurchange = currentPrice * item.SurchargePercent;
+//                            }
+//                        }
+//                    }
 
-                    detailedPriceReference.MinPrice = MinPrice;
-                    detailedPriceReference.MaxPrice = MaxPrice;
-                    detailedPriceReference.MinSurChange = MinSurchange;
-                    detailedPriceReference.MaxSurChange = MaxSurchange;
+//                    detailedPriceReference.MinPrice = MinPrice;
+//                    detailedPriceReference.MaxPrice = MaxPrice;
+//                    detailedPriceReference.MinSurChange = MinSurchange;
+//                    detailedPriceReference.MaxSurChange = MaxSurchange;
 
-                    priceReference.DetailedPriceReferences.Add(detailedPriceReference);
+//                    priceReference.DetailedPriceReferences.Add(detailedPriceReference);
 
-                };
-            } catch ( Exception ex )
-            {
+//                };
+//            } catch ( Exception ex )
+//            {
 
-            }
-            return priceReference;
-        }
+//            }
+//            return priceReference;
+//        }
 
-        public async Task<AppActionResult> GetServiceByProvinceIdAndServiceType(Guid Id, Domain.Enum.ServiceType type)
-        {
-            AppActionResult result = new AppActionResult();
-            try
-            {
-                var districtRepository = Resolve<IRepository<District>>();
-                var districtListDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 1, Int32.MaxValue, null, false, null);
-                if (districtListDb == null || districtListDb.Items!.Count == 0)
-                {
-                    return result;
-                }
-                var districtIds = districtListDb.Items.Select(d => d.Id);
-                var communeRepository = Resolve<IRepository<Commune>>();
-                var communeListDb = await communeRepository!.GetAllDataByExpression(c => districtIds.Contains(c.DistrictId), 1, Int32.MaxValue, null, false,null);
-                if (communeListDb == null || communeListDb.Items!.Count == 0)
-                {
-                    return result;
-                }
-                var communeIds = communeListDb.Items.Select(d => d.Id);
-                //var serviceListDb = await _repository.GetAllDataByExpression(s => communeIds.Contains(s.CommunceId) && s.Type== type, 1, Int32.MaxValue);
-              //  result.Result = serviceListDb;
-            }
-            catch (Exception ex)
-            {
-                result = BuildAppActionResultError(result, ex.Message);
-            }
-            return result;
-        }
-    }
-}
+//        public async Task<AppActionResult> GetServiceByProvinceIdAndServiceType(Guid Id, Domain.Enum.ServiceType type)
+//        {
+//            AppActionResult result = new AppActionResult();
+//            try
+//            {
+//                var districtRepository = Resolve<IRepository<District>>();
+//                var districtListDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 1, Int32.MaxValue);
+//                if (districtListDb == null || districtListDb.Items!.Count == 0)
+//                {
+//                    return result;
+//                }
+//                var districtIds = districtListDb.Items.Select(d => d.Id);
+//                var communeRepository = Resolve<IRepository<Commune>>();
+//                var communeListDb = await communeRepository!.GetAllDataByExpression(c => districtIds.Contains(c.DistrictId), 1, Int32.MaxValue);
+//                if (communeListDb == null || communeListDb.Items!.Count == 0)
+//                {
+//                    return result;
+//                }
+//                var communeIds = communeListDb.Items.Select(d => d.Id);
+//                //var serviceListDb = await _repository.GetAllDataByExpression(s => communeIds.Contains(s.CommunceId) && s.Type== type, 1, Int32.MaxValue);
+//              //  result.Result = serviceListDb;
+//            }
+//            catch (Exception ex)
+//            {
+//                result = BuildAppActionResultError(result, ex.Message);
+//            }
+//            return result;
+//        }
+//    }
+//}

@@ -1,10 +1,15 @@
-﻿namespace TravelCapstone.BackEnd.Domain.Enum;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public enum ServiceType
+namespace TravelCapstone.BackEnd.Domain.Enum
 {
-    HOTEL,
-    RESTAURANTS,
-    ENTERTAINMENT,
-    VEHICLE_SUPPLY,
-    AIR_TICKET_SUPPLY
+    public enum ServiceType
+    {
+        RESTING,
+        FOODANDBEVARAGE,
+        ENTERTAIMENT
+    }
 }

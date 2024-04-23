@@ -19,7 +19,7 @@ public class VehicleRoute
 
     [ForeignKey(nameof(DriverId))] public Driver? Driver { get; set; }
 
-    public Guid ReferenceTransportPriceId { get; set; }
+    public Guid? ReferenceTransportPriceId { get; set; }
 
     [ForeignKey(nameof(ReferenceTransportPriceId))] public ReferenceTransportPrice? ReferenceTransportPrice { get; set; }
 }

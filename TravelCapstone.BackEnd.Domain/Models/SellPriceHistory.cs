@@ -9,7 +9,7 @@ public class SellPriceHistory
     public int MOQ { get; set; }
     public double Price { get; set; }
     public DateTime Date { get; set; }
-    public Guid ServiceId { get; set; }
+    public Guid FacilityServiceId { get; set; }
 
-    [ForeignKey(nameof(ServiceId))] public Service? Service { get; set; }
+    [ForeignKey(nameof(FacilityServiceId))] public FacilityService? FacilityService { get; set; }
 }

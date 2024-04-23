@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,14 +10,16 @@ using TravelCapstone.BackEnd.Domain.Models.EnumModels;
 
 namespace TravelCapstone.BackEnd.Domain.Models
 {
-    public class ServiceRating
+    public class FacilityRating
     {
         [Key]
         public Guid Id { get; set; }
-        public Enum.ServiceType ServiceTypeId { get; set; }
-        [ForeignKey(nameof(ServiceTypeId))]
-        public EnumModels.ServiceType? ServiceType { get; set; } 
-        public int Rating { get; set; }
-        public string Name { get; set; } = null!;
+        public Enum.FacilityType FacilityTypeId { get; set; }
+        [ForeignKey(nameof(FacilityTypeId))]
+        public EnumModels.FacilityType? FacilityType { get; set; }
+
+        public Enum.Rating RatingId { get; set; }
+        [ForeignKey(nameof(RatingId))]
+        public EnumModels.Rating? Rating { get; set; }
     }
 }

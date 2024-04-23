@@ -21,17 +21,17 @@ public class ServiceInstaller : IInstaller
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ITourService, TourService>();
-        services.AddScoped<IPrivateTourRequestService, PrivateTourRequestService>();
-        services.AddScoped<IServiceProviderService, ServiceProviderService>();
+   //     services.AddScoped<IPrivateTourRequestService, PrivateTourRequestService>();
+    //    services.AddScoped<IServiceProviderService, ServiceProviderService>();
         services.AddScoped<ILocationService, LocationService>();
-        services.AddScoped<IMapService, MapService>();
+     //   services.AddScoped<IMapService, MapService>();
         services.AddScoped<IWalletService, WalletService>();
         services.AddScoped<ISmsService, SmsService>();
-        services.AddScoped<IServiceCostHistoryService, ServiceCostHistoryService>();
+      //  services.AddScoped<IServiceCostHistoryService, ServiceCostHistoryService>();
         services.AddScoped<IFileService, FileService>();
-        services.AddScoped<IServiceService, ServiceService>();
+     //   services.AddScoped<IServiceService, ServiceService>();
         services.AddScoped<IProvinceService, ProvinceService>();
-        services.AddScoped<IFakeDataGenerator,FakeDataGenerator>();
+     //   services.AddScoped<IFakeDataGenerator,FakeDataGenerator>();
         services.AddScoped<IAirportService, AirportService>();
         services.AddScoped<IReferenceTransportService, ReferenceTransportService>();
     }
