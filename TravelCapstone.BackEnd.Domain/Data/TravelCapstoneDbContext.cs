@@ -70,6 +70,8 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Models.EnumModels.PortType> PortTypes { get; set; }
     public DbSet<Models.EnumModels.ContractStatus> ContractStatuses { get; set; }
     public DbSet<Models.EnumModels.ServiceAvailability> ServiceAvailabilities { get; set; }
+    public DbSet<Models.EnumModels.DishType> DishTypes { get; set; }
+    public DbSet<Models.EnumModels.DietaryPreference> DietaryPreferences { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder builder)
