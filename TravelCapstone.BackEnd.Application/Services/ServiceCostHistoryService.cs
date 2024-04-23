@@ -416,7 +416,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     var latestHistoryForService = await _repository.GetAllDataByExpression(
                         a => a.ServiceId == serviceId,
                         0,
-                        0,
+                        0, null, false,
                         null
                     );
                     latestHistoryForService.Items = latestHistoryForService.Items!.OrderByDescending(a => a.Date).ToList();

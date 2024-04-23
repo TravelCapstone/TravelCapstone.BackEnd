@@ -21,7 +21,7 @@ public class PrivateTourResponeDto
     public string? Note { get; set; }
     public string? StartLocation { get; set; }
     public Province MainDestination { get; set; }
-    public List<Province>? OtherLocation { get; set; }
+    public List<RequestedLocation>? OtherLocation { get; set; }
     public Guid TourId { get; set; }
     public Tour? Tour { get; set; }
     public string? AccountId { get; set; }

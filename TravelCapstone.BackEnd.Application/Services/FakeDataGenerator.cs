@@ -75,7 +75,7 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
     {
         var services = new List<Service>();
         var random = new Random();
-        var communes = await _communeRepository.GetAllDataByExpression(null, 0, 0, null); // Đây là phương thức bạn cần triển khai trong repository của Commune
+        var communes = await _communeRepository.GetAllDataByExpression(null, 0, 0, null, false, null); // Đây là phương thức bạn cần triển khai trong repository của Commune
 
         for (var i = 0; i < count; i++)
         {
@@ -160,7 +160,7 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
         var tourRepository = Resolve<IRepository<Tour>>();
         var tours = new List<Tour>();
         var random = new Random();
-        var communes = await _communeRepository.GetAllDataByExpression(null, 0, 0, null); // Triển khai phương thức GetAllDataByExpression trong CommuneRepository
+        var communes = await _communeRepository.GetAllDataByExpression(null, 0, 0, null, false, null); // Triển khai phương thức GetAllDataByExpression trong CommuneRepository
 
         for (var i = 0; i < count; i++)
         {
@@ -248,7 +248,7 @@ public class FakeDataGenerator : GenericBackendService, IFakeDataGenerator
 
         var destinations = new List<Destination>();
         var random = new Random();
-       var list = await communeRepository!.GetAllDataByExpression(null, 0, 0, null);
+       var list = await communeRepository!.GetAllDataByExpression(null, 0, 0, null, false, null);
         var communes= list.Items;
         for (var i = 0; i < count; i++)
         {

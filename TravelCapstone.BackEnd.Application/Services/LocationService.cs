@@ -31,6 +31,8 @@ public class LocationService : GenericBackendService, ILocationService
                 null,
                 0,
                 0,
+                null,
+                false,
                 null
             );
         }
@@ -50,7 +52,7 @@ public class LocationService : GenericBackendService, ILocationService
             result.Result = await _districtRepository.GetAllDataByExpression(
                 a => a.ProvinceId == provinceId,
                 0,
-                0,
+                0, null, false,
                 null
             );
         }
@@ -71,6 +73,7 @@ public class LocationService : GenericBackendService, ILocationService
                 a => a.DistrictId == districtId,
                 0,
                 0,
+                 null, false,
                 null
             );
         }
@@ -93,6 +96,7 @@ public class LocationService : GenericBackendService, ILocationService
                      a.District!.Name.ToLower().Contains(districtName.ToLower()),
                 0,
                 0,
+                 null, false,
                 a => a.District!.Province!
             );
         }
