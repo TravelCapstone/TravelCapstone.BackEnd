@@ -10,7 +10,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Response
 {
     public class OptionListResponseDto
     {
-        public PrivateTourResponeDto? PrivateTourRespone { get; set; }
+        public PrivateTourResponseDto? PrivateTourResponse { get; set; }
         public OptionResponseDto Option1 { get; set; }
         public OptionResponseDto Option2 { get; set; }
         public OptionResponseDto Option3 { get; set; }

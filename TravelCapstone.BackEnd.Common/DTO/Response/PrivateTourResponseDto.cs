@@ -3,7 +3,7 @@ using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Common.DTO.Response;
 
-public class PrivateTourResponeDto
+public class PrivateTourResponseDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;
