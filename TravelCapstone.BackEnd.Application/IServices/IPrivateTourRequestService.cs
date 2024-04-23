@@ -9,7 +9,7 @@ public interface IPrivateTourRequestService
 {
     Task<AppActionResult> CreatePrivateTourRequest(PrivateTourRequestDTO privateTourequestDto);
 
-    Task<AppActionResult> GetAllTourPrivate(int pageNumber, int pageSize);
+    Task<AppActionResult> GetAllPrivateTourRequest(int pageNumber, int pageSize);
 
     Task<AppActionResult> GetPrivateTourRequestById(Guid id);
 

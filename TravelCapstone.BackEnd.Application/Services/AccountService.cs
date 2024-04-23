@@ -195,16 +195,16 @@ public class AccountService : GenericBackendService, IAccountService
     public async Task<AppActionResult> GetAllAccount(int pageIndex, int pageSize)
     {
         var result = new AppActionResult();
-        var list = await _accountRepository.GetAllDataByExpression(null, pageIndex, pageSize, null);
+        var list = await _accountRepository.GetAllDataByExpression(null, pageIndex, pageSize, null,false,null);
 
         var userRoleRepository = Resolve<IRepository<IdentityUserRole<string>>>();
         var roleRepository = Resolve<IRepository<IdentityRole>>();
-        var listRole = await roleRepository!.GetAllDataByExpression(null, 1, 100, null);
+        var listRole = await roleRepository!.GetAllDataByExpression(null, 1, 100, null, false, null);
         var listMap = _mapper.Map<List<AccountResponse>>(list.Items);
         foreach (var item in listMap)
         {
             var userRole = new List<IdentityRole>();
-            var role = await userRoleRepository!.GetAllDataByExpression(a => a.UserId == item.Id, 1, 100, null);
+            var role = await userRoleRepository!.GetAllDataByExpression(a => a.UserId == item.Id, 1, 100, null, false, null);
             foreach (var itemRole in role.Items!)
             {
                 var roleUser = listRole.Items!.ToList().FirstOrDefault(a => a.Id == itemRole.RoleId);

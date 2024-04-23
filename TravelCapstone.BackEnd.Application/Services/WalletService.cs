@@ -322,7 +322,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             {
                 var data = await _transactionRepository.GetAllDataByExpression(
                      a => a.TravelCompanionId == travelcompanionId,
-                     pageNumber, pageSize
+                     pageNumber, pageSize, null, false,null
                  );
                 data.Items = data.Items!.OrderByDescending(a => a.Date).ToList();
                 result.Result = data;
@@ -360,7 +360,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                             var details = await quotationDetailRepository!.GetAllDataByExpression(
                         filter: a => a!.OptionQuotation!.PrivateTourRequestId == order!.PrivateTourRequestId!,
                         pageNumber: 0,
-                        pageSize: 0
+                        pageSize: 0,
+                         null, false,null
                         //includes: a => a.SellPriceHistory!.Service!
                                 );
                             foreach (var detail in details.Items!)

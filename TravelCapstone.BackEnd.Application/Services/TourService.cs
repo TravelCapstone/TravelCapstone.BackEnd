@@ -41,7 +41,7 @@ public class TourService : GenericBackendService, ITourService
             var listPlan = await dayPlanRepository!.GetAllDataByExpression(
                 a => a.TourId == id,
                 0,
-                0,
+                0, null, false,
                 null);
             foreach (var item in listPlan.Items!)
             {
@@ -49,9 +49,11 @@ public class TourService : GenericBackendService, ITourService
                     a => a.DayPlanId == item.Id,
                     0,
                     0,
+                    null,
+                    false,
                     a => a.StartPoint!, a => a.EndPoint!);
                 var materials =
-                    await materialRepository!.GetAllDataByExpression(a => a.DayPlanId == item.Id, 0, 0, null);
+                    await materialRepository!.GetAllDataByExpression(a => a.DayPlanId == item.Id, 0, 0, null, false, null);
                 detail.DayPlanDtos.Add(new DayPlanDto
                 {
                     DayPlan = item,
@@ -79,14 +81,14 @@ public class TourService : GenericBackendService, ITourService
                 result.Result = await _repository.GetAllDataByExpression(
                     null,
                     pageNumber,
-                    pageSize,
+                    pageSize, null, false,
                     null
                 );
             else
                 result.Result = await _repository.GetAllDataByExpression(
                     a => a.Name.ToLower().Trim().Contains(keyWord.ToLower().Trim()),
                     pageNumber,
-                    pageSize,
+                    pageSize, null, false,
                     null
                 );
         }

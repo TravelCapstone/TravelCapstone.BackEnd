@@ -32,7 +32,7 @@ public class PrivateTourRequestController : Controller
     [HttpGet("get-all-private-tour-request/{pageNumber:int}/{pageSize:int}")]
     public async Task<AppActionResult> GetAllPrivateTourRequest(int pageNumber = 1, int pageSize = 10)
     {
-        return await _service.GetAllTourPrivate(pageNumber, pageSize);
+        return await _service.GetAllPrivateTourRequest(pageNumber, pageSize);
     }
 
     [HttpGet("get-private-tour-request-by-id/{id}")]

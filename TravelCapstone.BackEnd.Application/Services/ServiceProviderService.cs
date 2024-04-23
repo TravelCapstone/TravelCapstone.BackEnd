@@ -32,14 +32,14 @@ public class ServiceProviderService : GenericBackendService, IServiceProviderSer
                 result.Result = await _serviceProviderRepository.GetAllDataByExpression(
                     null,
                     pageNumber,
-                    pageSize,
+                    pageSize, null, false,
                     null
                 );
             else
                 result.Result = await _serviceProviderRepository.GetAllDataByExpression(
                     a => a.Name.ToLower().Trim().Contains(keyword.ToLower().Trim()),
                     pageNumber,
-                    pageSize,
+                    pageSize, null, false,
                     null
                 );
         }
@@ -124,7 +124,7 @@ public class ServiceProviderService : GenericBackendService, IServiceProviderSer
         try
         {
             result.Result =
-                await _serviceRepository.GetAllDataByExpression(a => a.ServiceProvider!.Id == id, 0, 0, null);
+                await _serviceRepository.GetAllDataByExpression(a => a.ServiceProvider!.Id == id, 0, 0, null, false, null);
         }
         catch (Exception e)
         {
