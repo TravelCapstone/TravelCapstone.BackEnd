@@ -40,7 +40,7 @@ public class MappingConfig
                 .ReverseMap()
                 ;
 
-            config.CreateMap<PrivateTourRequest, PrivateTourResponeDto>()
+            config.CreateMap<PrivateTourRequest, PrivateTourResponseDto>()
                 .ForMember(desc => desc.StartDate, act => act.MapFrom(src => src.StartDate))
                 .ForMember(desc => desc.EndDate, act => act.MapFrom(src => src.EndDate))
                 .ForMember(desc => desc.CreateDate, act => act.MapFrom(src => src.CreateDate))
@@ -94,7 +94,7 @@ public class MappingConfig
             config.CreateMap<PagedResult<CustomerDto>, PagedResult<Customer>>()
              .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
 
-            config.CreateMap<PagedResult<PrivateTourRequest>, PagedResult<PrivateTourResponeDto>>()
+            config.CreateMap<PagedResult<PrivateTourRequest>, PagedResult<PrivateTourResponseDto>>()
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
         });
         // Trong class MappingConfig

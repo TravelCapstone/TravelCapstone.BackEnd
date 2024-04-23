@@ -141,7 +141,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         return start.Hour >= 6 && start.Hour < 18;
     }
 
-    public async Task<AppActionResult> GetAllTourPrivate(int pageNumber, int pageSize)
+    public async Task<AppActionResult> GetAllPrivateTourRequest(int pageNumber, int pageSize)
     {
         var result = new AppActionResult();
         var accountRepository = Resolve<IRepository<Account>>();
@@ -152,7 +152,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             (null, pageNumber,
                 pageSize,a=> a.CreateDate,false,
                 p => p.Tour,p => p.CreateByAccount!, p => p.Province!);
-            var responseList = _mapper.Map<PagedResult<PrivateTourResponeDto>>(data);
+            var responseList = _mapper.Map<PagedResult<PrivateTourResponseDto>>(data);
             foreach (var item in responseList.Items!)
             {
                 var requestLocationDb = await requestLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0,null,false, r => r.Province!);
@@ -181,7 +181,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 result = BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour riêng tư với id {id}");
                 return result;
             }
-            data.PrivateTourRespone = _mapper.Map<PrivateTourResponeDto>(privateTourRequestDb);
+            data.PrivateTourResponse = _mapper.Map<PrivateTourResponseDto>(privateTourRequestDb);
             var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
             var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
             var vehicleQuotationDetailRepository = Resolve<IRepository<VehicleQuotationDetail>>();
@@ -217,7 +217,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             var list = await requestLocationRepository!.GetAllDataByExpression(a => a.PrivateTourRequestId == id, 0, 0, null, false, a => a.Province!);
            foreach(var item in list.Items!)
             {
-                provinces.Add(item.Province!);
+                data.PrivateTourResponse.OtherLocation = list.Items;
             }
             result.Result = data;
         }
