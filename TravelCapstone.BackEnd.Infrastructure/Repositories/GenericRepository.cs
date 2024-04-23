@@ -16,29 +16,11 @@ public class GenericRepository<T> : IRepository<T> where T : class
         _context = context;
         _dbSet = context.Set<T>();
     }
-
-    // public Task<List<T>> GetAllDataByExpression(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
-    // {
-    //     IQueryable<T> query = _dbSet;
-    //
-    //     if (filter != null)
-    //     {
-    //         query = query.Where(filter);
-    //     }
-    //     if (includes != null)
-    //     {
-    //         foreach (var item in includes)
-    //         {
-    //             query = query.Include(item);
-    //         }
-    //     }
-    //
-    //     var list = query.AsNoTracking().ToListAsync();
-    //     return  list;
-    // }
-
-    public async Task<PagedResult<T>> GetAllDataByExpression(Expression<Func<T, bool>>? filter, int pageNumber,
-        int pageSize, params Expression<Func<T, object>>[]? includes)
+    public async Task<PagedResult<T>> GetAllDataByExpression(Expression<Func<T, bool>>? filter,
+       int pageNumber, int pageSize,
+       Expression<Func<T, object>>? orderBy = null, 
+       bool isAscending = true, 
+       params Expression<Func<T, object>>[]? includes)
     {
         IQueryable<T> query = _dbSet;
 
@@ -52,6 +34,11 @@ public class GenericRepository<T> : IRepository<T> where T : class
             {
                 query = query.Include(include);
             }
+        }
+
+        if (orderBy != null)
+        {
+            query = isAscending ? query.OrderBy(orderBy) : query.OrderByDescending(orderBy);
         }
 
         var totalItems = await query.CountAsync();

@@ -44,7 +44,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
                 ReferencedPriceRangeByProvince data = new ReferencedPriceRangeByProvince();
                 var districtRepository = Resolve<IRepository<District>>();
-                var districtDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 0, 0);
+                var districtDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 0, 0, null, false,null);
                 if(districtDb.Items == null || districtDb.Items.Count <= 0 )
                 {
                     result.Result = null;
@@ -54,7 +54,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                 var communeRepository = Resolve<IRepository<Commune>>();
                 var districtIds = districtDb.Items.Select(s => s.Id);
-                var communeDb = await communeRepository!.GetAllDataByExpression(d => districtIds.Contains(d.DistrictId), 0, 0);
+                var communeDb = await communeRepository!.GetAllDataByExpression(d => districtIds.Contains(d.DistrictId), 0, 0, null, false,null);
                 if (communeDb.Items == null || communeDb.Items.Count <= 0)
                 {
                     result.Result = null;
@@ -64,7 +64,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                 var communeIds = communeDb.Items.Select(s => s.Id);
 
-                var serviceDb = await _repository.GetAllDataByExpression(g => communeIds.Contains(g.CommunceId) && g.IsActive, 0, 0, g => g.ServiceRating);
+                var serviceDb = await _repository.GetAllDataByExpression(g => communeIds.Contains(g.CommunceId) && g.IsActive, 0, 0, null, false, g => g.ServiceRating!);
 
                 
 
@@ -137,7 +137,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         }
                         total = detailedPriceReference.ServiceAvailability == ServiceAvailability.BOTH ? NumOfAdult + NumOfChild :
                                 detailedPriceReference.ServiceAvailability == ServiceAvailability.ADULT ? NumOfAdult : NumOfChild;
-                        var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.ServiceId == item.Id && s.MOQ <= total, 0, 0);
+                        var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.ServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, null);
                         if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
                         {
                             currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
@@ -184,14 +184,14 @@ namespace TravelCapstone.BackEnd.Application.Services
             try
             {
                 var districtRepository = Resolve<IRepository<District>>();
-                var districtListDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 1, Int32.MaxValue);
+                var districtListDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 1, Int32.MaxValue, null, false, null);
                 if (districtListDb == null || districtListDb.Items!.Count == 0)
                 {
                     return result;
                 }
                 var districtIds = districtListDb.Items.Select(d => d.Id);
                 var communeRepository = Resolve<IRepository<Commune>>();
-                var communeListDb = await communeRepository!.GetAllDataByExpression(c => districtIds.Contains(c.DistrictId), 1, Int32.MaxValue);
+                var communeListDb = await communeRepository!.GetAllDataByExpression(c => districtIds.Contains(c.DistrictId), 1, Int32.MaxValue, null, false,null);
                 if (communeListDb == null || communeListDb.Items!.Count == 0)
                 {
                     return result;

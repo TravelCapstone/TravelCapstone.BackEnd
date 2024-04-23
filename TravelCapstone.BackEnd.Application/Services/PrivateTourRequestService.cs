@@ -150,13 +150,13 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         {
             var data = await _repository.GetAllDataByExpression
             (null, pageNumber,
-                pageSize,
-                p => p.Tour, p => p.CreateByAccount!, p => p.Province!);
+                pageSize,a=> a.CreateDate,false,
+                p => p.Tour,p => p.CreateByAccount!, p => p.Province!);
             var responseList = _mapper.Map<PagedResult<PrivateTourResponeDto>>(data);
             foreach (var item in responseList.Items!)
             {
-                var requestLocationDb = await requestLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, r => r.Province!);
-                item.OtherLocation = requestLocationDb.Items!.Select(r => r.Province).ToList()!;
+                var requestLocationDb = await requestLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0,null,false, r => r.Province!);
+                item.OtherLocation = requestLocationDb.Items;
             }
             result.Result = responseList;
         }
@@ -185,7 +185,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
             var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
             var vehicleQuotationDetailRepository = Resolve<IRepository<VehicleQuotationDetail>>();
-            var optionsDb = await optionQuotationRepository!.GetAllDataByExpression(q => q.PrivateTourRequestId == id, 0, 0);
+            var optionsDb = await optionQuotationRepository!.GetAllDataByExpression(q => q.PrivateTourRequestId == id, 0, 0, null, false,null);
             if (optionsDb.Items!.Count != 3)
             {
                 result.Messages.Add($"Số lượng lựa chọn hiện tại: {optionsDb.Items.Count} không phù hợp");
@@ -202,8 +202,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             {
                 OptionResponseDto option = new OptionResponseDto();
                 option.OptionQuotation = item;
-                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null);
-                var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null);
+                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, null);
+                var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, null);
                 option.QuotationDetails = quotationDetailDb.Items!.ToList();
                 option.VehicleQuotationDetails = vehicleQuotationDetailDb.Items!.ToList();
                 //Option to order of OptionClass
@@ -214,12 +214,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 else data.Option3 = option;
             }
             List<Province> provinces= new List<Province>();
-            var list = await requestLocationRepository!.GetAllDataByExpression(a => a.PrivateTourRequestId == id, 0, 0, a => a.Province!);
+            var list = await requestLocationRepository!.GetAllDataByExpression(a => a.PrivateTourRequestId == id, 0, 0, null, false, a => a.Province!);
            foreach(var item in list.Items!)
             {
                 provinces.Add(item.Province!);
             }
-            data.PrivateTourRespone.OtherLocation = provinces;
             result.Result = data;
         }
         catch (Exception e)
@@ -259,13 +258,13 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                          && a.ServiceRating!.Rating == hotel.Rating
                          && a.ServiceRating.ServiceTypeId == ServiceType.HOTEL,
                         0,
-                        0,
+                        0, null, false,
                         null);
                     var sellHotel = await sellPriceRepository!.GetAllDataByExpression(
                         a => a.Service!.Communce!.District!.ProvinceId == location.ProvinceId
                         && a.Service.ServiceRating!.ServiceTypeId == ServiceType.HOTEL &&
                         a.Service.ServiceRating.Rating == hotel.Rating,
-                        0, 0, null
+                        0, 0, null, false, null
                         );
                     if (!listHotel.Items!.Any())
                     {
@@ -283,13 +282,13 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                          && a.ServiceRating!.Rating == restaurent.Rating
                          && a.ServiceRating.ServiceTypeId == ServiceType.RESTAURANTS,
                         0,
-                        0,
+                        0, null, false,
                         null);
                     var sellRestaurent = await sellPriceRepository!.GetAllDataByExpression(
                        a => a.Service!.Communce!.District!.ProvinceId == location.ProvinceId
                        && a.Service.ServiceRating!.ServiceTypeId == ServiceType.RESTAURANTS &&
                        a.Service.ServiceRating.Rating == restaurent.Rating,
-                       0, 0, null
+                       0, 0, null, false,null
                        );
                     if (!listRestaurent.Items!.Any())
                     {
@@ -305,7 +304,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                          a => a.Communce!.District!.ProvinceId == location.ProvinceId
                           && a.ServiceRating!.ServiceTypeId == ServiceType.ENTERTAINMENT,
                          0,
-                         0,
+                         0, null, false,
                          null);
                 if (entertaiment.Items!.Any())
                 {
@@ -454,9 +453,9 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 foreach (var vehicle in dto.Vehicles)
                 {
-                    var price = await referenceTransportPriceRepository!.GetAllDataByExpression(a => a.Departure!.Commune!.District!.ProvinceId == vehicle.StartPoint && a.Arrival.Commune.District.ProvinceId == vehicle.EndPoint
+                    var price = await referenceTransportPriceRepository!.GetAllDataByExpression(a => a.Departure!.Commune!.District!.ProvinceId == vehicle.StartPoint && a.Arrival!.Commune!.District!.ProvinceId == vehicle.EndPoint
                     || a.Departure.Commune.District.ProvinceId == vehicle.EndPoint && a.Arrival!.Commune!.District!.ProvinceId == vehicle.StartPoint
-                    , 0, 0, null
+                    , 0, 0, null, false,null
                     );
                     if (price.Items!.Any())
                     {
@@ -529,7 +528,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     await optionQuotationRepository.GetAllDataByExpression(
                         a => a.PrivateTourRequestId == option!.PrivateTourRequestId,
                         0,
-                        0,
+                        0, null, false,
                         null);
                 foreach (var item in listOption.Items!)
                 {
@@ -563,16 +562,16 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         {
             var districtRepository = Resolve<IRepository<District>>();
             var communeRepository = Resolve<IRepository<Commune>>();
-            var districtListDb = await districtRepository.GetAllDataByExpression(d => d.ProvinceId == provinceId, 0, 0);
-            var communeListDb = await communeRepository.GetAllDataByExpression(c => districtListDb.Items!.Select(d => d.Id).Contains(c.DistrictId), 0, 0);
-            if (communeListDb.Items.Count > 0)
+            var districtListDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == provinceId, 0, 0, null, false,null);
+            var communeListDb = await communeRepository!.GetAllDataByExpression(c => districtListDb.Items!.Select(d => d.Id).Contains(c.DistrictId), 0, 0, null, false, null);
+            if (communeListDb.Items!.Count > 0)
             {
                 var communeIds = communeListDb.Items.Select(c => c.Id).ToList();
                 var serviceRepository = Resolve<IRepository<Service>>();
-                var serviceListDb = await serviceRepository.GetAllDataByExpression(s => communeIds.Contains(s.CommunceId)
-                                                                                    && s.ServiceRating.ServiceTypeId == serviceTypeId,
-                                                                                    0, 0, s => s.ServiceRating);
-                List<ServiceRating> serviceRatings = serviceListDb.Items.Select(x => x.ServiceRating).ToList();
+                var serviceListDb = await serviceRepository!.GetAllDataByExpression(s => communeIds.Contains(s.CommunceId)
+                                                                                    && s.ServiceRating!.ServiceTypeId == serviceTypeId,
+                                                                                    0, 0, null, false, s => s.ServiceRating!);
+                List<ServiceRating> serviceRatings = serviceListDb.Items!.Select(x => x.ServiceRating).ToList()!;
                 result.Result = serviceRatings;
             }
         }

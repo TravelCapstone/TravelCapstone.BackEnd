@@ -39,17 +39,17 @@ namespace TravelCapstone.BackEnd.Application.Services
                     return result;
                 }
                 var requestedLocationRepository = Resolve<IRepository<RequestedLocation>>();
-                var requestedLocationListDb = await requestedLocationRepository!.GetAllDataByExpression(null, 0, 0, r => r.Province);
-                data.InsertRange(0, requestedLocationListDb.Items.Select(r => r.Province));
+                var requestedLocationListDb = await requestedLocationRepository!.GetAllDataByExpression(null, 0, 0, null, false, r => r.Province!);
+                data.InsertRange(0, requestedLocationListDb.Items!.Select(r => r.Province!));
                 var dayPlanRepository = Resolve<IRepository<DayPlan>>();
-                var dayPlanDb = await dayPlanRepository!.GetAllDataByExpression(r => r.TourId == privateTourRequestDb.TourId, 0, 0,null);
+                var dayPlanDb = await dayPlanRepository!.GetAllDataByExpression(r => r.TourId == privateTourRequestDb.TourId, 0, 0, null, false,null);
                 if(dayPlanDb.Items!.Count == 0)
                 {
                     return result;
                 }
                 var dayPlanIds = dayPlanDb.Items.Select(d => d.Id);
                 var routeRepository = Resolve<IRepository<Route>>();
-                var routeDb = await routeRepository!.GetAllDataByExpression(r => dayPlanIds.Contains(r.DayPlanId),0,0,null);
+                var routeDb = await routeRepository!.GetAllDataByExpression(r => dayPlanIds.Contains(r.DayPlanId),0,0, null, false, null);
                 if (routeDb.Items!.Count == 0)
                 {
                     return result;
@@ -61,8 +61,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                     destinationIds.Add(route.EndPointId);
                 }
                 var destinationRepository = Resolve<IRepository<Destination>>();
-                var destinationDb = await destinationRepository!.GetAllDataByExpression(r => destinationIds.Contains(r.Id), 1, Int32.MaxValue, r => r.Communce!.District!.Province!);
-                data.InsertRange(Math.Max(0, data.Count - 1), destinationDb!.Items!.Select(r => r.Communce!.District!.Province).ToList());
+                var destinationDb = await destinationRepository!.GetAllDataByExpression(r => destinationIds.Contains(r.Id), 1, Int32.MaxValue, null, false, r => r.Communce!.District!.Province!);
+                data.InsertRange(Math.Max(0, data.Count - 1), destinationDb!.Items!.Select(r => r.Communce!.District!.Province).ToList()!);
                 result.Result = data.DistinctBy(p => p.Id);
             } catch ( Exception ex )
             {
