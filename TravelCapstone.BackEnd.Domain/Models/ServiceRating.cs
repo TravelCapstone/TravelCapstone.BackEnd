@@ -19,5 +19,6 @@ namespace TravelCapstone.BackEnd.Domain.Models
         [ForeignKey(nameof(ServiceTypeId))]
         public EnumModels.ServiceType? ServiceType { get; set; } 
         public int Rating { get; set; }
+        public string Name { get; set; } = null!;
     }
 }
