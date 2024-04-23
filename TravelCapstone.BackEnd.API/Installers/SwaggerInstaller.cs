@@ -32,9 +32,9 @@ public class SwaggerInstaller : IInstaller
                     new string[] { }
                 }
             });
-            option.SwaggerDoc("v2", new OpenApiInfo
+            option.SwaggerDoc("v1", new OpenApiInfo
             {
-                Version = "v2",
+                Version = "v1",
                 Title = "Travel Capstone API",
                 Description = "©Copyright: Hồng Quân & Minh Khang",
                 TermsOfService = new Uri("https://example.com/terms"),

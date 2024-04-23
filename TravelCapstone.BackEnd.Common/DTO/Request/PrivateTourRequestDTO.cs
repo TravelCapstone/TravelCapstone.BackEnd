@@ -19,7 +19,7 @@ public class PrivateTourRequestDTO
     public string? Note { get; set; }
     public bool IsEnterprise { get; set; }
     public Guid MainDestinationId { get; set; }
-    public List<RequestedLocationDTO>? OtherLocation { get; set; }
+    public List<RequestedLocationDTO>? OtherLocation { get; set; } = new List<RequestedLocationDTO>();
     public string? AccountId { get; set; }
 }
 
