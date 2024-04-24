@@ -16,7 +16,8 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public TravelCapstoneDbContext(DbContextOptions options) : base(options)
     {
     }
-
+    #region DBSet
+    #region model
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Configuration> Configurations { get; set; }
     public DbSet<TourTraveller> TourTravellers { get; set; }
@@ -60,7 +61,11 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<TourTourguide> TourTourguides { get; set; }
     public DbSet<TransportServiceDetail> TransportServiceDetails { get; set; }
     public DbSet<ReferenceTransportPrice> ReferenceTransportPrices { get; set; }
+    #endregion
+
+    #region Enum
     public DbSet<Models.EnumModels.AttendanceRouteType> AttendanceRouteTypes { get; set; }
+    public DbSet<Models.EnumModels.MealType> MealTypes { get; set; }
     public DbSet<Models.EnumModels.ServiceType> ServiceTypes { get; set; }
     public DbSet<Models.EnumModels.AttendanceType> AttendanceTypes { get; set; }
     public DbSet<Models.EnumModels.JoinTourStatus> JoinTourStatuses { get; set; }
@@ -81,7 +86,8 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Models.EnumModels.ServiceAvailability> ServiceAvailabilities { get; set; }
     public DbSet<Models.EnumModels.DishType> DishTypes { get; set; }
     public DbSet<Models.EnumModels.DietaryPreference> DietaryPreferences { get; set; }
-
+    #endregion
+    #endregion
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -133,6 +139,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
         SeedEnumTable<Models.EnumModels.ServiceAvailability, Domain.Enum.ServiceAvailability>(builder);
         SeedEnumTable<Models.EnumModels.Rating, Domain.Enum.Rating>(builder);
         SeedEnumTable<Models.EnumModels.ServiceType, Domain.Enum.ServiceType>(builder);
+        SeedEnumTable<Models.EnumModels.MealType, Domain.Enum.MealType>(builder);
     }
 
     private static void SeedEnumTable<TEntity, TEnum>(ModelBuilder modelBuilder)

@@ -16,6 +16,9 @@ namespace TravelCapstone.BackEnd.Domain.Models
         public Enum.DietaryPreference DietaryPreferenceId { get; set; }
         [ForeignKey(nameof(DietaryPreferenceId))]
         public Models.EnumModels.DietaryPreference? DietaryPreference { get; set; }
+        public Enum.MealType MealTypeId { get; set; }
+        [ForeignKey(nameof(MealTypeId))]
+        public Models.EnumModels.MealType? MealType { get; set; }
         public Guid FacilityServiceId { get; set; }
         [ForeignKey(nameof(FacilityServiceId))] public FacilityService? FacilityService { get; set; }
     }

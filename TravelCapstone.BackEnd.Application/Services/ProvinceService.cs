@@ -26,7 +26,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AppActionResult> getAllProvinceByPrivateTourRequestId(Guid Id)
+        public async Task<AppActionResult> GetAllProvinceByPrivateTourRequestId(Guid Id)
         {
             AppActionResult result = new AppActionResult();
             try

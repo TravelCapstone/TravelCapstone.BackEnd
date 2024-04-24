@@ -6,13 +6,13 @@ using Twilio.Http;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
-    [Route("wallet")]
+    [Route("transaction")]
     [ApiController]
-    public class WalletController : ControllerBase
+    public class TransactionController : ControllerBase
     {
-        private IWalletService _walletService;
+        private ITransactionService _walletService;
 
-        public WalletController(IWalletService walletService)
+        public TransactionController(ITransactionService walletService)
         {
             _walletService = walletService;
         }

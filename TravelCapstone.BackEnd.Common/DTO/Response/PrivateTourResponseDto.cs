@@ -20,7 +20,9 @@ public class PrivateTourResponseDto
     public string? RecommnendedTourUrl { get; set; }
     public string? Note { get; set; }
     public string? StartLocation { get; set; }
-    public Province MainDestination { get; set; }
+    public Province? MainDestination { get; set; } 
+    public double WishPrice {  get; set; }
+    public DietaryPreference DietaryPreference { get; set; }
     public List<RequestedLocation>? OtherLocation { get; set; }
     public Guid TourId { get; set; }
     public Tour? Tour { get; set; }
