@@ -31,8 +31,4 @@ public class Tour
     [ForeignKey(nameof(BasedOnTourId))]
     public Tour? BasedTour { get; set; }
 
-    public string? TourGuideId { get; set; }
-
-    [ForeignKey(nameof(TourGuideId))]
-    public Account? TourGuide { get; set; }
 }

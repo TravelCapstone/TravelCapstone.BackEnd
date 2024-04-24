@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240423162218_fixDbBigUpdate")]
+    partial class fixDbBigUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -790,37 +792,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.MealType", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MealTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "Breakfast"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "Lunch"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Dinner"
-                        });
-                });
-
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.OptionClass", b =>
                 {
                     b.Property<int>("Id")
@@ -1094,11 +1065,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         {
                             Id = 2,
                             Name = "ENTERTAIMENT"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "VEHICLE"
                         });
                 });
 
@@ -1439,9 +1405,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid>("FacilityServiceId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("MealTypeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1451,8 +1414,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasIndex("DietaryPreferenceId");
 
                     b.HasIndex("FacilityServiceId");
-
-                    b.HasIndex("MealTypeId");
 
                     b.ToTable("Menus");
                 });
@@ -2613,17 +2574,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.MealType", "MealType")
-                        .WithMany()
-                        .HasForeignKey("MealTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("DietaryPreference");
 
                     b.Navigation("FacilityService");
-
-                    b.Navigation("MealType");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.MenuDish", b =>

@@ -3,7 +3,7 @@ using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.Application.IServices
 {
-    public interface IWalletService
+    public interface ITransactionService
     {
         Task<AppActionResult> GetUrlVnPayRecharge(Guid OrderId);
 

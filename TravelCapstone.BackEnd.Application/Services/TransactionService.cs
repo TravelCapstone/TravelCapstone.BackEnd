@@ -15,7 +15,7 @@ using Transaction = TravelCapstone.BackEnd.Domain.Models.Transaction;
 
 namespace TravelCapstone.BackEnd.Application.Services
 {
-    public class WalletService : GenericBackendService, IWalletService
+    public class TransactionService : GenericBackendService, ITransactionService
     {
         private IRepository<Transaction> _transactionRepository;
         private MomoConfiguration _momoConfiguration;
@@ -23,7 +23,7 @@ namespace TravelCapstone.BackEnd.Application.Services
         private readonly IConfiguration _configuration;
         private IUnitOfWork _unitOfWork;
 
-        public WalletService(IConfiguration configuration, IRepository<Transaction> repository, IUnitOfWork unitOfWork,
+        public TransactionService(IConfiguration configuration, IRepository<Transaction> repository, IUnitOfWork unitOfWork,
             IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _transactionRepository = repository;

@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace TravelCapstone.BackEnd.Domain.Enum
 {
-    public enum ServiceType
+    public enum DishType
     {
-        RESTING,
-        FOODANDBEVARAGE,
-        ENTERTAIMENT,
-        VEHICLE
+        Appetizer,
+        MainCourse,
+        SideDish,
+        Salad,
+        Soup,
+        Dessert,
+        Beverage,
     }
 }

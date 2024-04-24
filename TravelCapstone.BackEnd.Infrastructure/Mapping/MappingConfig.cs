@@ -34,9 +34,10 @@ public class MappingConfig
                 .ForMember(desc => desc.RecommendedTourUrl, act => act.MapFrom(src => src.RecommnendedTourUrl))
                 .ForMember(desc => desc.StartLocation, act => act.MapFrom(src => src.StartLocation))
                 .ForMember(desc => desc.StartLocationCommuneId, act => act.MapFrom(src => src.StartCommuneId))
+                .ForMember(desc => desc.DietaryPreferenceId, act => act.MapFrom(src => src.DietaryPreference))
+                .ForMember(desc => desc.WishPrice, act => act.MapFrom(src => src.WishPrice))
                 .ForMember(desc => desc.MainDestinationId, act => act.MapFrom(src => src.MainDestinationId))
                 .ForMember(desc => desc.CreateBy, act => act.MapFrom(src => src.AccountId))
-                
                 .ReverseMap()
                 ;
 
@@ -56,6 +57,8 @@ public class MappingConfig
                 .ForMember(desc => desc.StartLocation, act => act.MapFrom(src => src.StartLocation))
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.CreateBy))
                 .ForMember(desc => desc.Account, act => act.MapFrom(src => src.CreateByAccount))
+                .ForMember(desc => desc.DietaryPreference, act => act.MapFrom(src => src.DietaryPreferenceId))
+                .ForMember(desc => desc.WishPrice, act => act.MapFrom(src => src.WishPrice))
                 .ForMember(desc => desc.Name, act => act.MapFrom(src => $"{src.CreateByAccount!.FirstName} {src.CreateByAccount.LastName}"))
                 ;
 

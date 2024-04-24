@@ -105,16 +105,16 @@ public class MapService : GenericBackendService, IMapService
                         , 0, 0, null);
 
                 var listCoach = await sellPriceRepository!.GetAllDataByExpression
-                        (a => a.Service!.ServiceRating!.ServiceTypeId == ServiceType.VEHICLE_SUPPLY,
+                        (a => a.FacilityService.ServiceTypeId == ServiceType.VEHICLE,
                         0, 0, null);
                 if (listCoach.Items!.Any())
                 {
                     estimatedVehiclePrices.Add(new EstimatedVehiclePrice
                     {
-                        Min = listCoach.Items!.Min(a=> a.Price),
-                        Max = listCoach.Items!.Max(a=> a.Price),
+                        Min = listCoach.Items!.Min(a => a.Price),
+                        Max = listCoach.Items!.Max(a => a.Price),
                         Vehicle = VehicleType.COACH
-                    }); 
+                    });
                 }
 
                 if (listFlight.Items!.Any())

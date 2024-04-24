@@ -45,7 +45,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             {
                 List<ServiceCostHistoryRecord> sampleData = new List<ServiceCostHistoryRecord>();
                 sampleData.Add(new ServiceCostHistoryRecord
-                { No=1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, PricePerAdult = 9, PricePerChild = 4 });
+                { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, PricePerAdult = 9, PricePerChild = 4 });
                 result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord>(sampleData, "ProviderName_ddMMyyyy");
 
             }
@@ -74,11 +74,11 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
                 string[] serviceInfos = file.FileName.Split('_');
                 var serviceProviderRepository = Resolve<IRepository<ServiceProvider>>();
-                var serviceRepository = Resolve<IRepository<Service>>();
+                var serviceRepository = Resolve<IRepository<Facility>>();
                 var serviceProviderDb = await serviceProviderRepository.GetByExpression(s => s.Name == serviceInfos[0]);
                 DateTime.TryParseExact(serviceInfos[1].Substring(0, 8), "ddMMyyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
                 List<ServiceCostHistoryRecord> records = await GetListFromExcel(file);
-                List<ServiceCostHistory> data= new List<ServiceCostHistory>();
+                List<ServiceCostHistory> data = new List<ServiceCostHistory>();
                 var serviceId = Guid.Empty;
                 Dictionary<string, Guid> serviceIds = new Dictionary<string, Guid>();
                 string key;
@@ -86,39 +86,40 @@ namespace TravelCapstone.BackEnd.Application.Services
                 foreach (var record in records)
                 {
                     key = record.ServiceName + '-' + record.Unit;
-                        if (serviceIds.ContainsKey(key)) serviceId = serviceIds[key];
+                    if (serviceIds.ContainsKey(key)) serviceId = serviceIds[key];
+                    else
+                    {
+                        bool containsUnit = SD.EnumType.ServiceCostUnit.TryGetValue(record.Unit, out int index);
+                        if (containsUnit)
+                        {
+                            var service = await serviceRepository.GetByExpression(m => m.Name.Equals(record.ServiceName) && m.ServiceProviderId == serviceProviderDb.Id);
+                            serviceId = service.Id;
+                            serviceIds.Add(key, serviceId);
+                        }
                         else
                         {
-                            bool containsUnit = SD.EnumType.ServiceCostUnit.TryGetValue(record.Unit, out int index);
-                            if (containsUnit)
-                            {
-                                var service = await serviceRepository.GetByExpression(m => m.Name.Equals(record.ServiceName) && m.ServiceProviderId == serviceProviderDb.Id);
-                                    serviceId = service.Id;
-                                    serviceIds.Add(key, serviceId);
-                            } 
-                            else
-                            {
                             result = BuildAppActionResultError(result, "Gặp lỗi trong quá trình tải. Vui lòng kiểm tra thông tin và thủ lại");
-                            }
                         }
+                    }
                     data.Add(new ServiceCostHistory
                     {
                         Id = Guid.NewGuid(),
                         //PricePerAdult = record.PricePerAdult,
-                       // PricePerChild = record.PricePerChild,
+                        // PricePerChild = record.PricePerChild,
                         MOQ = record.MOQ,
-                    //    Unit = (Domain.Enum.Unit)SD.EnumType.ServiceCostUnit[record.Unit],
+                        //    Unit = (Domain.Enum.Unit)SD.EnumType.ServiceCostUnit[record.Unit],
                         Date = date,
-                        ServiceId = serviceId
+                        FacilityServiceId = serviceId
                     });
                 }
-            await _repository.InsertRange(data);
-            if(!BuildAppActionResultIsError(result))
-            {
-                result.Result = data;
-                await _unitOfWork.SaveChangesAsync();
+                await _repository.InsertRange(data);
+                if (!BuildAppActionResultIsError(result))
+                {
+                    result.Result = data;
+                    await _unitOfWork.SaveChangesAsync();
+                }
             }
-            } catch (Exception ex)
+            catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
             }
@@ -178,7 +179,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     return result;
                 }
 
-                var serviceRepository = Resolve<IRepository<Service>>();
+                var serviceRepository = Resolve<IRepository<Facility>>();
                 var serviceProviderRepository = Resolve<IRepository<ServiceProvider>>();
                 var serviceProdviderDb = await serviceProviderRepository.GetByExpression(s => s.Name.ToLower().Equals(serviceProviderName.ToLower()));
                 if (serviceProdviderDb == null)
@@ -197,7 +198,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     result.Result = data;
                     return result;
                 }
-                
+
                 int errorRecordCount = 0;
                 int i = 2;
                 int invalidRowInput = 0;
@@ -223,38 +224,38 @@ namespace TravelCapstone.BackEnd.Application.Services
                         continue;
                     }
 
-                        //SD.EnumType.serviceUnit.TryGetValue(record.Unit, out int serviceUnit);
-                        key = record.ServiceName + '-' + record.Unit;
-                       
-                            if (serviceIds.ContainsKey(key)) serviceId = serviceIds[key];
+                    //SD.EnumType.serviceUnit.TryGetValue(record.Unit, out int serviceUnit);
+                    key = record.ServiceName + '-' + record.Unit;
+
+                    if (serviceIds.ContainsKey(key)) serviceId = serviceIds[key];
+                    else
+                    {
+                        bool containsUnit = SD.EnumType.ServiceCostUnit.TryGetValue(record.Unit, out int index);
+                        if (containsUnit)
+                        {
+                            var service = await serviceRepository.GetByExpression(m => m.Name.Equals(record.ServiceName) && m.ServiceProviderId == serviceProdviderDb.Id && m.IsActive);
+                            if (service == null)
+                            {
+                                error.Append($"{errorRecordCount + 1}. Dịch vụ: {record.ServiceName} từ nhà cung cấp {serviceProdviderDb.Name} không tồn tại hoặc không có sẵn.\n");
+                                errorRecordCount++;
+                            }
                             else
                             {
-                                bool containsUnit = SD.EnumType.ServiceCostUnit.TryGetValue(record.Unit, out int index);
-                                if (containsUnit)
-                                {
-                                    var service = await serviceRepository.GetByExpression(m => m.Name.Equals(record.ServiceName) && m.ServiceProviderId == serviceProdviderDb.Id && m.IsActive);
-                                    if (service == null)
-                                    {
-                                        error.Append($"{errorRecordCount + 1}. Dịch vụ: {record.ServiceName} từ nhà cung cấp {serviceProdviderDb.Name} không tồn tại hoặc không có sẵn.\n");
-                                        errorRecordCount++;
-                                    }
-                                    else
-                                    {
-                                        serviceId = service.Id;
-                                        serviceIds.Add(key, serviceId);
-                                    }
-                                }
-                                else
-                                {
-                                    error.Append($"{errorRecordCount + 1}. Đơn vị tính: {record.Unit} không tồn tại.\n");
-                                    errorRecordCount++;
-                                }
+                                serviceId = service.Id;
+                                serviceIds.Add(key, serviceId);
                             }
-                        //else
-                        //{
-                        //    error.Append($"{errorRecordCount + 1}. Supplier {serviceProviderName} is a {supplier.Type.ToString()} so they don't supply {record.serviceName}.\n");
-                        //    errorRecordCount++;
-                        //}
+                        }
+                        else
+                        {
+                            error.Append($"{errorRecordCount + 1}. Đơn vị tính: {record.Unit} không tồn tại.\n");
+                            errorRecordCount++;
+                        }
+                    }
+                    //else
+                    //{
+                    //    error.Append($"{errorRecordCount + 1}. Supplier {serviceProviderName} is a {supplier.Type.ToString()} so they don't supply {record.serviceName}.\n");
+                    //    errorRecordCount++;
+                    //}
 
                     if (record.MOQ <= 0)
                     {
@@ -279,7 +280,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         duplicatedQuotation.Add(duplicatedKey, i - 1);
                     }
 
-                    if ((await _repository.GetByExpression(m => m.MOQ == record.MOQ && m.ServiceId == serviceId && date == m.Date)) != null)
+                    if ((await _repository.GetByExpression(m => m.MOQ == record.MOQ && m.FacilityServiceId == serviceId && date == m.Date)) != null)
                     {
                         error.Append($"{errorRecordCount + 1}. Tồn tại một báo giá dịch vụ tương tự trong cùng ngày.\n");
                         errorRecordCount++;
@@ -414,9 +415,9 @@ namespace TravelCapstone.BackEnd.Application.Services
                 foreach (var serviceId in servicesId)
                 {
                     var latestHistoryForService = await _repository.GetAllDataByExpression(
-                        a => a.ServiceId == serviceId,
+                        a => a.FacilityServiceId == serviceId,
                         0,
-                        0, null, false,
+                        0,
                         null
                     );
                     latestHistoryForService.Items = latestHistoryForService.Items!.OrderByDescending(a => a.Date).ToList();

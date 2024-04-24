@@ -16,7 +16,7 @@ public class ServiceDto
 
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public ServiceType Type { get; set; }
+    public FacilityType Type { get; set; }
     public string Address { get; set; } = null!;
     public Guid CommunceId { get; set; }
     public Guid? ServiceProviderId { get; set; }

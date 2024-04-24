@@ -13,9 +13,9 @@ namespace TravelCapstone.BackEnd.API.Controllers
         }
 
         [HttpGet("get-all-province-by-private-tour-request-id/{id}")]
-        public async Task<AppActionResult> getAllProvinceByPrivateTourRequestId(Guid id)
+        public async Task<AppActionResult> GetAllProvinceByPrivateTourRequestId(Guid id)
         {
-            return await _service.getAllProvinceByPrivateTourRequestId(id);
+            return await _service.GetAllProvinceByPrivateTourRequestId(id);
         }
 
     }

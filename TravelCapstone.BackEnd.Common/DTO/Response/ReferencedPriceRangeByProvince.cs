@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +29,8 @@ namespace TravelCapstone.BackEnd.Common.DTO.Response
     }
     public class DetailedPriceReference
     {
-        public ServiceRating ServiceRating = null!;
+        public Rating RatingId { get; set; }
+        public ServiceType ServiceTypeId { get; set; }
         public ServiceAvailability ServiceAvailability;
         public Unit Unit;
         public int ServingQuantity;

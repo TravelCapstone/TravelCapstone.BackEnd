@@ -11,16 +11,17 @@ using TravelCapstone.BackEnd.Common.DTO;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
+using TravelCapstone.BackEnd.Domain.Models.EnumModels;
 
 namespace TravelCapstone.BackEnd.Application.Services
 {
-    public class ServiceService : GenericBackendService, IServiceService
+    public class ServiceService : GenericBackendService, IFacilityServiceService
     {
-        private readonly IRepository<Service> _repository;
+        private readonly IRepository<FacilityService> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
         public ServiceService(
-            IRepository<Service> repository,
+            IRepository<FacilityService> repository,
             IUnitOfWork unitOfWork,
             IServiceProvider serviceProvider
         ) : base(serviceProvider)
@@ -44,8 +45,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
                 ReferencedPriceRangeByProvince data = new ReferencedPriceRangeByProvince();
                 var districtRepository = Resolve<IRepository<District>>();
-                var districtDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 0, 0, null, false,null);
-                if(districtDb.Items == null || districtDb.Items.Count <= 0 )
+                var districtDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 0, 0);
+                if (districtDb.Items == null || districtDb.Items.Count <= 0)
                 {
                     result.Result = null;
                     result.Messages.Add($"Không tìm thấy danh sách huyện");
@@ -54,7 +55,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                 var communeRepository = Resolve<IRepository<Commune>>();
                 var districtIds = districtDb.Items.Select(s => s.Id);
-                var communeDb = await communeRepository!.GetAllDataByExpression(d => districtIds.Contains(d.DistrictId), 0, 0, null, false,null);
+                var communeDb = await communeRepository!.GetAllDataByExpression(d => districtIds.Contains(d.DistrictId), 0, 0);
                 if (communeDb.Items == null || communeDb.Items.Count <= 0)
                 {
                     result.Result = null;
@@ -64,44 +65,51 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                 var communeIds = communeDb.Items.Select(s => s.Id);
 
-                var serviceDb = await _repository.GetAllDataByExpression(g => communeIds.Contains(g.CommunceId) && g.IsActive, 0, 0, null, false, g => g.ServiceRating!);
+                var serviceDb = await _repository.GetAllDataByExpression(g => communeIds.Contains(g.Facility!.CommunceId) && g.IsActive, 0, 0, null, false, g => g.Facility.FacilityRating!);
 
-                
 
-                if(serviceDb.Items != null && serviceDb.Items.Count > 0) {
-                    var hotelPrice = await GetTypePriceReference(ServiceType.HOTEL, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren,serviceDb.Items);
-                    var restaurantPrice = await GetTypePriceReference(ServiceType.RESTAURANTS, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    var entertainmentPrice = await GetTypePriceReference(ServiceType.ENTERTAINMENT, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    var vehicleSupplyPrice = await GetTypePriceReference(ServiceType.VEHICLE_SUPPLY, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+
+                if (serviceDb.Items != null && serviceDb.Items.Count > 0)
+                {
+                    var hotelPrice = await GetTypePriceReference(Domain.Enum.ServiceType.RESTING, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+                    var restaurantPrice = await GetTypePriceReference(Domain.Enum.ServiceType.FOODANDBEVARAGE, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+                    var entertainmentPrice = await GetTypePriceReference(Domain.Enum.ServiceType.ENTERTAIMENT, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+                    //var vehicleSupplyPrice = await GetTypePriceReference(Domain.Enum.ServiceType., tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
                     data.HotelPrice = hotelPrice;
                     data.RestaurantPrice = restaurantPrice;
                     data.EntertainmentPrice = entertainmentPrice;
-                    data.VehicleSupplyPrice = vehicleSupplyPrice;
+                    //data.VehicleSupplyPrice = vehicleSupplyPrice;
                 }
 
                 result.Result = data;
-            } catch ( Exception ex )
+            }
+            catch (Exception ex)
             {
 
             }
             return result;
         }
 
-        public Task<List<Guid>> GetServiceRatingByServiceTypeAndCommuneId(ServiceType serviceType, IEnumerable<Service> services)
+        public Task<List<FaicilityServiceCategory>> GetServiceRatingByServiceTypeAndCommuneId(Domain.Enum.ServiceType serviceType, IEnumerable<FacilityService> services)
         {
-            List<Guid> serviceRatings = null;
+            List<FaicilityServiceCategory> serviceRatings = null;
             try
             {
-                serviceRatings = services.Where(s => s.ServiceRating!.ServiceTypeId == serviceType).Select(s => s.ServiceRatingId).ToList();
-            } catch ( Exception ex )
+                serviceRatings = services.Where(s => s.ServiceTypeId == serviceType).Select(s => new FaicilityServiceCategory
+                {
+                    RatingId = s.Facility.FacilityRating.RatingId,
+                    ServiceTypeId = s.ServiceTypeId
+                }).ToList();
+            }
+            catch (Exception ex)
             {
-                serviceRatings = new List<Guid>();
+                serviceRatings = new List<FaicilityServiceCategory>();
             }
             return Task.FromResult(serviceRatings);
         }
 
 
-        public async Task<PriceReference> GetTypePriceReference(ServiceType type, int NumOfAdult, int NumOfChild, IEnumerable<Service> serviceDb)
+        public async Task<PriceReference> GetTypePriceReference(Domain.Enum.ServiceType type, int NumOfAdult, int NumOfChild, IEnumerable<FacilityService> serviceDb)
         {
             PriceReference priceReference = null;
             try
@@ -110,8 +118,12 @@ namespace TravelCapstone.BackEnd.Application.Services
                 priceReference = new PriceReference(type);
                 var hotelServiceRating = await GetServiceRatingByServiceTypeAndCommuneId(priceReference.ServiceType, serviceDb);
                 var hotelService = serviceDb
-                    .Where(s => hotelServiceRating.Contains(s.ServiceRatingId))
-                    .GroupBy(s => new { s.ServiceAvailabilityId, s.ServiceRatingId, s.ServingQuantity }) // Group by ServiceRating
+                    .Where(s => hotelServiceRating.Contains(new FaicilityServiceCategory
+                    {
+                        ServiceTypeId = s.ServiceTypeId,
+                        RatingId = s.Facility!.FacilityRating!.RatingId
+                    }))
+                    .GroupBy(s => new { s.ServiceAvailabilityId, s.Facility!.FacilityRating!.RatingId, s.ServingQuantity }) // Group by ServiceRating
                     .ToDictionary(g => g.Key, g => g.ToList());
 
                 foreach (var kvp in hotelService)
@@ -129,15 +141,16 @@ namespace TravelCapstone.BackEnd.Application.Services
                     {
                         if (i == 0)
                         {
-                            detailedPriceReference.ServiceRating = item.ServiceRating;
+                            detailedPriceReference.ServiceTypeId = item.ServiceTypeId;
+                            detailedPriceReference.RatingId = item.Facility!.FacilityRating!.RatingId;
                             detailedPriceReference.ServiceAvailability = item.ServiceAvailabilityId;
                             detailedPriceReference.ServingQuantity = item.ServingQuantity;
                             detailedPriceReference.Unit = item.UnitId;
                             i++;
                         }
-                        total = detailedPriceReference.ServiceAvailability == ServiceAvailability.BOTH ? NumOfAdult + NumOfChild :
-                                detailedPriceReference.ServiceAvailability == ServiceAvailability.ADULT ? NumOfAdult : NumOfChild;
-                        var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.ServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, null);
+                        total = detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.BOTH ? NumOfAdult + NumOfChild :
+                                detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.ADULT ? NumOfAdult : NumOfChild;
+                        var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.FacilityServiceId == item.Id && s.MOQ <= total, 0, 0);
                         if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
                         {
                             currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
@@ -171,7 +184,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                     priceReference.DetailedPriceReferences.Add(detailedPriceReference);
 
                 };
-            } catch ( Exception ex )
+            }
+            catch (Exception ex)
             {
 
             }
@@ -184,21 +198,21 @@ namespace TravelCapstone.BackEnd.Application.Services
             try
             {
                 var districtRepository = Resolve<IRepository<District>>();
-                var districtListDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 1, Int32.MaxValue, null, false, null);
+                var districtListDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 1, Int32.MaxValue);
                 if (districtListDb == null || districtListDb.Items!.Count == 0)
                 {
                     return result;
                 }
                 var districtIds = districtListDb.Items.Select(d => d.Id);
                 var communeRepository = Resolve<IRepository<Commune>>();
-                var communeListDb = await communeRepository!.GetAllDataByExpression(c => districtIds.Contains(c.DistrictId), 1, Int32.MaxValue, null, false,null);
+                var communeListDb = await communeRepository!.GetAllDataByExpression(c => districtIds.Contains(c.DistrictId), 1, Int32.MaxValue);
                 if (communeListDb == null || communeListDb.Items!.Count == 0)
                 {
                     return result;
                 }
                 var communeIds = communeListDb.Items.Select(d => d.Id);
                 //var serviceListDb = await _repository.GetAllDataByExpression(s => communeIds.Contains(s.CommunceId) && s.Type== type, 1, Int32.MaxValue);
-              //  result.Result = serviceListDb;
+                //  result.Result = serviceListDb;
             }
             catch (Exception ex)
             {

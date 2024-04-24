@@ -16,7 +16,8 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public TravelCapstoneDbContext(DbContextOptions options) : base(options)
     {
     }
-
+    #region DBSet
+    #region model
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Configuration> Configurations { get; set; }
     public DbSet<TourTraveller> TourTravellers { get; set; }
@@ -38,7 +39,9 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<QuotationDetail> QuotationDetails { get; set; }
     public DbSet<Route> Routes { get; set; }
     public DbSet<SellPriceHistory> SellPriceHistorys { get; set; }
-    public DbSet<Service> Services { get; set; }
+    public DbSet<Facility> Facilities { get; set; }
+    public DbSet<FacilityService> FacilityServices { get; set; }
+
     public DbSet<ServiceCostHistory> ServiceCostHistorys { get; set; }
     public DbSet<ServiceProvider> ServiceProviders { get; set; }
     public DbSet<Tour> Tours { get; set; }
@@ -47,22 +50,33 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<VehicleRoute> VehicleRoutes { get; set; }
-    public DbSet<ServiceRating> ServiceRatings { get; set; }    
     public DbSet<VehicleQuotationDetail> VehicleQuotationDetails { get; set; }
     public DbSet<Port> Ports { get; set; }
+    public DbSet<FacilityRating> FacilityRatings { get; set; }
     public DbSet<Contract> Contracts { get; set; }
+    public DbSet<Menu> Menus { get; set; }
+    public DbSet<MenuDish> MenuDishes { get; set; }
+    public DbSet<Dish> Dishes { get; set; }
+    public DbSet<TourguideAssignment> TourguideAssignments { get; set; }
+    public DbSet<TourTourguide> TourTourguides { get; set; }
+    public DbSet<TransportServiceDetail> TransportServiceDetails { get; set; }
     public DbSet<ReferenceTransportPrice> ReferenceTransportPrices { get; set; }
+    #endregion
+
+    #region Enum
     public DbSet<Models.EnumModels.AttendanceRouteType> AttendanceRouteTypes { get; set; }
+    public DbSet<Models.EnumModels.MealType> MealTypes { get; set; }
+    public DbSet<Models.EnumModels.ServiceType> ServiceTypes { get; set; }
     public DbSet<Models.EnumModels.AttendanceType> AttendanceTypes { get; set; }
     public DbSet<Models.EnumModels.JoinTourStatus> JoinTourStatuses { get; set; }
-    public DbSet<Models.EnumModels.MainVehicleTour> MainVehicleTours { get; set; }
     public DbSet<Models.EnumModels.MaterialType> MaterialTypes { get; set; }
     public DbSet<Models.EnumModels.OptionClass> OptionClasses { get; set; }
     public DbSet<Models.EnumModels.OptionQuotationStatus> OptionQuotationStatuses { get; set; }
     public DbSet<Models.EnumModels.OrderStatus> OrderStatuses { get; set; }
     public DbSet<Models.EnumModels.PrivateTourStatus> PrivateTourStatuses { get; set; }
-    public DbSet<Models.EnumModels.ServiceType> ServiceTypes { get; set; }
+    public DbSet<Models.EnumModels.FacilityType> FacilityTypes { get; set; }
     public DbSet<Models.EnumModels.TourStatus> TourStatuses { get; set; }
+    public DbSet<Models.EnumModels.Rating> Ratings { get; set; }
     public DbSet<Models.EnumModels.TourType> TourTypes { get; set; }
     public DbSet<Models.EnumModels.TransactionType> TransactionTypes { get; set; }
     public DbSet<Models.EnumModels.Unit> Units { get; set; }
@@ -70,7 +84,10 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Models.EnumModels.PortType> PortTypes { get; set; }
     public DbSet<Models.EnumModels.ContractStatus> ContractStatuses { get; set; }
     public DbSet<Models.EnumModels.ServiceAvailability> ServiceAvailabilities { get; set; }
-
+    public DbSet<Models.EnumModels.DishType> DishTypes { get; set; }
+    public DbSet<Models.EnumModels.DietaryPreference> DietaryPreferences { get; set; }
+    #endregion
+    #endregion
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -108,19 +125,21 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
         SeedEnumTable<Models.EnumModels.AttendanceRouteType, Domain.Enum.AttendanceRouteType>(builder);
         SeedEnumTable<Models.EnumModels.AttendanceType, Domain.Enum.AttendanceType>(builder);
         SeedEnumTable<Models.EnumModels.JoinTourStatus, Domain.Enum.JoinTourStatus>(builder);
-        SeedEnumTable<Models.EnumModels.MainVehicleTour, Domain.Enum.MainVehicleTour>(builder);
         SeedEnumTable<Models.EnumModels.MaterialType, Domain.Enum.MaterialType>(builder);
         SeedEnumTable<Models.EnumModels.OptionClass, Domain.Enum.OptionClass>(builder);
         SeedEnumTable<Models.EnumModels.OptionQuotationStatus, Domain.Enum.OptionQuotationStatus>(builder);
         SeedEnumTable<Models.EnumModels.OrderStatus, Domain.Enum.OrderStatus>(builder);
         SeedEnumTable<Models.EnumModels.PrivateTourStatus, Domain.Enum.PrivateTourStatus>(builder);
-        SeedEnumTable<Models.EnumModels.ServiceType, Domain.Enum.ServiceType>(builder);
+        SeedEnumTable<Models.EnumModels.FacilityType, Domain.Enum.FacilityType>(builder);
         SeedEnumTable<Models.EnumModels.TourStatus, Domain.Enum.TourStatus>(builder);
         SeedEnumTable<Models.EnumModels.TourType, Domain.Enum.TourType>(builder);
         SeedEnumTable<Models.EnumModels.TransactionType, Domain.Enum.TransactionType>(builder);
         SeedEnumTable<Models.EnumModels.Unit, Domain.Enum.Unit>(builder);
         SeedEnumTable<Models.EnumModels.VehicleType, Domain.Enum.VehicleType>(builder);
         SeedEnumTable<Models.EnumModels.ServiceAvailability, Domain.Enum.ServiceAvailability>(builder);
+        SeedEnumTable<Models.EnumModels.Rating, Domain.Enum.Rating>(builder);
+        SeedEnumTable<Models.EnumModels.ServiceType, Domain.Enum.ServiceType>(builder);
+        SeedEnumTable<Models.EnumModels.MealType, Domain.Enum.MealType>(builder);
     }
 
     private static void SeedEnumTable<TEntity, TEnum>(ModelBuilder modelBuilder)
@@ -148,17 +167,17 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        //optionsBuilder.UseSqlServer(
-        //    "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
-        IConfiguration config = new ConfigurationBuilder()
-                       .SetBasePath(Directory.GetCurrentDirectory())
-                       .AddJsonFile("appsettings.json", true, true)
-                       .Build();
-        string cs = config["ConnectionStrings:Host"];
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseSqlServer(cs);
-        }
+        optionsBuilder.UseSqlServer(
+            "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+        //IConfiguration config = new ConfigurationBuilder()
+        //               .SetBasePath(Directory.GetCurrentDirectory())
+        //               .AddJsonFile("appsettings.json", true, true)
+        //               .Build();
+        //string cs = config["ConnectionStrings:Host"];
+        //if (!optionsBuilder.IsConfigured)
+        //{
+        //    optionsBuilder.UseSqlServer(cs);
+        //}
 
     }
 }

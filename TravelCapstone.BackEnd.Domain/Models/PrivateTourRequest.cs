@@ -25,6 +25,11 @@ public class PrivateTourRequest: BaseEntity
     public string? RecommendedTourUrl { get; set; }
     public string? Note { get; set; }
     public string? StartLocation { get; set; }
+    public double WishPrice {  get; set; }
+    public Enum.DietaryPreference DietaryPreferenceId { get; set; }
+    [ForeignKey(nameof(DietaryPreferenceId))]
+    public Models.EnumModels.DietaryPreference? DietaryPreference { get; set; }
+
     public Guid? StartLocationCommuneId { get; set; }
     [ForeignKey(nameof(StartLocationCommuneId))]   
     public Commune? Commune { get; set; }

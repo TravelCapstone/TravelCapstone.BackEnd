@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace TravelCapstone.BackEnd.Domain.Enum
 {
-    public enum ServiceType
+    public enum MealType
     {
-        RESTING,
-        FOODANDBEVARAGE,
-        ENTERTAIMENT,
-        VEHICLE
+        Breakfast,
+        Lunch,
+        Dinner
     }
 }

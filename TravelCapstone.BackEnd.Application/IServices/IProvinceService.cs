@@ -9,6 +9,6 @@ namespace TravelCapstone.BackEnd.Application.IServices
 {
     public interface IProvinceService
     {
-        Task<AppActionResult> getAllProvinceByPrivateTourRequestId(Guid Id);
+        Task<AppActionResult> GetAllProvinceByPrivateTourRequestId(Guid Id);
     }
 }

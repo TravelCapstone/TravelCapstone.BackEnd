@@ -9,12 +9,12 @@ namespace TravelCapstone.BackEnd.Application.Services;
 public class ServiceProviderService : GenericBackendService, IServiceProviderService
 {
     private readonly IRepository<ServiceProvider> _serviceProviderRepository;
-    private readonly IRepository<Service> _serviceRepository;
+    private readonly IRepository<Facility> _serviceRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public ServiceProviderService(IServiceProvider serviceProvider,
         IRepository<ServiceProvider> serviceProviderRepository,
-        IRepository<Service> serviceRepository,
+        IRepository<Facility> serviceRepository,
         IUnitOfWork unitOfWork
     ) : base(serviceProvider)
     {
@@ -32,14 +32,14 @@ public class ServiceProviderService : GenericBackendService, IServiceProviderSer
                 result.Result = await _serviceProviderRepository.GetAllDataByExpression(
                     null,
                     pageNumber,
-                    pageSize, null, false,
+                    pageSize,
                     null
                 );
             else
                 result.Result = await _serviceProviderRepository.GetAllDataByExpression(
                     a => a.Name.ToLower().Trim().Contains(keyword.ToLower().Trim()),
                     pageNumber,
-                    pageSize, null, false,
+                    pageSize,
                     null
                 );
         }
@@ -57,7 +57,7 @@ public class ServiceProviderService : GenericBackendService, IServiceProviderSer
         try
         {
             var serviceProviderId = Guid.NewGuid();
-            var listService = new List<Service>();
+            var listService = new List<Facility>();
             await _serviceProviderRepository.Insert(
                 new ServiceProvider
                 {
@@ -66,7 +66,7 @@ public class ServiceProviderService : GenericBackendService, IServiceProviderSer
                 });
             foreach (var item in serviceProviderDto.Services)
             {
-                var service = new Service
+                var service = new Facility
                 {
                     Name = item.Name,
                     Id = Guid.NewGuid(),
@@ -124,7 +124,7 @@ public class ServiceProviderService : GenericBackendService, IServiceProviderSer
         try
         {
             result.Result =
-                await _serviceRepository.GetAllDataByExpression(a => a.ServiceProvider!.Id == id, 0, 0, null, false, null);
+                await _serviceRepository.GetAllDataByExpression(a => a.ServiceProvider!.Id == id, 0, 0, null);
         }
         catch (Exception e)
         {

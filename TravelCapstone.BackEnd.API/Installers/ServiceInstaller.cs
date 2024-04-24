@@ -25,13 +25,13 @@ public class ServiceInstaller : IInstaller
         services.AddScoped<IServiceProviderService, ServiceProviderService>();
         services.AddScoped<ILocationService, LocationService>();
         services.AddScoped<IMapService, MapService>();
-        services.AddScoped<IWalletService, WalletService>();
+        services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<IServiceCostHistoryService, ServiceCostHistoryService>();
         services.AddScoped<IFileService, FileService>();
-        services.AddScoped<IServiceService, ServiceService>();
+        services.AddScoped<IFacilityServiceService, ServiceService>();
         services.AddScoped<IProvinceService, ProvinceService>();
-        services.AddScoped<IFakeDataGenerator,FakeDataGenerator>();
+     //   services.AddScoped<IFakeDataGenerator,FakeDataGenerator>();
         services.AddScoped<IAirportService, AirportService>();
         services.AddScoped<IReferenceTransportService, ReferenceTransportService>();
     }

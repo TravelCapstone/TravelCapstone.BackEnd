@@ -17,7 +17,8 @@ public class Hotel
     public int NumOfDay { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public int Rating { get; set; }
+    public  Rating Rating { get; set; }
+    public int ServingQuantity { get; set; }
 }
 
 public class Location
@@ -32,7 +33,7 @@ public class Restaurant
 {
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public int Rating { get; set; }
+    public Rating Rating { get; set; }
 }
 public class Entertainment
 {

@@ -10,7 +10,8 @@ public class PlanServiceCostDetail
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
     public Guid TourId { get; set; }
-    public int Quantity { get; set; }
+    public int QuantityOfAdult { get; set; }
+    public int QuantityOfChild { get; set; }
     [ForeignKey(nameof(TourId))] public Tour Tour { get; set; } = null!;
 
     public Guid? SellPriceHistoryId { get; set; }
