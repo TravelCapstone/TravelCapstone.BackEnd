@@ -12,8 +12,8 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    [Migration("20240424041118_addEnumMealType")]
-    partial class addEnumMealType
+    [Migration("20240424062512_addSeedEnumDietaryPreference")]
+    partial class addSeedEnumDietaryPreference
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -683,6 +683,43 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DietaryPreferences");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "OMNIVORES"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "VEGAN"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "VEGETARIAN"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "GLUTEN_FREE"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "HALAL"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "KOSHER"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "PESCATARIAN"
+                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.DishType", b =>
@@ -1359,6 +1396,80 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasIndex("RatingId");
 
                     b.ToTable("FacilityRatings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("41f6e693-d06c-43bb-934c-8d3dc014dbba"),
+                            FacilityTypeId = 0,
+                            RatingId = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("0f9d86b6-15b4-4515-9c73-e76ba1b1b9db"),
+                            FacilityTypeId = 0,
+                            RatingId = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("aeece871-67b1-41e9-b909-d4545457b53a"),
+                            FacilityTypeId = 0,
+                            RatingId = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("dba3eb35-4f27-45a5-a9e5-d81d68ca8c69"),
+                            FacilityTypeId = 0,
+                            RatingId = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("6b1d4940-bb49-44cf-9a1e-59b69c035355"),
+                            FacilityTypeId = 0,
+                            RatingId = 3
+                        },
+                        new
+                        {
+                            Id = new Guid("35f4a977-6d58-4332-9ebd-59fabe683e3c"),
+                            FacilityTypeId = 0,
+                            RatingId = 4
+                        },
+                        new
+                        {
+                            Id = new Guid("b214adff-95e2-430f-9091-810bc3bce5ca"),
+                            FacilityTypeId = 1,
+                            RatingId = 5
+                        },
+                        new
+                        {
+                            Id = new Guid("1f96e29a-f30b-4a7c-bef5-03655578a5c0"),
+                            FacilityTypeId = 1,
+                            RatingId = 6
+                        },
+                        new
+                        {
+                            Id = new Guid("164c7400-0352-4fa4-8364-1eed2581b119"),
+                            FacilityTypeId = 1,
+                            RatingId = 7
+                        },
+                        new
+                        {
+                            Id = new Guid("bf21c56a-8e84-4280-8e60-6e507c9830ad"),
+                            FacilityTypeId = 1,
+                            RatingId = 8
+                        },
+                        new
+                        {
+                            Id = new Guid("b7f55d43-0987-4198-ab38-192dd1979685"),
+                            FacilityTypeId = 1,
+                            RatingId = 9
+                        },
+                        new
+                        {
+                            Id = new Guid("6f6c405b-3f1e-48c0-b0c0-6b532c232023"),
+                            FacilityTypeId = 2,
+                            RatingId = 11
+                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.FacilityService", b =>
