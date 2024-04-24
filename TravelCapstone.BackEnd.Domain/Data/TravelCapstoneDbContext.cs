@@ -119,6 +119,71 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
             ConcurrencyStamp = "02962efa-1273-46c0-b103-7167b1742ef3",
             NormalizedName = "customer"
         });
+        builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.HOTEL,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.LODGING
+        }); builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.HOTEL,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.LODGING
+        }); builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.HOTEL,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.HOTEL_TWOSTAR
+        }); builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.HOTEL,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.HOTEL_THREESTAR
+        }); builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.HOTEL,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.HOTEL_FOURSTAR
+        }); builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.HOTEL,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.HOTEL_FIVESTAR
+        });
+        builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.RESTAURANTS,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.RESTAURENT_CASUAL
+        }); builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.RESTAURANTS,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.RESTAURENT_TWOSTAR
+        }); builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.RESTAURANTS,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.RESTAURENT_THREESTAR
+        });
+        builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.RESTAURANTS,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.RESTAURENT_FOURSTAR
+        });
+        builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.RESTAURANTS,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.RESTAURENT_FIVESTAR
+        });
+        builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
+            FacilityTypeId = Enum.FacilityType.ENTERTAINMENT,
+            Id = Guid.NewGuid(),
+            RatingId = Enum.Rating.TOURIST_AREA
+        }); 
 
         base.OnModelCreating(builder);
 
@@ -140,6 +205,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
         SeedEnumTable<Models.EnumModels.Rating, Domain.Enum.Rating>(builder);
         SeedEnumTable<Models.EnumModels.ServiceType, Domain.Enum.ServiceType>(builder);
         SeedEnumTable<Models.EnumModels.MealType, Domain.Enum.MealType>(builder);
+        SeedEnumTable<Models.EnumModels.DietaryPreference, Domain.Enum.DietaryPreference>(builder);
     }
 
     private static void SeedEnumTable<TEntity, TEnum>(ModelBuilder modelBuilder)
@@ -167,13 +233,16 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(
-            "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
-        //IConfiguration config = new ConfigurationBuilder()
-        //               .SetBasePath(Directory.GetCurrentDirectory())
-        //               .AddJsonFile("appsettings.json", true, true)
-        //               .Build();
-        //string cs = config["ConnectionStrings:Host"];
+        //optionsBuilder.UseSqlServer(
+        //    "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+        IConfiguration config = new ConfigurationBuilder()
+                       .SetBasePath(Directory.GetCurrentDirectory())
+                       .AddJsonFile("appsettings.json", true, true)
+                       .Build();
+        //  string cs = config["ConnectionStrings:Host"];
+        string cs = "Data Source=SQL5104.site4now.net;Initial Catalog=db_aa7304_travelbe01;User Id=db_aa7304_travelbe01_admin;Password=travelbe01@3;MultipleActiveResultSets=True;TrustServerCertificate=True";
+        optionsBuilder.UseSqlServer(cs);
+
         //if (!optionsBuilder.IsConfigured)
         //{
         //    optionsBuilder.UseSqlServer(cs);
