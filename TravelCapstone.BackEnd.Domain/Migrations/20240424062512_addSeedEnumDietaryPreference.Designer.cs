@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240424062512_addSeedEnumDietaryPreference")]
+    partial class addSeedEnumDietaryPreference
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1398,73 +1400,73 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9696a0c1-9856-49d3-bf82-067e66a5e0fc"),
+                            Id = new Guid("41f6e693-d06c-43bb-934c-8d3dc014dbba"),
                             FacilityTypeId = 0,
                             RatingId = 0
                         },
                         new
                         {
-                            Id = new Guid("3266708a-0bd3-4fb2-84fd-b4e826ca2516"),
+                            Id = new Guid("0f9d86b6-15b4-4515-9c73-e76ba1b1b9db"),
                             FacilityTypeId = 0,
                             RatingId = 0
                         },
                         new
                         {
-                            Id = new Guid("5a4ccdaa-1553-420c-9810-30fe3543fb37"),
+                            Id = new Guid("aeece871-67b1-41e9-b909-d4545457b53a"),
                             FacilityTypeId = 0,
                             RatingId = 1
                         },
                         new
                         {
-                            Id = new Guid("5234a0c6-d8a8-4f00-abf7-bfe003c9c079"),
+                            Id = new Guid("dba3eb35-4f27-45a5-a9e5-d81d68ca8c69"),
                             FacilityTypeId = 0,
                             RatingId = 2
                         },
                         new
                         {
-                            Id = new Guid("b1a43278-516b-491e-bc08-900c3bf5dbdb"),
+                            Id = new Guid("6b1d4940-bb49-44cf-9a1e-59b69c035355"),
                             FacilityTypeId = 0,
                             RatingId = 3
                         },
                         new
                         {
-                            Id = new Guid("ce741393-e66a-4d04-9b9e-0aef620ec39f"),
+                            Id = new Guid("35f4a977-6d58-4332-9ebd-59fabe683e3c"),
                             FacilityTypeId = 0,
                             RatingId = 4
                         },
                         new
                         {
-                            Id = new Guid("a3f92296-3241-497e-9153-59c0b3b8ab89"),
+                            Id = new Guid("b214adff-95e2-430f-9091-810bc3bce5ca"),
                             FacilityTypeId = 1,
                             RatingId = 5
                         },
                         new
                         {
-                            Id = new Guid("4b07110d-aed3-4ecd-9158-80376b25c351"),
+                            Id = new Guid("1f96e29a-f30b-4a7c-bef5-03655578a5c0"),
                             FacilityTypeId = 1,
                             RatingId = 6
                         },
                         new
                         {
-                            Id = new Guid("66a197ae-bba9-4693-a019-317dfc7ae08a"),
+                            Id = new Guid("164c7400-0352-4fa4-8364-1eed2581b119"),
                             FacilityTypeId = 1,
                             RatingId = 7
                         },
                         new
                         {
-                            Id = new Guid("e907e222-c36c-4f56-acc6-96fa237b6362"),
+                            Id = new Guid("bf21c56a-8e84-4280-8e60-6e507c9830ad"),
                             FacilityTypeId = 1,
                             RatingId = 8
                         },
                         new
                         {
-                            Id = new Guid("e9f70412-4243-4aa6-adf4-c7a96eb566d4"),
+                            Id = new Guid("b7f55d43-0987-4198-ab38-192dd1979685"),
                             FacilityTypeId = 1,
                             RatingId = 9
                         },
                         new
                         {
-                            Id = new Guid("7188600d-7729-443b-9293-576c1809f4c0"),
+                            Id = new Guid("6f6c405b-3f1e-48c0-b0c0-6b532c232023"),
                             FacilityTypeId = 2,
                             RatingId = 11
                         });
@@ -2047,28 +2049,18 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("FacilityServiceId")
+                    b.Property<Guid>("FacilityServiceId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("MOQ")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("MenuId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<double>("Price")
                         .HasColumnType("float");
-
-                    b.Property<Guid?>("TransportServiceDetailId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FacilityServiceId");
-
-                    b.HasIndex("MenuId");
-
-                    b.HasIndex("TransportServiceDetailId");
 
                     b.ToTable("SellPriceHistorys");
                 });
@@ -3064,21 +3056,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 {
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.FacilityService", "FacilityService")
                         .WithMany()
-                        .HasForeignKey("FacilityServiceId");
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Menu", "Menu")
-                        .WithMany()
-                        .HasForeignKey("MenuId");
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.TransportServiceDetail", "TransportServiceDetail")
-                        .WithMany()
-                        .HasForeignKey("TransportServiceDetailId");
+                        .HasForeignKey("FacilityServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("FacilityService");
-
-                    b.Navigation("Menu");
-
-                    b.Navigation("TransportServiceDetail");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.ServiceCostHistory", b =>

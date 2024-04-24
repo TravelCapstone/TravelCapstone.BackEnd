@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
-    public partial class fixDbBigUpdate : Migration
+    public partial class addSeedEnumDietaryPreference : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -57,11 +57,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_ServiceCostHistorys_ServiceId",
                 table: "ServiceCostHistorys");
-
-            migrationBuilder.DeleteData(
-                table: "ServiceTypes",
-                keyColumn: "Id",
-                keyValue: 3);
 
             migrationBuilder.DeleteData(
                 table: "ServiceTypes",
@@ -227,6 +222,18 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MealTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MealTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Ratings",
                 columns: table => new
                 {
@@ -254,13 +261,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         column: x => x.AccountId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_TourguideAssignments_Provinces_ProvinceId",
                         column: x => x.ProvinceId,
                         principalTable: "Provinces",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -279,7 +286,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         column: x => x.VehicleTypeId,
                         principalTable: "VehicleTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -299,7 +306,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         column: x => x.DishTypeId,
                         principalTable: "DishTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -318,13 +325,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         column: x => x.FacilityTypeId,
                         principalTable: "FacilityTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_FacilityRatings_Ratings_RatingId",
                         column: x => x.RatingId,
                         principalTable: "Ratings",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -343,13 +350,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         column: x => x.TourguideAssignmentId,
                         principalTable: "TourguideAssignments",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_TourTourguides_Tours_TourId",
                         column: x => x.TourId,
                         principalTable: "Tours",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -373,19 +380,19 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         column: x => x.CommunceId,
                         principalTable: "Communes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_Facilities_FacilityRatings_FacilityRatingId",
                         column: x => x.FacilityRatingId,
                         principalTable: "FacilityRatings",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_Facilities_ServiceProviders_ServiceProviderId",
                         column: x => x.ServiceProviderId,
                         principalTable: "ServiceProviders",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -409,25 +416,25 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         column: x => x.FacilityId,
                         principalTable: "Facilities",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_FacilityServices_ServiceAvailabilities_ServiceAvailabilityId",
                         column: x => x.ServiceAvailabilityId,
                         principalTable: "ServiceAvailabilities",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_FacilityServices_ServiceTypes_ServiceTypeId",
                         column: x => x.ServiceTypeId,
                         principalTable: "ServiceTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_FacilityServices_Units_UnitId",
                         column: x => x.UnitId,
                         principalTable: "Units",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -438,6 +445,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DietaryPreferenceId = table.Column<int>(type: "int", nullable: false),
+                    MealTypeId = table.Column<int>(type: "int", nullable: false),
                     FacilityServiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -448,13 +456,19 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         column: x => x.DietaryPreferenceId,
                         principalTable: "DietaryPreferences",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_Menus_FacilityServices_FacilityServiceId",
                         column: x => x.FacilityServiceId,
                         principalTable: "FacilityServices",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
+                    table.ForeignKey(
+                        name: "FK_Menus_MealTypes_MealTypeId",
+                        column: x => x.MealTypeId,
+                        principalTable: "MealTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction. NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -473,13 +487,27 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         column: x => x.DishId,
                         principalTable: "Dishes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_MenuDishes_Menus_MenuId",
                         column: x => x.MenuId,
                         principalTable: "Menus",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
+                });
+
+            migrationBuilder.InsertData(
+                table: "DietaryPreferences",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 0, "OMNIVORES" },
+                    { 1, "VEGAN" },
+                    { 2, "VEGETARIAN" },
+                    { 3, "GLUTEN_FREE" },
+                    { 4, "HALAL" },
+                    { 5, "KOSHER" },
+                    { 6, "PESCATARIAN" }
                 });
 
             migrationBuilder.InsertData(
@@ -492,6 +520,16 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     { 2, "ENTERTAINMENT" },
                     { 3, "VEHICLE_SUPPLY" },
                     { 4, "AIR_TICKET_SUPPLY" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "MealTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 0, "Breakfast" },
+                    { 1, "Lunch" },
+                    { 2, "Dinner" }
                 });
 
             migrationBuilder.InsertData(
@@ -533,6 +571,32 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 keyValue: 2,
                 column: "Name",
                 value: "ENTERTAIMENT");
+
+            migrationBuilder.UpdateData(
+                table: "ServiceTypes",
+                keyColumn: "Id",
+                keyValue: 3,
+                column: "Name",
+                value: "VEHICLE");
+
+            migrationBuilder.InsertData(
+                table: "FacilityRatings",
+                columns: new[] { "Id", "FacilityTypeId", "RatingId" },
+                values: new object[,]
+                {
+                    { new Guid("0f9d86b6-15b4-4515-9c73-e76ba1b1b9db"), 0, 0 },
+                    { new Guid("164c7400-0352-4fa4-8364-1eed2581b119"), 1, 7 },
+                    { new Guid("1f96e29a-f30b-4a7c-bef5-03655578a5c0"), 1, 6 },
+                    { new Guid("35f4a977-6d58-4332-9ebd-59fabe683e3c"), 0, 4 },
+                    { new Guid("41f6e693-d06c-43bb-934c-8d3dc014dbba"), 0, 0 },
+                    { new Guid("6b1d4940-bb49-44cf-9a1e-59b69c035355"), 0, 3 },
+                    { new Guid("6f6c405b-3f1e-48c0-b0c0-6b532c232023"), 2, 11 },
+                    { new Guid("aeece871-67b1-41e9-b909-d4545457b53a"), 0, 1 },
+                    { new Guid("b214adff-95e2-430f-9091-810bc3bce5ca"), 1, 5 },
+                    { new Guid("b7f55d43-0987-4198-ab38-192dd1979685"), 1, 9 },
+                    { new Guid("bf21c56a-8e84-4280-8e60-6e507c9830ad"), 1, 8 },
+                    { new Guid("dba3eb35-4f27-45a5-a9e5-d81d68ca8c69"), 0, 2 }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ServiceCostHistorys_FacilityServiceId",
@@ -635,6 +699,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "FacilityServiceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Menus_MealTypeId",
+                table: "Menus",
+                column: "MealTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TourguideAssignments_AccountId",
                 table: "TourguideAssignments",
                 column: "AccountId");
@@ -672,7 +741,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "DietaryPreferenceId",
                 principalTable: "DietaryPreferences",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_QuotationDetails_FacilityRatings_FacilityRatingId",
@@ -680,7 +749,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "FacilityRatingId",
                 principalTable: "FacilityRatings",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_QuotationDetails_ServiceTypes_ServiceTypeId",
@@ -688,7 +757,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "ServiceTypeId",
                 principalTable: "ServiceTypes",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ReferenceTransportPrices_FacilityRatings_FacilityRatingId",
@@ -696,7 +765,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "FacilityRatingId",
                 principalTable: "FacilityRatings",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ReferenceTransportPrices_ServiceTypes_ServiceTypeId",
@@ -704,7 +773,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "ServiceTypeId",
                 principalTable: "ServiceTypes",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_SellPriceHistorys_FacilityServices_FacilityServiceId",
@@ -712,7 +781,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "FacilityServiceId",
                 principalTable: "FacilityServices",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ServiceCostHistorys_FacilityServices_FacilityServiceId",
@@ -827,6 +896,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
             migrationBuilder.DropTable(
                 name: "FacilityServices");
+
+            migrationBuilder.DropTable(
+                name: "MealTypes");
 
             migrationBuilder.DropTable(
                 name: "Facilities");
@@ -1002,7 +1074,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         column: x => x.ServiceTypeId,
                         principalTable: "ServiceTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -1030,31 +1102,31 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         column: x => x.CommunceId,
                         principalTable: "Communes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_Services_ServiceAvailabilities_ServiceAvailabilityId",
                         column: x => x.ServiceAvailabilityId,
                         principalTable: "ServiceAvailabilities",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_Services_ServiceProviders_ServiceProviderId",
                         column: x => x.ServiceProviderId,
                         principalTable: "ServiceProviders",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_Services_ServiceRatings_ServiceRatingId",
                         column: x => x.ServiceRatingId,
                         principalTable: "ServiceRatings",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                     table.ForeignKey(
                         name: "FK_Services_Units_UnitId",
                         column: x => x.UnitId,
                         principalTable: "Units",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction. NoAction);
                 });
 
             migrationBuilder.UpdateData(
@@ -1078,14 +1150,17 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "Name",
                 value: "ENTERTAINMENT");
 
+            migrationBuilder.UpdateData(
+                table: "ServiceTypes",
+                keyColumn: "Id",
+                keyValue: 3,
+                column: "Name",
+                value: "VEHICLE_SUPPLY");
+
             migrationBuilder.InsertData(
                 table: "ServiceTypes",
                 columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 3, "VEHICLE_SUPPLY" },
-                    { 4, "AIR_TICKET_SUPPLY" }
-                });
+                values: new object[] { 4, "AIR_TICKET_SUPPLY" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tours_TourGuideId",
@@ -1133,7 +1208,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "StartLocationCommuneId",
                 principalTable: "Communes",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_QuotationDetails_ServiceRatings_ServiceRatingId",
@@ -1141,7 +1216,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "ServiceRatingId",
                 principalTable: "ServiceRatings",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ReferenceTransportPrices_ServiceRatings_ServiceRatingId",
@@ -1149,7 +1224,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "ServiceRatingId",
                 principalTable: "ServiceRatings",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_SellPriceHistorys_Services_ServiceId",
@@ -1157,7 +1232,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "ServiceId",
                 principalTable: "Services",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ServiceCostHistorys_Services_ServiceId",
@@ -1165,7 +1240,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "ServiceId",
                 principalTable: "Services",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Tours_AspNetUsers_TourGuideId",
@@ -1180,7 +1255,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "ServiceId",
                 principalTable: "Services",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_VehicleRoutes_ReferenceTransportPrices_ReferenceTransportPriceId",
@@ -1188,7 +1263,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "ReferenceTransportPriceId",
                 principalTable: "ReferenceTransportPrices",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction. NoAction);
         }
     }
 }

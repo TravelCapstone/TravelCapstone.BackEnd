@@ -12,8 +12,8 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    [Migration("20240423162218_fixDbBigUpdate")]
-    partial class fixDbBigUpdate
+    [Migration("20240424105110_addFieldSellPrice")]
+    partial class addFieldSellPrice
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -683,6 +683,43 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DietaryPreferences");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "OMNIVORES"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "VEGAN"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "VEGETARIAN"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "GLUTEN_FREE"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "HALAL"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "KOSHER"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "PESCATARIAN"
+                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.DishType", b =>
@@ -789,6 +826,37 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         {
                             Id = 0,
                             Name = "PASSPORT"
+                        });
+                });
+
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.MealType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MealTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "Breakfast"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "Lunch"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Dinner"
                         });
                 });
 
@@ -1065,6 +1133,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         {
                             Id = 2,
                             Name = "ENTERTAIMENT"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "VEHICLE"
                         });
                 });
 
@@ -1323,6 +1396,80 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasIndex("RatingId");
 
                     b.ToTable("FacilityRatings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("e54995b3-4356-4d8e-9a85-3ea84708b622"),
+                            FacilityTypeId = 0,
+                            RatingId = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("2082d4e0-3c81-4f09-a1ee-71c9fbe68695"),
+                            FacilityTypeId = 0,
+                            RatingId = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("eaf29dae-91b6-4937-bf98-73dea569608d"),
+                            FacilityTypeId = 0,
+                            RatingId = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("c3f8197d-dc54-42d3-a7ac-03b7a54f149f"),
+                            FacilityTypeId = 0,
+                            RatingId = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("90260827-f4a3-4e51-b663-e1e3a04319ee"),
+                            FacilityTypeId = 0,
+                            RatingId = 3
+                        },
+                        new
+                        {
+                            Id = new Guid("bb0ce269-6f65-4ad9-a78c-e2d875a3e615"),
+                            FacilityTypeId = 0,
+                            RatingId = 4
+                        },
+                        new
+                        {
+                            Id = new Guid("a3cec749-e989-4dfc-a951-01ae5968643e"),
+                            FacilityTypeId = 1,
+                            RatingId = 5
+                        },
+                        new
+                        {
+                            Id = new Guid("98deef3f-1f0c-42b5-8f6e-691e42599055"),
+                            FacilityTypeId = 1,
+                            RatingId = 6
+                        },
+                        new
+                        {
+                            Id = new Guid("c9140b0f-aa3d-4356-acc6-1d7be690ab69"),
+                            FacilityTypeId = 1,
+                            RatingId = 7
+                        },
+                        new
+                        {
+                            Id = new Guid("220c785d-85dc-47f9-bd71-84527244ea26"),
+                            FacilityTypeId = 1,
+                            RatingId = 8
+                        },
+                        new
+                        {
+                            Id = new Guid("4db6fc84-4f56-41be-b451-a90175cbb330"),
+                            FacilityTypeId = 1,
+                            RatingId = 9
+                        },
+                        new
+                        {
+                            Id = new Guid("fb360e5e-00c7-4590-b382-5c2488436f27"),
+                            FacilityTypeId = 2,
+                            RatingId = 11
+                        });
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.FacilityService", b =>
@@ -1405,6 +1552,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid>("FacilityServiceId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("MealTypeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1414,6 +1564,8 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasIndex("DietaryPreferenceId");
 
                     b.HasIndex("FacilityServiceId");
+
+                    b.HasIndex("MealTypeId");
 
                     b.ToTable("Menus");
                 });
@@ -1897,18 +2049,28 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("FacilityServiceId")
+                    b.Property<Guid?>("FacilityServiceId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("MOQ")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("MenuId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
+
+                    b.Property<Guid?>("TransportServiceDetailId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FacilityServiceId");
+
+                    b.HasIndex("MenuId");
+
+                    b.HasIndex("TransportServiceDetailId");
 
                     b.ToTable("SellPriceHistorys");
                 });
@@ -2574,9 +2736,17 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.MealType", "MealType")
+                        .WithMany()
+                        .HasForeignKey("MealTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("DietaryPreference");
 
                     b.Navigation("FacilityService");
+
+                    b.Navigation("MealType");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.MenuDish", b =>
@@ -2896,11 +3066,21 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 {
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.FacilityService", "FacilityService")
                         .WithMany()
-                        .HasForeignKey("FacilityServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FacilityServiceId");
+
+                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Menu", "Menu")
+                        .WithMany()
+                        .HasForeignKey("MenuId");
+
+                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.TransportServiceDetail", "TransportServiceDetail")
+                        .WithMany()
+                        .HasForeignKey("TransportServiceDetailId");
 
                     b.Navigation("FacilityService");
+
+                    b.Navigation("Menu");
+
+                    b.Navigation("TransportServiceDetail");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.ServiceCostHistory", b =>
