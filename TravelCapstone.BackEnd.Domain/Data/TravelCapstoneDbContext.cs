@@ -233,15 +233,15 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        //optionsBuilder.UseSqlServer(
-        //    "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+        optionsBuilder.UseSqlServer(
+            "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
         IConfiguration config = new ConfigurationBuilder()
                        .SetBasePath(Directory.GetCurrentDirectory())
                        .AddJsonFile("appsettings.json", true, true)
                        .Build();
         //  string cs = config["ConnectionStrings:Host"];
-        string cs = "Data Source=SQL5104.site4now.net;Initial Catalog=db_aa7304_travelbe01;User Id=db_aa7304_travelbe01_admin;Password=travelbe01@3;MultipleActiveResultSets=True;TrustServerCertificate=True";
-        optionsBuilder.UseSqlServer(cs);
+        //string cs = "Data Source=SQL5104.site4now.net;Initial Catalog=db_aa7304_travelbe01;User Id=db_aa7304_travelbe01_admin;Password=travelbe01@3;MultipleActiveResultSets=True;TrustServerCertificate=True";
+        //optionsBuilder.UseSqlServer(cs);
 
         //if (!optionsBuilder.IsConfigured)
         //{
