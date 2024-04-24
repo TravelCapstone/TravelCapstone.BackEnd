@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240424105110_addFieldSellPrice")]
+    partial class addFieldSellPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1398,73 +1400,73 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9696a0c1-9856-49d3-bf82-067e66a5e0fc"),
+                            Id = new Guid("e54995b3-4356-4d8e-9a85-3ea84708b622"),
                             FacilityTypeId = 0,
                             RatingId = 0
                         },
                         new
                         {
-                            Id = new Guid("3266708a-0bd3-4fb2-84fd-b4e826ca2516"),
+                            Id = new Guid("2082d4e0-3c81-4f09-a1ee-71c9fbe68695"),
                             FacilityTypeId = 0,
                             RatingId = 0
                         },
                         new
                         {
-                            Id = new Guid("5a4ccdaa-1553-420c-9810-30fe3543fb37"),
+                            Id = new Guid("eaf29dae-91b6-4937-bf98-73dea569608d"),
                             FacilityTypeId = 0,
                             RatingId = 1
                         },
                         new
                         {
-                            Id = new Guid("5234a0c6-d8a8-4f00-abf7-bfe003c9c079"),
+                            Id = new Guid("c3f8197d-dc54-42d3-a7ac-03b7a54f149f"),
                             FacilityTypeId = 0,
                             RatingId = 2
                         },
                         new
                         {
-                            Id = new Guid("b1a43278-516b-491e-bc08-900c3bf5dbdb"),
+                            Id = new Guid("90260827-f4a3-4e51-b663-e1e3a04319ee"),
                             FacilityTypeId = 0,
                             RatingId = 3
                         },
                         new
                         {
-                            Id = new Guid("ce741393-e66a-4d04-9b9e-0aef620ec39f"),
+                            Id = new Guid("bb0ce269-6f65-4ad9-a78c-e2d875a3e615"),
                             FacilityTypeId = 0,
                             RatingId = 4
                         },
                         new
                         {
-                            Id = new Guid("a3f92296-3241-497e-9153-59c0b3b8ab89"),
+                            Id = new Guid("a3cec749-e989-4dfc-a951-01ae5968643e"),
                             FacilityTypeId = 1,
                             RatingId = 5
                         },
                         new
                         {
-                            Id = new Guid("4b07110d-aed3-4ecd-9158-80376b25c351"),
+                            Id = new Guid("98deef3f-1f0c-42b5-8f6e-691e42599055"),
                             FacilityTypeId = 1,
                             RatingId = 6
                         },
                         new
                         {
-                            Id = new Guid("66a197ae-bba9-4693-a019-317dfc7ae08a"),
+                            Id = new Guid("c9140b0f-aa3d-4356-acc6-1d7be690ab69"),
                             FacilityTypeId = 1,
                             RatingId = 7
                         },
                         new
                         {
-                            Id = new Guid("e907e222-c36c-4f56-acc6-96fa237b6362"),
+                            Id = new Guid("220c785d-85dc-47f9-bd71-84527244ea26"),
                             FacilityTypeId = 1,
                             RatingId = 8
                         },
                         new
                         {
-                            Id = new Guid("e9f70412-4243-4aa6-adf4-c7a96eb566d4"),
+                            Id = new Guid("4db6fc84-4f56-41be-b451-a90175cbb330"),
                             FacilityTypeId = 1,
                             RatingId = 9
                         },
                         new
                         {
-                            Id = new Guid("7188600d-7729-443b-9293-576c1809f4c0"),
+                            Id = new Guid("fb360e5e-00c7-4590-b382-5c2488436f27"),
                             FacilityTypeId = 2,
                             RatingId = 11
                         });

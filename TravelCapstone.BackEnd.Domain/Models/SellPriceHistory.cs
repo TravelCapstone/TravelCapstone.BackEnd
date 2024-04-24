@@ -9,12 +9,13 @@ public class SellPriceHistory
     public int MOQ { get; set; }
     public double Price { get; set; }
     public DateTime Date { get; set; }
-    public Guid FacilityServiceId { get; set; }
+    public Guid? FacilityServiceId { get; set; }
+
     [ForeignKey(nameof(FacilityServiceId))] public FacilityService? FacilityService { get; set; }
-    public Guid MenuId { get; set; }
+    public Guid? MenuId { get; set; }
     [ForeignKey(nameof(MenuId))] public Menu? Menu { get; set; }
 
     public Guid? TransportServiceDetailId { get; set; }
-    [ForeignKey(nameof(TransportServiceDetailId))]  
+    [ForeignKey(nameof(TransportServiceDetailId))]
     public TransportServiceDetail? TransportServiceDetail { get; set; }
 }
