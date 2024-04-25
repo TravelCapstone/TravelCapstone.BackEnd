@@ -35,7 +35,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 if (!BuildAppActionResultIsError(result))
                 {
                     result.Result = await _sellPriceHistoryRepository.GetAllDataByExpression(p => p.FacilityService!.Facility!.FacilityRating!.FacilityTypeId == FacilityType.HOTEL 
-                    && p.FacilityService!.Facility!.FacilityRatingId == ratingId, pageIndex, pageSize, null, true, p => p.FacilityService!.Facility!.FacilityRating!);
+                    && p.FacilityService!.Facility!.FacilityRatingId == ratingId, pageIndex, pageSize, a=> a.Date, false, p => p.FacilityService!.Facility!.FacilityRating!);
                 }
             } catch (Exception e)
             {
@@ -51,7 +51,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             try
             {
                  result.Result = await _sellPriceHistoryRepository.GetAllDataByExpression(p => p.FacilityService!.FacilityId == facilityId && p.FacilityService.ServiceTypeId == ServiceType.ENTERTAIMENT,
-                     pageIndex, pageSize, null, true, p => p.FacilityService!.Facility!.FacilityRating!);
+                     pageIndex, pageSize, a=> a.Date, false, p => p.FacilityService!.Facility!.FacilityRating!);
             }
             catch (Exception e)
             {
