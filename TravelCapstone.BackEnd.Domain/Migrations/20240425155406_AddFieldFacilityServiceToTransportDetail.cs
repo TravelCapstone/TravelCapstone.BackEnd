@@ -81,7 +81,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 table: "Menus",
                 type: "nvarchar(450)",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreateDate",
