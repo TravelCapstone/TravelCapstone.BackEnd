@@ -82,12 +82,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 oldType: "uniqueidentifier");
 
             migrationBuilder.AddColumn<Guid>(
-                name: "MenuId",
-                table: "SellPriceHistorys",
-                type: "uniqueidentifier",
-                nullable: true);
-
-            migrationBuilder.AddColumn<Guid>(
                 name: "TransportServiceDetailId",
                 table: "SellPriceHistorys",
                 type: "uniqueidentifier",
@@ -112,11 +106,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     { new Guid("fb360e5e-00c7-4590-b382-5c2488436f27"), 2, 11 }
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_SellPriceHistorys_MenuId",
-                table: "SellPriceHistorys",
-                column: "MenuId");
-
+          
             migrationBuilder.CreateIndex(
                 name: "IX_SellPriceHistorys_TransportServiceDetailId",
                 table: "SellPriceHistorys",
@@ -127,13 +117,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 table: "SellPriceHistorys",
                 column: "FacilityServiceId",
                 principalTable: "FacilityServices",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_SellPriceHistorys_Menus_MenuId",
-                table: "SellPriceHistorys",
-                column: "MenuId",
-                principalTable: "Menus",
                 principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
@@ -158,10 +141,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 name: "FK_SellPriceHistorys_TransportServiceDetails_TransportServiceDetailId",
                 table: "SellPriceHistorys");
 
-            migrationBuilder.DropIndex(
-                name: "IX_SellPriceHistorys_MenuId",
-                table: "SellPriceHistorys");
-
+           
             migrationBuilder.DropIndex(
                 name: "IX_SellPriceHistorys_TransportServiceDetailId",
                 table: "SellPriceHistorys");
@@ -225,10 +205,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 table: "FacilityRatings",
                 keyColumn: "Id",
                 keyValue: new Guid("fb360e5e-00c7-4590-b382-5c2488436f27"));
-
-            migrationBuilder.DropColumn(
-                name: "MenuId",
-                table: "SellPriceHistorys");
 
             migrationBuilder.DropColumn(
                 name: "TransportServiceDetailId",
