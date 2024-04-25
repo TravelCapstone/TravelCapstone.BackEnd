@@ -5,6 +5,7 @@ using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
+    [Route("facility")]
     public class FacilityController : Controller
     {
         private readonly IFacilityService _service;
