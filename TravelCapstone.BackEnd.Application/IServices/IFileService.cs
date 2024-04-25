@@ -9,6 +9,6 @@ namespace TravelCapstone.BackEnd.Application.IServices
 {
     public interface IFileService
     {
-        public IActionResult GenerateExcelContent<T>(IEnumerable<T> dataList, string sheetName);
+        public IActionResult GenerateExcelContent<T>(IEnumerable<T> dataList, List<string> header, string sheetName);
     }
 }

@@ -6,17 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Common.DTO.Response;
-using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.Application.IServices
 {
-    public interface IServiceCostHistoryService
+    public interface IMenuService
     {
         public Task<AppActionResult> UploadQuotation(IFormFile file);
         public Task<AppActionResult> ValidateExcelFile(IFormFile file);
         public Task<IActionResult> GetPriceQuotationTemplate();
-        Task<AppActionResult> GetLastCostHistory(List<Guid> servicesId);
-        public Task<AppActionResult> GetServiceCostByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId);
     }
-
 }

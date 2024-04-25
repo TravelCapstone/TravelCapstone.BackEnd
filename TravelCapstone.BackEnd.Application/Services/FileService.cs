@@ -20,22 +20,17 @@ namespace TravelCapstone.BackEnd.Application.Services
         {
             _result = new();
         }
-        public IActionResult GenerateExcelContent<T>(IEnumerable<T> dataList, string sheetName)
+        public IActionResult GenerateExcelContent<T>(IEnumerable<T> dataList, List<string> header, string sheetName)
         {
             using (ExcelPackage package = new ExcelPackage())
             {
                 ExcelWorksheet worksheet = package.Workbook.Worksheets.Add(sheetName);
 
                 PropertyInfo[] properties = typeof(T).GetProperties();
-                bool isRecordTemplate = false;
-                for (int i = 0; i < properties.Length; i++)
+                bool isRecordTemplate = true;
+                for (int i = 0; i < header.Count; i++)
                 {
-                    if (sheetName.Contains("Template") && properties[i].Name.Equals("Id"))
-                    {
-                        worksheet.Cells[1, i + 1].Value = "No";
-                        isRecordTemplate = true;
-                    }
-                    else worksheet.Cells[1, i + 1].Value = properties[i].Name;
+                    worksheet.Cells[1, i + 1].Value = header[i];
                 }
 
                 int row = 2;

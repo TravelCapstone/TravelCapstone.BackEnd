@@ -17,7 +17,8 @@ namespace TravelCapstone.BackEnd.Domain.Models
         public VehicleType VehicleTypeId { get; set; }
         [ForeignKey(nameof(VehicleTypeId))]
         public EnumModels.VehicleType? VehicleType { get; set; }
-
+        public Guid FacilityServiceId { get; set; }
+        [ForeignKey(nameof(FacilityServiceId))] public FacilityService? FacilityService { get; set; }
 
     }
 }

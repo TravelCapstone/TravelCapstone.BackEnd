@@ -13,6 +13,7 @@ namespace TravelCapstone.BackEnd.Domain.Models
     {
         [Key]
         public Guid Id { get; set; }    
+        public string Name { get; set; }
         public int ServingQuantity { get; set; }
         public double SurchargePercent { get; set; } = 0;
         public Guid FacilityId { get; set; }

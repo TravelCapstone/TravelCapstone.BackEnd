@@ -566,7 +566,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         try
         {
             
-                var facilityServiceRepository = Resolve<IRepository<FacilityService>>();
+                var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
                 var facilityServiceListDb = await facilityServiceRepository!.GetAllDataByExpression(
                     s => s.Facility!.Communce!.District!.ProvinceId== provinceId
                  && s!.ServiceTypeId == serviceTypeId,
