@@ -92,6 +92,12 @@ public class SD
         }
     }
 
+    public class Regex
+    {
+        public static string PHONENUMBER = "^0\\d{9,10}$";
+        public static string EMAIL = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        public static string NAME = "^[\\p{L}\\s,'.-]+$";
+    }
     public class EnumType
     {
         public static Dictionary<string, int> MaterialUnit = new Dictionary<string, int> { { "KG", 0 }, { "M3", 1 }, { "BAR", 2 }, { "ITEM", 3 }, { "Kg", 0 }, { "m3", 1 }, { "Bar", 2 }, { "Item", 3 }, { "kg", 0 }, { "bar", 2 }, { "item", 3 } };
@@ -101,7 +107,9 @@ public class SD
 
     public class ExcelHeaders
     {
-        public static List<String> SERVICE_QUOTATION = new List<string> { "No", "ServiceName", "Unit", "MOQ", "PricePerAdult", "PricePerChild" };
+        public static List<String> SERVICE_QUOTATION = new List<string> { "No", "Tên dịch vụ", "Đơn vị", "MOQ", "Giá người lớn", "Giá trẻ em" };
+        public static List<String> TOURGUIDE_REGISTRATION = new List<string> { "No", "Tên", "Họ", "Email", "Số điện thoại", "Giới tính" };
     }
+
 
 }
