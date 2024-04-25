@@ -34,6 +34,9 @@ public class ServiceInstaller : IInstaller
      //   services.AddScoped<IFakeDataGenerator,FakeDataGenerator>();
         services.AddScoped<IAirportService, AirportService>();
         services.AddScoped<IReferenceTransportService, ReferenceTransportService>();
-        services.AddScoped<IExcelService, ExcelService>();
+        services.AddScoped<IMenuService, MenuService>();
+        services.AddScoped<ISellPriceHistoryService, SellPriceHistoryService>();
+        services.AddScoped<ITourguideAssignmentsService, TourguideAssignmentsService>();
+        services.AddScoped<IFacilityService, FacilityService>();
     }
 }
