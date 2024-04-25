@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Application.IServices;
 
@@ -32,4 +35,8 @@ public interface IAccountService
     Task<AppActionResult> GoogleCallBack(string accessTokenFromGoogle);
 
     public Task<AppActionResult> SendEmailForActiveCode(string email);
+    public Task<IActionResult> GetTourGuideTemplate();
+    public Task<AppActionResult> ImportTourGuideFromExcel(IFormFile file);
+    public void SendAccountCreationEmailForTourGuide(List<Account> tourGuideAccountList);
+
 }
