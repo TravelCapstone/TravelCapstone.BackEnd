@@ -7,8 +7,8 @@ namespace TravelCapstone.BackEnd.API.Controllers
 {
     public class FacilityController : Controller
     {
-        private readonly FacilityService _service;
-        public FacilityController(FacilityService service)
+        private readonly IFacilityService _service;
+        public FacilityController(IFacilityService service)
         {
             _service = service;
         }

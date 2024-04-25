@@ -4,7 +4,6 @@ using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Common.Validator;
 using TravelCapstone.BackEnd.Domain.Enum;
-using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {

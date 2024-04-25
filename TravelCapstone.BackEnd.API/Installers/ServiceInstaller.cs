@@ -35,5 +35,7 @@ public class ServiceInstaller : IInstaller
         services.AddScoped<IAirportService, AirportService>();
         services.AddScoped<IReferenceTransportService, ReferenceTransportService>();
         services.AddScoped<IExcelService, ExcelService>();
+        services.AddScoped<ISellPriceHistoryService, SellPriceHistoryService>();
+        services.AddScoped<IFacilityService, FacilityService>();
     }
 }
