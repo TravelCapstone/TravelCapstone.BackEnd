@@ -36,10 +36,10 @@ namespace TravelCapstone.BackEnd.Application.Services
             {
                 var communeRepository = Resolve<IRepository<Commune>>();
                 var communeDb = await communeRepository!.GetAllDataByExpression(c => c.District!.ProvinceId == provinceId, 0, 0, null, false, null);
-                if(communeDb.Items != null & communeDb.Items.Count > 0)
+                if(communeDb.Items != null & communeDb.Items!.Count > 0)
                 {
                     var communeIds = communeDb.Items!.Select(c => c.Id);
-                    var facilityDb = await _repository.GetAllDataByExpression(f => communeIds.Contains(f.CommunceId), 0, 0, null, false, null);
+                    var facilityDb = await _repository.GetAllDataByExpression(f => communeIds.Contains(f.CommunceId), 0, 0, null, false, a=> a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
                     result.Result = facilityDb;
                 }
 
