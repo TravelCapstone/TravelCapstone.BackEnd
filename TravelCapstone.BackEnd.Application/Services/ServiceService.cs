@@ -16,11 +16,11 @@ namespace TravelCapstone.BackEnd.Application.Services
 {
     public class ServiceService : GenericBackendService, IFacilityServiceService
     {
-        private readonly IRepository<FacilityService> _repository;
+        private readonly IRepository<Domain.Models.FacilityService> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
         public ServiceService(
-            IRepository<FacilityService> repository,
+            IRepository<Domain.Models.FacilityService> repository,
             IUnitOfWork unitOfWork,
             IServiceProvider serviceProvider
         ) : base(serviceProvider)
@@ -89,7 +89,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
-        public Task<List<FaicilityServiceCategory>> GetServiceRatingByServiceTypeAndCommuneId(Domain.Enum.ServiceType serviceType, IEnumerable<FacilityService> services)
+        public Task<List<FaicilityServiceCategory>> GetServiceRatingByServiceTypeAndCommuneId(Domain.Enum.ServiceType serviceType, IEnumerable<Domain.Models.FacilityService> services)
         {
             List<FaicilityServiceCategory> serviceRatings = null;
             try
@@ -108,7 +108,7 @@ namespace TravelCapstone.BackEnd.Application.Services
         }
 
 
-        public async Task<PriceReference> GetTypePriceReference(Domain.Enum.ServiceType type, int NumOfAdult, int NumOfChild, IEnumerable<FacilityService> serviceDb)
+        public async Task<PriceReference> GetTypePriceReference(Domain.Enum.ServiceType type, int NumOfAdult, int NumOfChild, IEnumerable<Domain.Models.FacilityService> serviceDb)
         {
             PriceReference priceReference = null;
             //try

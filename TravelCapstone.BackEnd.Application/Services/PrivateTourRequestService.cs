@@ -563,21 +563,21 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
     public async Task<AppActionResult> GetServiceRatingListByServiceType(Guid provinceId, Domain.Enum.ServiceType serviceTypeId)
     {
         AppActionResult result = new AppActionResult();
-        //try
-        //{
+        try
+        {
             
-        //        var facilityServiceRepository = Resolve<IRepository<FacilityService>>();
-        //        var facilityServiceListDb = await facilityServiceRepository!.GetAllDataByExpression(
-        //            s => s.Facility!.Communce!.District!.ProvinceId== provinceId
-        //         && s!.ServiceTypeId == serviceTypeId,
-        //        0, 0, null, false);
-        //        result.Result = facilityServiceListDb;
+                var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
+                var facilityServiceListDb = await facilityServiceRepository!.GetAllDataByExpression(
+                    s => s.Facility!.Communce!.District!.ProvinceId== provinceId
+                 && s!.ServiceTypeId == serviceTypeId,
+                0, 0, null, false);
+                result.Result = facilityServiceListDb;
             
-        //}
-        //catch (Exception e)
-        //{
-        //    result = BuildAppActionResultError(result, e.Message);
-        //}
+        }
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, e.Message);
+        }
         return result;
     }
 }

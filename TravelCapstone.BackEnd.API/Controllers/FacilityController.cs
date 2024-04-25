@@ -1,26 +1,22 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Application.Services;
 using TravelCapstone.BackEnd.Common.DTO.Response;
-using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
-    [Route("facility")]
-    [ApiController]
-    public class FacilityController : ControllerBase
+    public class FacilityController : Controller
     {
-        private IFacilityService _facilityService;
-
-        public FacilityController(IFacilityService facilityService)
+        private readonly IFacilityService _service;
+        public FacilityController(IFacilityService service)
         {
-            _facilityService = facilityService;
+            _service = service;
         }
-        [HttpGet("get-all-facility-by-provinceId")]
-        public async Task<AppActionResult> GetAllFacilityByPronvinceId(Guid provinceId,ServiceType serviceType)
+
+        [HttpGet("get-all-facility-by-province-Id/{provinceId}")]
+        public async Task<AppActionResult> GetFacilityByProvinceId(Guid provinceId)
         {
-            return await _facilityService.GetAllFacilityByPronvinceId(provinceId, serviceType);
-                
+            return await _service.GetFacilityByProvinceId(provinceId);
         }
     }
-}
+    }

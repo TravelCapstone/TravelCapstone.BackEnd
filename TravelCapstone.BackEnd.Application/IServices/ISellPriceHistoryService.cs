@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.Application.IServices
 {
     public interface ISellPriceHistoryService
     {
-        Task<AppActionResult> GetHotelPriceByRating(Guid ratingId, int pageIndex, int pageSize);
-        Task<AppActionResult> GetAllEntertainmentPriceByFacilityId(Guid facilityId, int pageIndex, int pageSize);
+        public Task<AppActionResult> GetSellPriceByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId);
     }
 }

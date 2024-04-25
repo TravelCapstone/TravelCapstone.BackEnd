@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Domain.Enum;
+using TravelCapstone.BackEnd.Domain.Models.BaseModel;
 
 namespace TravelCapstone.BackEnd.Domain.Models
 {
-    public class Menu
+    public class Menu:BaseEntity
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;

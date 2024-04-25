@@ -5,7 +5,7 @@ namespace TravelCapstone.BackEnd.Common.Utils;
 public class SD
 {
     public static int MAX_RECORD_PER_PAGE = short.MaxValue;
-
+    public static string DEFAULT_PASSWORD = "TourGuide@123";
     public static string FormatDateTime(DateTime dateTime)
     {
         return dateTime.ToString("dd/MM/yyyy");
@@ -92,16 +92,28 @@ public class SD
         }
     }
 
+    public class Regex
+    {
+        public static string PHONENUMBER = "^0\\d{9,10}$";
+        public static string EMAIL = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        public static string NAME = "^[\\p{L}\\s,'.-]+$";
+    }
     public class EnumType
     {
         public static Dictionary<string, int> MaterialUnit = new Dictionary<string, int> { { "KG", 0 }, { "M3", 1 }, { "BAR", 2 }, { "ITEM", 3 }, { "Kg", 0 }, { "m3", 1 }, { "Bar", 2 }, { "Item", 3 }, { "kg", 0 }, { "bar", 2 }, { "item", 3 } };
         public static Dictionary<string, int> ServiceCostUnit = new Dictionary<string, int> { { "DAY", 0 }, { "Day", 0 }, { "day", 0 }, { "ROOM", 1 }, { "Room", 1 }, { "room", 1 }, { "PERSON", 2 }, { "Person", 2 }, { "person", 2 } };
+        public static Dictionary<string, int> VehicleType = new Dictionary<string, int> { { "DAY", 0 }, { "Day", 0 }, { "day", 0 }, { "ROOM", 1 }, { "Room", 1 }, { "room", 1 }, { "PERSON", 2 }, { "Person", 2 }, { "person", 2 } };
 
     }
 
     public class ExcelHeaders
     {
-        public static List<String> SERVICE_QUOTATION = new List<string> { "No", "ServiceName", "Unit", "MOQ", "PricePerAdult", "PricePerChild" };
+        public static List<String> SERVICE_QUOTATION = new List<string> { "No", "Tên dịch vụ", "Đơn vị", "MOQ", "Giá người lớn", "Giá trẻ em" };
+        public static List<String> MENU_SERVICE_QUOTATION = new List<string> { "No", "Tên dịch vụ", "Đơn vị", "MOQ", "Giá người lớn", "Giá trẻ em" };
+        public static List<String> TOURGUIDE_REGISTRATION = new List<string> { "No", "Tên", "Họ", "Email", "Số điện thoại", "Giới tính" };
+        public static List<String> VEHICLE_REGISTRATION = new List<string> { "No", "Biển số", "Dung tích", "Số động cơ", "Số khung", "Thương hiệu", "Tên chủ sở hữu", "Màu" };
+
     }
+
 
 }

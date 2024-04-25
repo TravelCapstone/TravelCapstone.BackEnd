@@ -2,8 +2,14 @@ using AutoMapper;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using OfficeOpenXml;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Text;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.ConfigurationModel;
@@ -23,12 +29,17 @@ public class AccountService : GenericBackendService, IAccountService
     private readonly TokenDto _tokenDto;
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<Account> _userManager;
-
+    private readonly IEmailService _emailService;
+    private readonly IExcelService _excelService;
+    private readonly IFileService _fileService;
     public AccountService(
         IRepository<Account> accountRepository,
         IUnitOfWork unitOfWork,
         UserManager<Account> userManager,
         SignInManager<Account> signInManager,
+        IEmailService emailService,
+        IExcelService excelService,
+        IFileService fileService,
         IMapper mapper,
         IServiceProvider serviceProvider
     ) : base(serviceProvider)
@@ -37,6 +48,8 @@ public class AccountService : GenericBackendService, IAccountService
         _unitOfWork = unitOfWork;
         _userManager = userManager;
         _signInManager = signInManager;
+        _emailService = emailService;
+        _excelService = excelService;
         _tokenDto = new TokenDto();
         _mapper = mapper;
     }
@@ -570,6 +583,334 @@ public class AccountService : GenericBackendService, IAccountService
             result = BuildAppActionResultError(result, ex.Message);
         }
 
+        return result;
+    }
+
+
+    public async Task<AppActionResult> ImportTourGuideFromExcel(IFormFile file)
+    {
+        AppActionResult result = new AppActionResult();
+        try
+        {
+            var validation = await ValidateExcelFile(file);
+            ExcelValidatingResponse validationResponse = validation.Result as ExcelValidatingResponse;
+            if (validationResponse == null)
+            {
+                result = BuildAppActionResultError(result, "Kiểm tra file Excel xảy ra lỗi.\n Vui lòng thử lại.");
+                return result;
+            }
+            if (!validationResponse.IsValidated)
+            {
+                result.Result = validationResponse;
+                return result;
+            }
+
+            List<TourGuideRegistrationRecord> records = await GetListFromExcel(file);
+            List<Account> tourGuideList = new List<Account>();
+            foreach (TourGuideRegistrationRecord record in records)
+            {
+                var tourGuideAccount = _mapper.Map<Account>(record);
+                tourGuideAccount.Id = Guid.NewGuid().ToString();
+                tourGuideAccount.UserName = record.Email;
+                tourGuideAccount.IsDeleted = false;
+                tourGuideAccount.IsVerified = true;
+                tourGuideAccount.VerifyCode = null;
+                var resultCreateUser = await _userManager.CreateAsync(tourGuideAccount, SD.DEFAULT_PASSWORD);
+                if (!resultCreateUser.Succeeded)
+                {
+                    result.Messages.Add($"Tạo tài khoản cho hướng dẫn viên {record.FirstName} {record.LastName} với số điện thoại {record.PhoneNumber} thất bại.");
+                }
+                else
+                {
+                    tourGuideList.Add(tourGuideAccount);
+                }
+            }
+            bool isSuccessful = await AssignTourGuideRole(tourGuideList);
+            if (isSuccessful)
+            {
+                SendAccountCreationEmailForTourGuide(tourGuideList);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+        return result;
+    }
+
+    public async Task<AppActionResult> ValidateExcelFile(IFormFile file)
+    {
+        AppActionResult result = new AppActionResult();
+        ExcelValidatingResponse data = new ExcelValidatingResponse();
+        try
+        {
+            string errorHeader = await _excelService.CheckHeader(file, SD.ExcelHeaders.TOURGUIDE_REGISTRATION);
+            if (!string.IsNullOrEmpty(errorHeader))
+            {
+                data.IsValidated = false;
+                data.HeaderError = errorHeader;
+                result.Result = data;
+                return result;
+            }
+
+            List<TourGuideRegistrationRecord> records = await GetListFromExcel(file);
+            if (records.Count == 0)
+            {
+                data.IsValidated = false;
+                data.HeaderError = $"Danh sách báo giá rỗng";
+                result.Result = data;
+                return result;
+            }
+
+            int errorRecordCount = 0;
+            int i = 2;
+            int invalidRowInput = 0;
+            string key = "";
+            data.Errors = new string[records.Count];
+            Dictionary<string, int> duplicatedData = new Dictionary<string, int>();
+            string[] words = null;
+            PagedResult<Account> accountDb = null;
+            foreach (TourGuideRegistrationRecord record in records)
+            {
+                StringBuilder error = new StringBuilder();
+                errorRecordCount = 0;
+                Guid serviceId = Guid.Empty;
+                if (record.No != i - 1)
+                {
+                    error.Append($"{errorRecordCount + 1}. Thứ tự đúng {i - 1}.\n");
+                    errorRecordCount++;
+                }
+
+                if (string.IsNullOrEmpty(record.FirstName) || string.IsNullOrEmpty(record.LastName) || string.IsNullOrEmpty(record.Email) || string.IsNullOrEmpty(record.PhoneNumber))
+                {
+                    error.Append($"{errorRecordCount + 1}. Ô tên hoặc đơn vị tính trống.\n");
+                    errorRecordCount++;
+                    continue;
+                }
+
+                //SD.EnumType.serviceUnit.TryGetValue(record.Unit, out int serviceUnit);
+                //Check Regex
+
+                if (!Regex.IsMatch(record.FirstName, SD.Regex.NAME))
+                {
+                    error.Append($"{errorRecordCount + 1}. Tên không đúng format\n");
+                    errorRecordCount++;
+                }
+
+                words = record.FirstName.Split(' ');
+                if (words.Length > 1)
+                {
+                    foreach (string word in words)
+                    {
+                        if (char.GetUnicodeCategory(word[0]) == UnicodeCategory.UppercaseLetter)
+                        {
+                            error.Append($"{errorRecordCount + 1}. Mỗi chữ cái đầu trong tên phải viết hoa.\n");
+                            errorRecordCount++;
+                            break;
+                        }
+                    }
+                }
+
+                words = record.LastName.Split(' ');
+                if (words.Length > 1)
+                {
+                    foreach (string word in words)
+                    {
+                        if (char.GetUnicodeCategory(word[0]) == UnicodeCategory.UppercaseLetter)
+                        {
+                            error.Append($"{errorRecordCount + 1}. Mỗi chữ cái đầu trong tên phải viết hoa.\n");
+                            errorRecordCount++;
+                            break;
+                        }
+                    }
+                }
+
+                if (!Regex.IsMatch(record.LastName, SD.Regex.NAME))
+                {
+                    error.Append($"{errorRecordCount + 1}. Tên không đúng format\n");
+                    errorRecordCount++;
+                }
+
+                if (!Regex.IsMatch(record.Email, SD.Regex.EMAIL))
+                {
+                    error.Append($"{errorRecordCount + 1}. Email không đúng format\n");
+                    errorRecordCount++;
+                }
+
+                if (!Regex.IsMatch(record.PhoneNumber, SD.Regex.PHONENUMBER))
+                {
+                    error.Append($"{errorRecordCount + 1}. Số điện thoại không đúng format\n");
+                    errorRecordCount++;
+                }
+
+                if (duplicatedData.ContainsKey(record.PhoneNumber))
+                {
+                    error.Append($"{errorRecordCount + 1}. Tồn tại số điện thoại này ở dòng {duplicatedData[record.PhoneNumber]}\n");
+                    errorRecordCount++;
+                }
+                else
+                {
+                    duplicatedData.Add(record.PhoneNumber, i - 1);
+                }
+
+                if (duplicatedData.ContainsKey(record.Email))
+                {
+                    error.Append($"{errorRecordCount + 1}. Tồn tại email này ở dòng {duplicatedData[record.Email]}\n");
+                    errorRecordCount++;
+                }
+                else
+                {
+                    duplicatedData.Add(record.Email, i - 1);
+                }
+
+
+                accountDb = await _accountRepository!.GetAllDataByExpression(a => a.NormalizedEmail == record.Email || a.PhoneNumber == record.PhoneNumber, 0, 0);
+                if (accountDb.Items!.Count > 0)
+                {
+                    if (accountDb.Items.Where(a => a.NormalizedEmail == record.Email).Count() > 0)
+                    {
+                        error.Append($"{errorRecordCount + 1}. Email đã tồn tại trong hộ thống.\n");
+                        errorRecordCount++;
+                    }
+
+                    if (accountDb.Items.Where(a => a.PhoneNumber == record.PhoneNumber).Count() > 0)
+                    {
+                        error.Append($"{errorRecordCount + 1}. Số điện thoại đã tồn tại trong hộ thống.\n");
+                        errorRecordCount++;
+                    }
+                }
+
+                if (errorRecordCount != 0)
+                {
+                    data.Errors[i - 2] = error.ToString();
+                    invalidRowInput++;
+                }
+                i++;
+            }
+
+            if (invalidRowInput > 0)
+            {
+                data.IsValidated = false;
+                result.Result = data;
+                return result;
+            }
+
+            data.IsValidated = true;
+            data.Errors = null;
+            data.HeaderError = null;
+            result.Result = data;
+        }
+        catch (Exception ex)
+        {
+            data.IsValidated = false;
+        }
+        return result;
+
+    }
+
+    private async Task<List<TourGuideRegistrationRecord>> GetListFromExcel(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return null;
+        }
+
+        try
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                await file.CopyToAsync(stream);
+                stream.Position = 0;
+
+                using (ExcelPackage package = new ExcelPackage(stream))
+                {
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is in the first sheet
+
+                    int rowCount = worksheet.Dimension.Rows;
+                    int colCount = worksheet.Dimension.Columns;
+
+                    List<TourGuideRegistrationRecord> records = new List<TourGuideRegistrationRecord>();
+
+                    for (int row = 2; row <= rowCount; row++) // Assuming header is in the first row
+                    {
+                        TourGuideRegistrationRecord record = new TourGuideRegistrationRecord()
+                        {
+                            No = (worksheet.Cells[row, 1].Value == null) ? 0 : int.Parse(worksheet.Cells[row, 1].Value.ToString()),
+                            FirstName = (worksheet.Cells[row, 2].Value == null) ? "" : worksheet.Cells[row, 2].Value.ToString(),
+                            LastName = (worksheet.Cells[row, 3].Value == null) ? "" : worksheet.Cells[row, 3].Value.ToString(),
+                            Email = (worksheet.Cells[row, 4].Value == null) ? "" : (worksheet.Cells[row, 4].Value.ToString()),
+                            PhoneNumber = (worksheet.Cells[row, 5].Value == null) ? "" : (worksheet.Cells[row, 5].Value.ToString()),
+                            Gender = (worksheet.Cells[row, 6].Value == null) ? false : (worksheet.Cells[row, 6].Value.ToString() == "TRUE")
+                        };
+                        records.Add(record);
+                    }
+                    return records;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+        return null;
+    }
+
+    public void SendAccountCreationEmailForTourGuide(List<Account> tourGuideAccountList)
+    {
+        try
+        {
+            foreach (var account in tourGuideAccountList)
+            {
+                _emailService.SendEmail(account.Email,
+                    $"Thông tin tài khoản của hướng dẫn viên {account.FirstName} {account.LastName} tại Cóc Travel",
+                    $"Tài khoản của bạn: \nTên đăng nhập: {account.Email} \nMật khẩu: {SD.DEFAULT_PASSWORD}\n Vui lòng không chia sẻ thông tin tài khoản của bạn với bất kì ai");
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    public async Task<bool> AssignTourGuideRole(List<Account> tourGuideAccountList)
+    {
+        bool isSucess = true;
+        try
+        {
+            var identityRoleRepository = Resolve<IRepository<IdentityRole>>();
+            var roleDb = await identityRoleRepository!.GetByExpression(r => r.Name.Equals("TOUR GUIDE"));
+            foreach (var account in tourGuideAccountList)
+            {
+                var accountDb = await _accountRepository.GetByExpression(a => a.PhoneNumber == account.PhoneNumber);
+                if (accountDb != null)
+                {
+                    await AssignRoleForUserId(accountDb.Id, new List<string> { roleDb.Id });
+                }
+                else
+                {
+                    isSucess = false;
+                    break;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+        return isSucess;
+    }
+
+    public async Task<IActionResult> GetTourGuideTemplate()
+    {
+        IActionResult result = null;
+        try
+        {
+            List<TourGuideRegistrationRecord> sampleData = new List<TourGuideRegistrationRecord>();
+            sampleData.Add(new TourGuideRegistrationRecord
+            { No = 1, FirstName = "Anh", LastName = "Nguyễn", Email = "anhnguyen.tourguide@gmail.com", PhoneNumber = "0945787123", Gender = true });
+            result = _fileService.GenerateExcelContent<TourGuideRegistrationRecord>(sampleData, SD.ExcelHeaders.TOURGUIDE_REGISTRATION, "IMPORT TOURGUIDE");
+        }
+        catch (Exception ex)
+        {
+        }
         return result;
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240425044256_AddPositionToProvince")]
+    partial class AddPositionToProvince
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1398,73 +1400,73 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("4f6da9e1-e1ae-40cc-9bbf-0e4f3f1f0612"),
+                            Id = new Guid("07a548d9-2cc0-43db-9955-9baa4416bbe1"),
                             FacilityTypeId = 0,
                             RatingId = 0
                         },
                         new
                         {
-                            Id = new Guid("8ea82025-f43c-4eba-b60f-5cc67436e028"),
+                            Id = new Guid("22167a65-1bb7-459f-b139-0199da0d90ab"),
                             FacilityTypeId = 0,
                             RatingId = 0
                         },
                         new
                         {
-                            Id = new Guid("a10e4edc-54b6-44ac-8fd2-5f7f450f3ac7"),
+                            Id = new Guid("04e73eef-5357-4a96-b381-3d3acc7a0162"),
                             FacilityTypeId = 0,
                             RatingId = 1
                         },
                         new
                         {
-                            Id = new Guid("5a883a5f-d485-4de1-8afa-a3fe5c9888a2"),
+                            Id = new Guid("c2e0b315-7ae3-4fc0-a6fa-7c3464d02294"),
                             FacilityTypeId = 0,
                             RatingId = 2
                         },
                         new
                         {
-                            Id = new Guid("9140c68a-e11b-4dbe-83c1-41f5bc01e30d"),
+                            Id = new Guid("e3946b7f-4117-4a88-bf44-3b0373336008"),
                             FacilityTypeId = 0,
                             RatingId = 3
                         },
                         new
                         {
-                            Id = new Guid("78515336-6fb8-458c-9cc2-a5bbd897f671"),
+                            Id = new Guid("4577e53c-0800-4394-8a34-4b3e79583f7b"),
                             FacilityTypeId = 0,
                             RatingId = 4
                         },
                         new
                         {
-                            Id = new Guid("f9044258-c1ef-45d9-a427-0adef716150b"),
+                            Id = new Guid("03988dad-131f-40e3-9c3d-53441de26f10"),
                             FacilityTypeId = 1,
                             RatingId = 5
                         },
                         new
                         {
-                            Id = new Guid("8a93a06c-83c8-49fe-a772-9c95787ecac9"),
+                            Id = new Guid("482745d0-1ff6-4d39-80e5-96c3824acf58"),
                             FacilityTypeId = 1,
                             RatingId = 6
                         },
                         new
                         {
-                            Id = new Guid("34b6e168-13b0-4f4e-bf0b-466c3b0ad024"),
+                            Id = new Guid("3fec69a2-b513-4160-81e1-a8b6e704dc99"),
                             FacilityTypeId = 1,
                             RatingId = 7
                         },
                         new
                         {
-                            Id = new Guid("11c6720b-6040-4b4d-bece-7c7a57960f59"),
+                            Id = new Guid("a1c17d13-a24a-487a-86de-2ffe54bc1b9f"),
                             FacilityTypeId = 1,
                             RatingId = 8
                         },
                         new
                         {
-                            Id = new Guid("f4ae7a28-9277-440e-b07a-4ab70c075669"),
+                            Id = new Guid("4c981c59-f529-4858-8c8d-d665eeb5c785"),
                             FacilityTypeId = 1,
                             RatingId = 9
                         },
                         new
                         {
-                            Id = new Guid("695e80ff-4ffe-4edd-88c0-64daf9825648"),
+                            Id = new Guid("16d8dc55-6fba-4f14-b772-4e59e6774814"),
                             FacilityTypeId = 2,
                             RatingId = 11
                         });
@@ -1481,10 +1483,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ServiceAvailabilityId")
                         .HasColumnType("int");
@@ -1544,13 +1542,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CreateBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1568,23 +1559,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UpdateBy")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CreateBy");
 
                     b.HasIndex("DietaryPreferenceId");
 
                     b.HasIndex("FacilityServiceId");
 
                     b.HasIndex("MealTypeId");
-
-                    b.HasIndex("UpdateBy");
 
                     b.ToTable("Menus");
                 });
@@ -2330,9 +2311,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("FacilityServiceId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("ServingQuantity")
                         .HasColumnType("int");
 
@@ -2340,8 +2318,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FacilityServiceId");
 
                     b.HasIndex("VehicleTypeId");
 
@@ -2754,12 +2730,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Menu", b =>
                 {
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "CreateByAccount")
-                        .WithMany()
-                        .HasForeignKey("CreateBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.DietaryPreference", "DietaryPreference")
                         .WithMany()
                         .HasForeignKey("DietaryPreferenceId")
@@ -2778,19 +2748,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "UpdateByAccount")
-                        .WithMany()
-                        .HasForeignKey("UpdateBy");
-
-                    b.Navigation("CreateByAccount");
-
                     b.Navigation("DietaryPreference");
 
                     b.Navigation("FacilityService");
 
                     b.Navigation("MealType");
-
-                    b.Navigation("UpdateByAccount");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.MenuDish", b =>
@@ -3284,19 +3246,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.TransportServiceDetail", b =>
                 {
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.FacilityService", "FacilityService")
-                        .WithMany()
-                        .HasForeignKey("FacilityServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.VehicleType", "VehicleType")
                         .WithMany()
                         .HasForeignKey("VehicleTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("FacilityService");
 
                     b.Navigation("VehicleType");
                 });

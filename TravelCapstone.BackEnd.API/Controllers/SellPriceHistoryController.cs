@@ -1,30 +1,23 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
-    [Route("sell-price-history")]
-    [ApiController]
-    public class SellPriceHistoryController : ControllerBase
+    public class SellPriceHistoryController : Controller
     {
-        private ISellPriceHistoryService _sellPriceHistoryService;
-        public SellPriceHistoryController(ISellPriceHistoryService sellPriceHistoryService)
+        private readonly ISellPriceHistoryService _service;
+        public SellPriceHistoryController(ISellPriceHistoryService service)
         {
-            _sellPriceHistoryService = sellPriceHistoryService; 
+            _service = service;
         }
 
-        [HttpGet("get-hotel-price-by-rating/{pageNumber:int}/{pageSize:int}")]
-        public async Task<AppActionResult> GetHotelPriceByRating(Guid ratingId, int pageNumber = 1, int pageSize = 10)
-        {
-            return await _sellPriceHistoryService.GetHotelPriceByRating(ratingId, pageNumber, pageSize);       
-        }
 
-        [HttpGet("get-all-entertainment-price-by-facility-id/{pageNumber:int}/{pageSize:int}")]
-        public async Task<AppActionResult> GetAllEntertainmentPriceByFacilityId(Guid facilityId, int pageNumber = 1, int pageSize = 10)
+        [HttpGet("get-sell-price-by-facility-Id-and-service-type")]
+        public async Task<AppActionResult> GetServiceCostByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId)
         {
-            return await _sellPriceHistoryService.GetAllEntertainmentPriceByFacilityId(facilityId, pageNumber, pageSize);
+            return await _service.GetSellPriceByFacilityIdAndServiceType(facilityId, serviceTypeId);
         }
     }
 }

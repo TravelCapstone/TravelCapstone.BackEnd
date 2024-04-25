@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,54 +12,63 @@ using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Application.Services
 {
-    public class SellPriceHistoryService : GenericBackendService, ISellPriceHistoryService
+    public class SellPriceHistoryService: GenericBackendService, ISellPriceHistoryService
     {
-        private readonly IRepository<SellPriceHistory> _sellPriceHistoryRepository;
+        private readonly IRepository<SellPriceHistory> _repository;
         private readonly IUnitOfWork _unitOfWork;
-        public SellPriceHistoryService(IServiceProvider serviceProvider, IUnitOfWork unitOfWork, IRepository<SellPriceHistory> sellPriceHistoryRepository) : base(serviceProvider)
+        private readonly IMapper _mapper;
+        private IFileService _fileService;
+
+        public SellPriceHistoryService(
+            IRepository<SellPriceHistory> repository,
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IFileService fileService,
+        IServiceProvider serviceProvider
+        ) : base(serviceProvider)
         {
-            _sellPriceHistoryRepository = sellPriceHistoryRepository;
+            _repository = repository;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _fileService = fileService;
         }
 
-        public async Task<AppActionResult> GetHotelPriceByRating(Guid ratingId, int pageIndex, int pageSize)
-            {
-            var result = new AppActionResult();
-            var facilityRatingRepository = Resolve<IRepository<FacilityRating>>();
-            try
-            {
-                var facilityRating = await facilityRatingRepository!.GetById(ratingId);
-                if (facilityRating == null)
-                {
-                    result = BuildAppActionResultError(result, $"Loại dịch vụ với ${ratingId} này không tồn tại");
-                }
-                if (!BuildAppActionResultIsError(result))
-                {
-                    result.Result = await _sellPriceHistoryRepository.GetAllDataByExpression(p => p.FacilityService!.Facility!.FacilityRating!.FacilityTypeId == FacilityType.HOTEL 
-                    && p.FacilityService!.Facility!.FacilityRatingId == ratingId, pageIndex, pageSize, a=> a.Date, false, p => p.FacilityService!.Facility!.FacilityRating!);
-                }
-            } catch (Exception e)
-            {
-                result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
-            }
-            return result;
-        }
-
-        public async Task<AppActionResult> GetAllEntertainmentPriceByFacilityId(Guid facilityId, int pageIndex, int pageSize)
+        public async Task<AppActionResult> GetSellPriceByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId)
         {
-            var result = new AppActionResult();
-            var facilityRepository = Resolve<IRepository<Facility>>();
+            AppActionResult result = new AppActionResult();
             try
             {
-                 result.Result = await _sellPriceHistoryRepository.GetAllDataByExpression(p => p.FacilityService!.FacilityId == facilityId && p.FacilityService.ServiceTypeId == ServiceType.ENTERTAIMENT,
-                     pageIndex, pageSize, a=> a.Date, false, p => p.FacilityService!.Facility!.FacilityRating!);
+                var facilityRepository = Resolve<IRepository<Facility>>();
+                var facilityDb = await facilityRepository!.GetByExpression(f => f.Id == facilityId);
+                if (facilityDb != null)
+                {
+                    var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
+                    var facilityServiceDb = await facilityServiceRepository!.GetAllDataByExpression(fs => fs.FacilityId == facilityDb.Id && fs.ServiceTypeId == serviceTypeId, 0, 0, null, false, null);
+                    if (facilityServiceDb.Items != null && facilityServiceDb.Items.Count > 0)
+                    {
+                        var facilityServiceIds = facilityServiceDb.Items.Select(f => f.Id).ToList();
+                        var menuRepository = Resolve<IRepository<Menu>>();
+                        var menuDb = await menuRepository!.GetAllDataByExpression(m => facilityServiceIds.Contains(m.FacilityServiceId), 0, 0, null, false, null);
+                        var transportServiceDetailRepository = Resolve<IRepository<TransportServiceDetail>>();
+                        var transportDb = await transportServiceDetailRepository!.GetAllDataByExpression(m => facilityServiceIds.Contains(m.FacilityServiceId), 0, 0, null, false, null);
+                        var menuIds = menuDb.Items!.Select(m => m.Id).ToList();
+                        var transportIds = transportDb.Items!.Select(m => m.Id).ToList();
+                        var sellPriceHistoryRepository = Resolve<IRepository<SellPriceHistory>>();
+                        var sellPriceHistoryDb = await sellPriceHistoryRepository!.GetAllDataByExpression(s => (s.FacilityServiceId != null && facilityServiceIds.Contains((Guid)s.FacilityServiceId))
+                                                                                                                    || (s.MenuId != null && menuIds.Contains((Guid)s.MenuId))
+                                                                                                                    || (s.TransportServiceDetailId != null && transportIds.Contains((Guid)s.TransportServiceDetailId)), 0, 0, s => s.Date, false, null);
+                        result.Result = sellPriceHistoryDb;
+                    }
+
+                    result.Result = facilityServiceDb;
+                }
+
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+                result = BuildAppActionResultError(result, ex.Message);
             }
             return result;
         }
-
     }
 }
