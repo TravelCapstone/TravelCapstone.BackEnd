@@ -37,5 +37,6 @@ public class ServiceInstaller : IInstaller
         services.AddScoped<IMenuService, MenuService>();
         services.AddScoped<ISellPriceHistoryService, SellPriceHistoryService>();
         services.AddScoped<ITourguideAssignmentsService, TourguideAssignmentsService>();
+        services.AddScoped<IFacilityService, FacilityService>();
     }
 }

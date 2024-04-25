@@ -5,7 +5,7 @@ using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
-    [Route("sell-price-history-controller")]
+    [Route("sell-price-history")]
     [ApiController]
     public class SellPriceHistoryController : ControllerBase
     {
