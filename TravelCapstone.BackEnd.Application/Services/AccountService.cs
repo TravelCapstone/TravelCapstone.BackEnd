@@ -29,12 +29,17 @@ public class AccountService : GenericBackendService, IAccountService
     private readonly TokenDto _tokenDto;
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<Account> _userManager;
-
+    private readonly IEmailService _emailService;
+    private readonly IExcelService _excelService;
+    private readonly IFileService _fileService;
     public AccountService(
         IRepository<Account> accountRepository,
         IUnitOfWork unitOfWork,
         UserManager<Account> userManager,
         SignInManager<Account> signInManager,
+        IEmailService emailService,
+        IExcelService excelService,
+        IFileService fileService,
         IMapper mapper,
         IServiceProvider serviceProvider
     ) : base(serviceProvider)
@@ -43,6 +48,8 @@ public class AccountService : GenericBackendService, IAccountService
         _unitOfWork = unitOfWork;
         _userManager = userManager;
         _signInManager = signInManager;
+        _emailService = emailService;
+        _excelService = excelService;
         _tokenDto = new TokenDto();
         _mapper = mapper;
     }
@@ -854,7 +861,7 @@ public class AccountService : GenericBackendService, IAccountService
         {
             foreach (var account in tourGuideAccountList)
             {
-                _emailservice.SendEmail(account.Email,
+                _emailService.SendEmail(account.Email,
                     $"Thông tin tài khoản của hướng dẫn viên {account.FirstName} {account.LastName} tại Cóc Travel",
                     $"Tài khoản của bạn: \nTên đăng nhập: {account.Email} \nMật khẩu: {SD.DEFAULT_PASSWORD}\n Vui lòng không chia sẻ thông tin tài khoản của bạn với bất kì ai");
             }
@@ -906,5 +913,4 @@ public class AccountService : GenericBackendService, IAccountService
         }
         return result;
     }
-}
 }

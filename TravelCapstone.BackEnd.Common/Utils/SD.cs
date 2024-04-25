@@ -5,7 +5,7 @@ namespace TravelCapstone.BackEnd.Common.Utils;
 public class SD
 {
     public static int MAX_RECORD_PER_PAGE = short.MaxValue;
-
+    public static string DEFAULT_PASSWORD = "TourGuide@123";
     public static string FormatDateTime(DateTime dateTime)
     {
         return dateTime.ToString("dd/MM/yyyy");
