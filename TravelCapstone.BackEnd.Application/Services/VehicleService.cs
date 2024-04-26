@@ -18,7 +18,7 @@ using Vehicle = TravelCapstone.BackEnd.Domain.Models.Vehicle;
 
 namespace TravelCapstone.BackEnd.Application.Services
 {
-    public class VehicleService : GenericBackendService, IServiceCostHistoryService
+    public class VehicleService : GenericBackendService, IVehicleService
     {
         private readonly IRepository<Vehicle> _repository;
         private readonly IUnitOfWork _unitOfWork;
@@ -46,7 +46,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 List<ServiceCostHistoryRecord> sampleData = new List<ServiceCostHistoryRecord>();
                 sampleData.Add(new ServiceCostHistoryRecord
                 { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, PricePerAdult = 9, PricePerChild = 4 });
-                result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord>(sampleData, SD.ExcelHeaders.SERVICE_QUOTATION, "ProviderName_ddMMyyyy");
+                result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord, Object>(sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION, "ProviderName_ddMMyyyy");
 
             }
             catch (Exception ex)
@@ -55,76 +55,76 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
-        public async Task<AppActionResult> UploadQuotation(IFormFile file)
-        {
-            AppActionResult result = new AppActionResult();
-            try
-            {
-                var validation = await ValidateExcelFile(file);
-                ExcelValidatingResponse validationResponse = validation.Result as ExcelValidatingResponse;
-                if (validationResponse == null)
-                {
-                    result = BuildAppActionResultError(result, "Kiểm tra file Excel xảy ra lỗi.\n Vui lòng thử lại.");
-                    return result;
-                }
-                if (!validationResponse.IsValidated)
-                {
-                    result.Result = validationResponse;
-                    return result;
-                }
-                string[] serviceInfos = file.FileName.Split('_');
-                var serviceProviderRepository = Resolve<IRepository<ServiceProvider>>();
-                var serviceRepository = Resolve<IRepository<Facility>>();
-                var serviceProviderDb = await serviceProviderRepository.GetByExpression(s => s.Name == serviceInfos[0]);
-                DateTime.TryParseExact(serviceInfos[1].Substring(0, 8), "ddMMyyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
-                List<ServiceCostHistoryRecord> records = await GetListFromExcel(file);
-                List<ServiceCostHistory> data = new List<ServiceCostHistory>();
-                var serviceId = Guid.Empty;
-                Dictionary<string, Guid> serviceIds = new Dictionary<string, Guid>();
-                string key;
+        //public async Task<AppActionResult> UploadQuotation(IFormFile file)
+        //{
+        //    AppActionResult result = new AppActionResult();
+        //    try
+        //    {
+        //        var validation = await ValidateExcelFile(file);
+        //        ExcelValidatingResponse validationResponse = validation.Result as ExcelValidatingResponse;
+        //        if (validationResponse == null)
+        //        {
+        //            result = BuildAppActionResultError(result, "Kiểm tra file Excel xảy ra lỗi.\n Vui lòng thử lại.");
+        //            return result;
+        //        }
+        //        if (!validationResponse.IsValidated)
+        //        {
+        //            result.Result = validationResponse;
+        //            return result;
+        //        }
+        //        string[] serviceInfos = file.FileName.Split('_');
+        //        var serviceProviderRepository = Resolve<IRepository<ServiceProvider>>();
+        //        var serviceRepository = Resolve<IRepository<Facility>>();
+        //        var serviceProviderDb = await serviceProviderRepository.GetByExpression(s => s.Name == serviceInfos[0]);
+        //        DateTime.TryParseExact(serviceInfos[1].Substring(0, 8), "ddMMyyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
+        //        List<ServiceCostHistoryRecord> records = await GetListFromExcel(file);
+        //        List<ServiceCostHistory> data = new List<ServiceCostHistory>();
+        //        var serviceId = Guid.Empty;
+        //        Dictionary<string, Guid> serviceIds = new Dictionary<string, Guid>();
+        //        string key;
 
-                foreach (var record in records)
-                {
-                    key = record.ServiceName + '-' + record.Unit;
-                    if (serviceIds.ContainsKey(key)) serviceId = serviceIds[key];
-                    else
-                    {
-                        bool containsUnit = SD.EnumType.ServiceCostUnit.TryGetValue(record.Unit, out int index);
-                        if (containsUnit)
-                        {
-                            var service = await serviceRepository.GetByExpression(m => m.Name.Equals(record.ServiceName) && m.ServiceProviderId == serviceProviderDb.Id);
-                            serviceId = service.Id;
-                            serviceIds.Add(key, serviceId);
-                        }
-                        else
-                        {
-                            result = BuildAppActionResultError(result, "Gặp lỗi trong quá trình tải. Vui lòng kiểm tra thông tin và thủ lại");
-                        }
-                    }
-                    data.Add(new ServiceCostHistory
-                    {
-                        Id = Guid.NewGuid(),
-                        //PricePerAdult = record.PricePerAdult,
-                        // PricePerChild = record.PricePerChild,
-                        MOQ = record.MOQ,
-                        //    Unit = (Domain.Enum.Unit)SD.EnumType.ServiceCostUnit[record.Unit],
-                        Date = date,
-                        FacilityServiceId = serviceId
-                    });
-                }
-                await _repository.InsertRange(data);
-                if (!BuildAppActionResultIsError(result))
-                {
-                    result.Result = data;
-                    await _unitOfWork.SaveChangesAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                result = BuildAppActionResultError(result, ex.Message);
-            }
-            return result;
-        }
+        //        foreach (var record in records)
+        //        {
+        //            key = record.ServiceName + '-' + record.Unit;
+        //            if (serviceIds.ContainsKey(key)) serviceId = serviceIds[key];
+        //            else
+        //            {
+        //                bool containsUnit = SD.EnumType.ServiceCostUnit.TryGetValue(record.Unit, out int index);
+        //                if (containsUnit)
+        //                {
+        //                    var service = await serviceRepository.GetByExpression(m => m.Name.Equals(record.ServiceName) && m.ServiceProviderId == serviceProviderDb.Id);
+        //                    serviceId = service.Id;
+        //                    serviceIds.Add(key, serviceId);
+        //                }
+        //                else
+        //                {
+        //                    result = BuildAppActionResultError(result, "Gặp lỗi trong quá trình tải. Vui lòng kiểm tra thông tin và thủ lại");
+        //                }
+        //            }
+        //            data.Add(new ServiceCostHistory
+        //            {
+        //                Id = Guid.NewGuid(),
+        //                //PricePerAdult = record.PricePerAdult,
+        //                // PricePerChild = record.PricePerChild,
+        //                MOQ = record.MOQ,
+        //                //    Unit = (Domain.Enum.Unit)SD.EnumType.ServiceCostUnit[record.Unit],
+        //                Date = date,
+        //                FacilityServiceId = serviceId
+        //            });
+        //        }
+        //        await _repository.InsertRange(data);
+        //        if (!BuildAppActionResultIsError(result))
+        //        {
+        //            result.Result = data;
+        //            await _unitOfWork.SaveChangesAsync();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result = BuildAppActionResultError(result, ex.Message);
+        //    }
+        //    return result;
+        //}
 
         public async Task<AppActionResult> ValidateExcelFile(IFormFile file)
         {
@@ -280,12 +280,6 @@ namespace TravelCapstone.BackEnd.Application.Services
                         duplicatedQuotation.Add(duplicatedKey, i - 1);
                     }
 
-                    if ((await _repository.GetByExpression(m => m.MOQ == record.MOQ && m.FacilityServiceId == serviceId && date == m.Date)) != null)
-                    {
-                        error.Append($"{errorRecordCount + 1}. Tồn tại một báo giá dịch vụ tương tự trong cùng ngày.\n");
-                        errorRecordCount++;
-                    }
-
                     if (errorRecordCount != 0)
                     {
                         data.Errors[i - 2] = error.ToString();
@@ -405,37 +399,6 @@ namespace TravelCapstone.BackEnd.Application.Services
             }
             return string.Empty;
         }
-        public async Task<AppActionResult> GetLastCostHistory(List<Guid> servicesId)
-        {
-            AppActionResult result = new AppActionResult();
-            try
-            {
-                var latestCostHistory = new Dictionary<Guid, ServiceCostHistory>();
-
-                foreach (var serviceId in servicesId)
-                {
-                    var latestHistoryForService = await _repository.GetAllDataByExpression(
-                        a => a.FacilityServiceId == serviceId,
-                        0,
-                        0,
-                        null
-                    );
-                    latestHistoryForService.Items = latestHistoryForService.Items!.OrderByDescending(a => a.Date).ToList();
-                    if (latestHistoryForService.Items != null && latestHistoryForService.Items.Any())
-                    {
-                        latestCostHistory[serviceId] = latestHistoryForService.Items.First();
-                    }
-                }
-
-
-                result.Result = latestCostHistory.Values;
-            }
-            catch (Exception ex)
-            {
-                result = BuildAppActionResultError(result, ex.Message);
-            }
-            return result;
-        }
-
+    
     }
 }

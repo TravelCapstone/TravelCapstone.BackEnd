@@ -74,7 +74,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
-        public Task<IActionResult> GetTemplate()
+        public async Task<IActionResult> GetTemplate()
         {
             IActionResult result = null;
             try
@@ -82,7 +82,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 List<ServiceCostHistoryRecord> sampleData = new List<ServiceCostHistoryRecord>();
                 sampleData.Add(new ServiceCostHistoryRecord
                 { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, PricePerAdult = 9, PricePerChild = 4 });
-                result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord>(sampleData, SD.ExcelHeaders.SERVICE_QUOTATION, "ProviderName_ddMMyyyy");
+                result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord, Object>(sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION, "ProviderName_ddMMyyyy");
 
             }
             catch (Exception ex)
