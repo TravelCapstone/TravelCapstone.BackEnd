@@ -238,7 +238,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
                        .SetBasePath(Directory.GetCurrentDirectory())
                        .AddJsonFile("appsettings.json", true, true)
                        .Build();
-        string cs = config["ConnectionStrings:Host"];
+        string cs = config["ConnectionStrings:DB"];
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder.UseSqlServer(cs);

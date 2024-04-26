@@ -1072,6 +1072,42 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.ReferencePriceRating", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReferencePriceRating");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "ECONOMY_AIR_BRAND"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "STANDARD_AIR_BRAND"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "MIDDLE_AIR_BRAND"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "STANDARD_FERRY_TERMINAL"
+                        });
+                });
+
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.ServiceAvailability", b =>
                 {
                     b.Property<int>("Id")
@@ -1398,73 +1434,73 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9014b2af-7189-488d-9ac0-16e465e5d4d5"),
+                            Id = new Guid("b266b810-c9c9-4ba6-b650-6f46bc62f511"),
                             FacilityTypeId = 0,
                             RatingId = 0
                         },
                         new
                         {
-                            Id = new Guid("968b3495-bd82-4070-bd02-e9fdfbb4bc73"),
+                            Id = new Guid("55f6c585-d1fc-4ba0-b6aa-954c081b43fe"),
                             FacilityTypeId = 0,
                             RatingId = 0
                         },
                         new
                         {
-                            Id = new Guid("eb854862-de7f-42b4-8634-8d96299f46dc"),
+                            Id = new Guid("0f47b8b8-dfa4-403c-9969-5dec814c1938"),
                             FacilityTypeId = 0,
                             RatingId = 1
                         },
                         new
                         {
-                            Id = new Guid("97584536-d29e-4666-aed1-344a86f5a8dc"),
+                            Id = new Guid("d6590997-ee47-4fb2-a6d2-a0664c515fee"),
                             FacilityTypeId = 0,
                             RatingId = 2
                         },
                         new
                         {
-                            Id = new Guid("684a3dd3-bcfe-446c-bc0d-1dc9944ef0f7"),
+                            Id = new Guid("af92daf2-bf7f-4986-8261-e48dfc92a59d"),
                             FacilityTypeId = 0,
                             RatingId = 3
                         },
                         new
                         {
-                            Id = new Guid("f44c551d-f2fe-479a-93f2-bd68eb377e66"),
+                            Id = new Guid("d366d607-c5a2-47e0-bbcd-1048bf41894b"),
                             FacilityTypeId = 0,
                             RatingId = 4
                         },
                         new
                         {
-                            Id = new Guid("33927acd-fe0d-445c-9fd0-f6d102082d46"),
+                            Id = new Guid("94fdaf0b-f062-42f9-a816-c0b149a39599"),
                             FacilityTypeId = 1,
                             RatingId = 5
                         },
                         new
                         {
-                            Id = new Guid("4b6dba92-c317-4161-b733-9208c0f4ba24"),
+                            Id = new Guid("b64f6c06-4e46-49b1-ad5c-580dada8e999"),
                             FacilityTypeId = 1,
                             RatingId = 6
                         },
                         new
                         {
-                            Id = new Guid("30274f05-9134-417e-84ed-bf10d04b9140"),
+                            Id = new Guid("a2251a62-5a35-4730-9c28-efd31f256641"),
                             FacilityTypeId = 1,
                             RatingId = 7
                         },
                         new
                         {
-                            Id = new Guid("490187d9-b7db-43ec-969e-98cf6d28bedb"),
+                            Id = new Guid("225758e0-f657-446e-98fd-c974e55d40b8"),
                             FacilityTypeId = 1,
                             RatingId = 8
                         },
                         new
                         {
-                            Id = new Guid("9b2a26c0-14d5-4ea4-846f-e5d981283b33"),
+                            Id = new Guid("a537acb2-db0a-41a8-bf1e-3f3b9d4cf063"),
                             FacilityTypeId = 1,
                             RatingId = 9
                         },
                         new
                         {
-                            Id = new Guid("fab2236e-eab6-4695-acd4-90f9474c0cef"),
+                            Id = new Guid("4652f741-3085-45a2-90a8-f3709b96fb68"),
                             FacilityTypeId = 2,
                             RatingId = 11
                         });
@@ -1974,12 +2010,12 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid>("DepartureId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("FacilityRatingId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ProviderName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReferencePriceRatingId")
+                        .HasColumnType("int");
 
                     b.Property<int>("ServiceTypeId")
                         .HasColumnType("int");
@@ -1990,7 +2026,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.HasIndex("DepartureId");
 
-                    b.HasIndex("FacilityRatingId");
+                    b.HasIndex("ReferencePriceRatingId");
 
                     b.HasIndex("ServiceTypeId");
 
@@ -3035,9 +3071,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.FacilityRating", "FacilityRating")
+                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.ReferencePriceRating", "ReferencePriceRating")
                         .WithMany()
-                        .HasForeignKey("FacilityRatingId")
+                        .HasForeignKey("ReferencePriceRatingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -3051,7 +3087,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.Navigation("Departure");
 
-                    b.Navigation("FacilityRating");
+                    b.Navigation("ReferencePriceRating");
 
                     b.Navigation("ServiceType");
                 });

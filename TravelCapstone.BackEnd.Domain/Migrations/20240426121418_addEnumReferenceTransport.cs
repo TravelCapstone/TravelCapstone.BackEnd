@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
-    public partial class fixDB : Migration
+    public partial class addEnumReferenceTransport : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -277,6 +277,18 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ratings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReferencePriceRating",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReferencePriceRating", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -1182,19 +1194,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     ArrivalDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AdultPrice = table.Column<double>(type: "float", nullable: false),
                     ChildPrice = table.Column<double>(type: "float", nullable: false),
-                    FacilityRatingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReferencePriceRatingId = table.Column<int>(type: "int", nullable: false),
                     ServiceTypeId = table.Column<int>(type: "int", nullable: false),
                     ProviderName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ReferenceTransportPrices", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ReferenceTransportPrices_FacilityRatings_FacilityRatingId",
-                        column: x => x.FacilityRatingId,
-                        principalTable: "FacilityRatings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_ReferenceTransportPrices_Ports_ArrivalId",
                         column: x => x.ArrivalId,
@@ -1205,6 +1211,12 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         name: "FK_ReferenceTransportPrices_Ports_DepartureId",
                         column: x => x.DepartureId,
                         principalTable: "Ports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_ReferenceTransportPrices_ReferencePriceRating_ReferencePriceRatingId",
+                        column: x => x.ReferencePriceRatingId,
+                        principalTable: "ReferencePriceRating",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
@@ -1831,6 +1843,17 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "ReferencePriceRating",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 0, "ECONOMY_AIR_BRAND" },
+                    { 1, "STANDARD_AIR_BRAND" },
+                    { 2, "MIDDLE_AIR_BRAND" },
+                    { 3, "STANDARD_FERRY_TERMINAL" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "ServiceAvailabilities",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
@@ -1904,28 +1927,36 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     { 2, "LIMOUSINE" },
                     { 3, "CAR" },
                     { 4, "PLANE" },
-                    { 5, "BOAT" },
-                    { 6, "BICYCLE" },
-                    { 7, "HELICOPTER" }
+                    { 5, "BOAT" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "VehicleTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[] { 6, "BICYCLE" });
+
+            migrationBuilder.InsertData(
+                table: "VehicleTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[] { 7, "HELICOPTER" });
 
             migrationBuilder.InsertData(
                 table: "FacilityRatings",
                 columns: new[] { "Id", "FacilityTypeId", "RatingId" },
                 values: new object[,]
                 {
-                    { new Guid("30274f05-9134-417e-84ed-bf10d04b9140"), 1, 7 },
-                    { new Guid("33927acd-fe0d-445c-9fd0-f6d102082d46"), 1, 5 },
-                    { new Guid("490187d9-b7db-43ec-969e-98cf6d28bedb"), 1, 8 },
-                    { new Guid("4b6dba92-c317-4161-b733-9208c0f4ba24"), 1, 6 },
-                    { new Guid("684a3dd3-bcfe-446c-bc0d-1dc9944ef0f7"), 0, 3 },
-                    { new Guid("9014b2af-7189-488d-9ac0-16e465e5d4d5"), 0, 0 },
-                    { new Guid("968b3495-bd82-4070-bd02-e9fdfbb4bc73"), 0, 0 },
-                    { new Guid("97584536-d29e-4666-aed1-344a86f5a8dc"), 0, 2 },
-                    { new Guid("9b2a26c0-14d5-4ea4-846f-e5d981283b33"), 1, 9 },
-                    { new Guid("eb854862-de7f-42b4-8634-8d96299f46dc"), 0, 1 },
-                    { new Guid("f44c551d-f2fe-479a-93f2-bd68eb377e66"), 0, 4 },
-                    { new Guid("fab2236e-eab6-4695-acd4-90f9474c0cef"), 2, 11 }
+                    { new Guid("0f47b8b8-dfa4-403c-9969-5dec814c1938"), 0, 1 },
+                    { new Guid("225758e0-f657-446e-98fd-c974e55d40b8"), 1, 8 },
+                    { new Guid("4652f741-3085-45a2-90a8-f3709b96fb68"), 2, 11 },
+                    { new Guid("55f6c585-d1fc-4ba0-b6aa-954c081b43fe"), 0, 0 },
+                    { new Guid("94fdaf0b-f062-42f9-a816-c0b149a39599"), 1, 5 },
+                    { new Guid("a2251a62-5a35-4730-9c28-efd31f256641"), 1, 7 },
+                    { new Guid("a537acb2-db0a-41a8-bf1e-3f3b9d4cf063"), 1, 9 },
+                    { new Guid("af92daf2-bf7f-4986-8261-e48dfc92a59d"), 0, 3 },
+                    { new Guid("b266b810-c9c9-4ba6-b650-6f46bc62f511"), 0, 0 },
+                    { new Guid("b64f6c06-4e46-49b1-ad5c-580dada8e999"), 1, 6 },
+                    { new Guid("d366d607-c5a2-47e0-bbcd-1048bf41894b"), 0, 4 },
+                    { new Guid("d6590997-ee47-4fb2-a6d2-a0664c515fee"), 0, 2 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -2268,9 +2299,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "DepartureId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReferenceTransportPrices_FacilityRatingId",
+                name: "IX_ReferenceTransportPrices_ReferencePriceRatingId",
                 table: "ReferenceTransportPrices",
-                column: "FacilityRatingId");
+                column: "ReferencePriceRatingId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReferenceTransportPrices_ServiceTypeId",
@@ -2613,6 +2644,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
             migrationBuilder.DropTable(
                 name: "Ports");
+
+            migrationBuilder.DropTable(
+                name: "ReferencePriceRating");
 
             migrationBuilder.DropTable(
                 name: "DayPlans");

@@ -906,7 +906,7 @@ public class AccountService : GenericBackendService, IAccountService
             List<TourGuideRegistrationRecord> sampleData = new List<TourGuideRegistrationRecord>();
             sampleData.Add(new TourGuideRegistrationRecord
             { No = 1, FirstName = "Anh", LastName = "Nguyễn", Email = "anhnguyen.tourguide@gmail.com", PhoneNumber = "0945787123", Gender = true });
-            result = _fileService.GenerateExcelContent<TourGuideRegistrationRecord>(sampleData, SD.ExcelHeaders.TOURGUIDE_REGISTRATION, "IMPORT TOURGUIDE");
+            //result = _fileService.GenerateExcelContent<TourGuideRegistrationRecord>(sampleData, SD.ExcelHeaders.TOURGUIDE_REGISTRATION, "IMPORT TOURGUIDE");
         }
         catch (Exception ex)
         {
