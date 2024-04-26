@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,6 +70,21 @@ namespace TravelCapstone.BackEnd.Application.Services
                 result = BuildAppActionResultError(result, ex.Message);
             }
             return result;
+        }
+
+        public Task<IActionResult> GetTemplate()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AppActionResult> UploadQuotation(IFormFile file)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AppActionResult> ValidateExcelFile(IFormFile file)
+        {
+            throw new NotImplementedException();
         }
     }
 }
