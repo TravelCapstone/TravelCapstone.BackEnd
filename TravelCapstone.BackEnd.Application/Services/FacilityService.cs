@@ -29,7 +29,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<AppActionResult> GetFacilityByProvinceId(Guid provinceId)
+        public async Task<AppActionResult> GetFacilityByProvinceId(Guid provinceId, int pageNumber, int pageSize)
         {
             AppActionResult result = new AppActionResult();
             try
@@ -39,7 +39,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 if(communeDb.Items != null & communeDb.Items!.Count > 0)
                 {
                     var communeIds = communeDb.Items!.Select(c => c.Id);
-                    var facilityDb = await _repository.GetAllDataByExpression(f => communeIds.Contains(f.CommunceId), 0, 0, null, false, a=> a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
+                    var facilityDb = await _repository.GetAllDataByExpression(f => communeIds.Contains(f.CommunceId), pageNumber, pageSize, null, false, a=> a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
                     result.Result = facilityDb;
                 }
 

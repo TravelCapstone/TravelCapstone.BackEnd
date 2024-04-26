@@ -191,7 +191,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             return priceReference;
         }
 
-        public async Task<AppActionResult> GetServiceByProvinceIdAndServiceType(Guid Id, Domain.Enum.ServiceType type)
+        public async Task<AppActionResult> GetServiceByProvinceIdAndServiceType(Guid Id, Domain.Enum.ServiceType type, int pageNumber, int pageSize)
         {
             AppActionResult result = new AppActionResult();
             try
@@ -204,7 +204,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
                 var districtIds = districtListDb.Items.Select(d => d.Id);
                 var communeRepository = Resolve<IRepository<Commune>>();
-                var communeListDb = await communeRepository!.GetAllDataByExpression(c => districtIds.Contains(c.DistrictId), 0, 0, null, false, null);
+                var communeListDb = await communeRepository!.GetAllDataByExpression(c => districtIds.Contains(c.DistrictId), pageNumber, pageSize, null, false, null);
                 if (communeListDb == null || communeListDb.Items!.Count == 0)
                 {
                     return result;
@@ -220,12 +220,12 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
-        public async Task<AppActionResult> GetServiceByFacilityId(Guid Id)
+        public async Task<AppActionResult> GetServiceByFacilityId(Guid Id, int pageNumber, int pageSize)
         {
             AppActionResult result = new();
             try
             {
-                result.Result = await _repository.GetAllDataByExpression(a => a.FacilityId == Id, 0, 0, null, false, a => a.Facility!);
+                result.Result = await _repository.GetAllDataByExpression(a => a.FacilityId == Id, pageNumber, pageSize, null, false, a => a.Facility!);
             }
             catch (Exception ex)
             {
