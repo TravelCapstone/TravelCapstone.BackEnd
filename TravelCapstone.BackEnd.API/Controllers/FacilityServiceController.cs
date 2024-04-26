@@ -25,10 +25,10 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetServiceByProvinceIdAndRequestId(provinceId, requestId, pageNumber, pageSize);
         }
-        [HttpGet("get-service-by-province-id-and-tour-request-id/{provinceId}/{requestId}")]
-        public async Task<AppActionResult> GetServiceByFacilityId(Guid provinceId, int pageNumber =1, int pageSize = 10)
+        [HttpGet("get-service-by-facilityId/{facilityId}")]
+        public async Task<AppActionResult> GetServiceByFacilityId(Guid facilityId, int pageNumber =1, int pageSize = 10)
         {
-            return await _service.GetServiceByFacilityId(provinceId,pageNumber,pageSize);
+            return await _service.GetServiceByFacilityId(facilityId, pageNumber,pageSize);
         }
 
     }
