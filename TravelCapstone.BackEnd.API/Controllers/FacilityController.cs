@@ -19,5 +19,10 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetFacilityByProvinceId(provinceId,pageNumber,pageSize);
         }
+        [HttpGet("get-all-facility")]
+        public async Task<AppActionResult> GetAllFacility( int pageNumber = 1, int pageSize = 10)
+        {
+            return await _service.GetAllFacility( pageNumber, pageSize);
+        }
     }
     }
