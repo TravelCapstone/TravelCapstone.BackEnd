@@ -8,7 +8,7 @@ using TravelCapstone.BackEnd.Domain.Enum;
 namespace TravelCapstone.BackEnd.Application.IServices { 
     public interface IFacilityServiceService { 
         Task<AppActionResult> GetServiceByProvinceIdAndServiceType(Guid Id, ServiceType type, int pageNumber, int pageSize); 
-        Task<AppActionResult> GetServiceByProvinceIdAndRequestId(Guid Id, Guid requestId, int pageNumber, int pageSize);
+        Task<AppActionResult> GetServicePriceRangeByProvinceIdAndRequestId(Guid Id, Guid requestId, int pageNumber, int pageSize);
         Task<AppActionResult> GetServiceByFacilityId(Guid Id, int pageNumber, int pageSize);
     }
 }
