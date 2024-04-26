@@ -56,11 +56,10 @@ namespace TravelCapstone.BackEnd.Application.Services
                         var sellPriceHistoryRepository = Resolve<IRepository<SellPriceHistory>>();
                         var sellPriceHistoryDb = await sellPriceHistoryRepository!.GetAllDataByExpression(s => (s.FacilityServiceId != null && facilityServiceIds.Contains((Guid)s.FacilityServiceId))
                                                                                                                     || (s.MenuId != null && menuIds.Contains((Guid)s.MenuId))
-                                                                                                                    || (s.TransportServiceDetailId != null && transportIds.Contains((Guid)s.TransportServiceDetailId)), 0, 0, s => s.Date, false, null);
+                                                                                                                    || (s.TransportServiceDetailId != null && transportIds.Contains((Guid)s.TransportServiceDetailId)), 
+                                                                                                                    0, 0, s => s.Date, false, s => s.TransportServiceDetail.FacilityService, s => s.FacilityService, s => s.Menu.FacilityService);
                         result.Result = sellPriceHistoryDb;
                     }
-
-                    result.Result = facilityServiceDb;
                 }
 
             }

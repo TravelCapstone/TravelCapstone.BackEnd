@@ -765,7 +765,7 @@ public class AccountService : GenericBackendService, IAccountService
                 }
 
 
-                accountDb = await _accountRepository!.GetAllDataByExpression(a => a.NormalizedEmail == record.Email || a.PhoneNumber == record.PhoneNumber, 0, 0);
+                accountDb = await _accountRepository!.GetAllDataByExpression(a => a.NormalizedEmail == record.Email || a.PhoneNumber == record.PhoneNumber, 0, 0,null,false,null);
                 if (accountDb.Items!.Count > 0)
                 {
                     if (accountDb.Items.Where(a => a.NormalizedEmail == record.Email).Count() > 0)

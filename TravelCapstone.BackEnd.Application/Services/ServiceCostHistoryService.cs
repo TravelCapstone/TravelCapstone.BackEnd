@@ -461,11 +461,10 @@ namespace TravelCapstone.BackEnd.Application.Services
                         var servicecostHistoryRepository = Resolve<IRepository<ServiceCostHistory>>();
                         var servicecostHistoryDb = await servicecostHistoryRepository!.GetAllDataByExpression(s => (s.FacilityServiceId != null && facilityServiceIds.Contains((Guid)s.FacilityServiceId))
                                                                                                                     || (s.MenuId != null && menuIds.Contains((Guid)s.MenuId))
-                                                                                                                    || (s.TransportServiceDetailId != null && transportIds.Contains((Guid)s.TransportServiceDetailId)), 0, 0, s => s.Date, false, null);
+                                                                                                                    || (s.TransportServiceDetailId != null && transportIds.Contains((Guid)s.TransportServiceDetailId))
+                                                                                                                    , 0, 0, s => s.Date, false, s => s.Transport.FacilityService, s => s.FacilityService, s => s.Menu.FacilityService);
                         result.Result = servicecostHistoryDb;
                     }
-                    
-                    result.Result = facilityServiceDb;
                 }
 
             }

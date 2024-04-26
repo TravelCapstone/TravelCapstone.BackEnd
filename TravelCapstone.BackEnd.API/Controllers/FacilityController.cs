@@ -15,9 +15,9 @@ namespace TravelCapstone.BackEnd.API.Controllers
         }
 
         [HttpGet("get-all-facility-by-province-Id/{provinceId}")]
-        public async Task<AppActionResult> GetFacilityByProvinceId(Guid provinceId)
+        public async Task<AppActionResult> GetFacilityByProvinceId(Guid provinceId, int pageNumber=1, int pageSize = 10)
         {
-            return await _service.GetFacilityByProvinceId(provinceId);
+            return await _service.GetFacilityByProvinceId(provinceId,pageNumber,pageSize);
         }
     }
     }

@@ -5,6 +5,7 @@ using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
+    [Route("sell-price")]
     public class SellPriceHistoryController : Controller
     {
         private readonly ISellPriceHistoryService _service;
