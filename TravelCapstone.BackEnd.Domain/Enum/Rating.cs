@@ -18,6 +18,7 @@ namespace TravelCapstone.BackEnd.Domain.Enum
         RESTAURENT_THREESTAR,
         RESTAURENT_FOURSTAR,
         RESTAURENT_FIVESTAR,
-        RESORT
+        RESORT,
+        TOURIST_AREA
     }
 }
