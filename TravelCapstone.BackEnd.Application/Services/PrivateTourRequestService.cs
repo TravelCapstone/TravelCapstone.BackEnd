@@ -340,7 +340,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 foreach (var location in dto.Locations)
                 {
-                    var estimateService = await facilityService!.GetServiceByProvinceIdAndRequestId(location.ProvinceId, dto.PrivateTourRequestId);
+                    var estimateService = await facilityService!.GetServiceByProvinceIdAndRequestId(location.ProvinceId, dto.PrivateTourRequestId,0,0);
                     var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
                     foreach (var hotel in location.Hotels)
                     {
