@@ -29,6 +29,20 @@ namespace TravelCapstone.BackEnd.Application.Services
             _mapper = mapper;
         }
 
+        public async Task<AppActionResult> GetAllFacility(int pageNumber, int pageSize)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+               result.Result = await _repository.GetAllDataByExpression(null, pageNumber, pageSize, null, false, a => a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
         public async Task<AppActionResult> GetFacilityByProvinceId(Guid provinceId, int pageNumber, int pageSize)
         {
             AppActionResult result = new AppActionResult();
