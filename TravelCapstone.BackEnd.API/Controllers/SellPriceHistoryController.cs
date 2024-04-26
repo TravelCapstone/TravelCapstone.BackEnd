@@ -15,10 +15,10 @@ namespace TravelCapstone.BackEnd.API.Controllers
         }
 
 
-        [HttpGet("get-sell-price-by-facility-Id-and-service-type")]
-        public async Task<AppActionResult> GetServiceCostByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId)
+        [HttpGet("get-sell-price-by-facility-Id-and-service-type/{facilityId}/{serviceTypeId}/{pageNumber:int}/{pageSize:int}")]
+        public async Task<AppActionResult> GetServiceCostByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId, int pageNumber = 1, int pageSize = 10)
         {
-            return await _service.GetSellPriceByFacilityIdAndServiceType(facilityId, serviceTypeId);
+            return await _service.GetSellPriceByFacilityIdAndServiceType(facilityId, serviceTypeId, pageNumber, pageSize);
         }
     }
 }

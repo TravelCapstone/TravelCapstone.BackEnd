@@ -16,7 +16,7 @@ namespace TravelCapstone.BackEnd.Application.IServices
         public Task<AppActionResult> ValidateExcelFile(IFormFile file);
         public Task<IActionResult> GetPriceQuotationTemplate();
         Task<AppActionResult> GetLastCostHistory(List<Guid> servicesId);
-        public Task<AppActionResult> GetServiceCostByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId);
+        public Task<AppActionResult> GetServiceCostByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId, int pageNumber, int pageSize);
     }
 
 }

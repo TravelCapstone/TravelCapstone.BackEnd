@@ -12,7 +12,7 @@ namespace TravelCapstone.BackEnd.Application.IServices
 {
     public interface ISellPriceHistoryService
     {
-        public Task<AppActionResult> GetSellPriceByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId);
+        public Task<AppActionResult> GetSellPriceByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId, int pageNumber, int pageSize);
         public Task<AppActionResult> UploadQuotation(IFormFile file);
         public Task<AppActionResult> ValidateExcelFile(IFormFile file);
         public Task<IActionResult> GetTemplate();

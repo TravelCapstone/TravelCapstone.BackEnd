@@ -15,10 +15,16 @@ namespace TravelCapstone.BackEnd.API.Controllers
             _menuService = menuService;     
         }
 
-        [HttpGet("get-menu-by-facility/{pageNumber:int}/{pageSize:int}")]
+        [HttpGet("get-menu-by-facility/{facilityId}/{pageNumber:int}/{pageSize:int}")]
         public async Task<AppActionResult> GetMenuByFacility(Guid facilityId, int pageNumber = 1, int pageSize = 10)
         {
             return await _menuService.GetMenuByFacilityId(facilityId, pageNumber, pageSize);        
+        }
+
+        [HttpGet("get-all-menu/{pageNumber:int}/{pageSize:int}")]
+        public async Task<AppActionResult> GetAllMenu(int pageNumber = 1, int pageSize = 10)
+        {
+            return await _menuService.GetAllMenu(pageNumber, pageSize);
         }
     }
 }
