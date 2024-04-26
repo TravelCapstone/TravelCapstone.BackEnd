@@ -24,10 +24,6 @@ namespace TravelCapstone.BackEnd.Domain.Models
         public Enum.ReferencePriceRating ReferencePriceRatingId { get; set; }
         [ForeignKey(nameof(ReferencePriceRatingId))]
         public ReferencePriceRating? ReferencePriceRating { get; set; }
-
-        public Enum.ServiceType ServiceTypeId { get; set; }
-        [ForeignKey(nameof(ServiceTypeId))]
-        public ServiceType? ServiceType { get; set; }
         public string ProviderName { get; set; } = null!;
     }
 }
