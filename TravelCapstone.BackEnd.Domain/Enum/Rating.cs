@@ -19,7 +19,10 @@ namespace TravelCapstone.BackEnd.Domain.Enum
         RESTAURENT_FOURSTAR,
         RESTAURENT_FIVESTAR,
         RESORT,
-        TOURIST_AREA
+        TOURIST_AREA, ECONOMY_AIR_BRAND,
+        STANDARD_AIR_BRAND,
+        MIDDLE_AIR_BRAND,
+        STANDARD_FERRY_TERMINAL
 
     }
 }

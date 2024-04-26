@@ -225,7 +225,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             AppActionResult result = new();
             try
             {
-                result.Result = await _repository.GetAllDataByExpression(a => a.FacilityId == Id, pageNumber, pageSize, null, false, a => a.Facility!);
+                result.Result = await _repository.GetAllDataByExpression(a => a.FacilityId == Id, pageNumber, pageSize, null, false, a => a.Facility!.Communce!.District!.Province!, a => a.Facility!.FacilityRating!.Rating!);
             }
             catch (Exception ex)
             {
