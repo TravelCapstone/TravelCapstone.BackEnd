@@ -5,6 +5,7 @@ using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
+    [Route("facility-service")]
     public class ServiceController : Controller
     {
         private readonly IFacilityServiceService _service;

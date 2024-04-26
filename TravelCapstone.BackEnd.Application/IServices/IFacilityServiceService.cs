@@ -9,5 +9,6 @@ namespace TravelCapstone.BackEnd.Application.IServices {
     public interface IFacilityServiceService { 
         Task<AppActionResult> GetServiceByProvinceIdAndServiceType(Guid Id, ServiceType type); 
         Task<AppActionResult> GetServiceByProvinceIdAndRequestId(Guid Id, Guid requestId);
+        Task<AppActionResult> GetServiceByFacilityId(Guid Id);
     }
 }

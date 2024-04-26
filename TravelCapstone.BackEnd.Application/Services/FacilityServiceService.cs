@@ -14,12 +14,12 @@ using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Application.Services
 {
-    public class ServiceService : GenericBackendService, IFacilityServiceService
+    public class FacilityServiceService : GenericBackendService, IFacilityServiceService
     {
         private readonly IRepository<Domain.Models.FacilityService> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ServiceService(
+        public FacilityServiceService(
             IRepository<Domain.Models.FacilityService> repository,
             IUnitOfWork unitOfWork,
             IServiceProvider serviceProvider
@@ -197,14 +197,14 @@ namespace TravelCapstone.BackEnd.Application.Services
             try
             {
                 var districtRepository = Resolve<IRepository<District>>();
-                var districtListDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 1, Int32.MaxValue);
+                var districtListDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 0,0,null,false,null);
                 if (districtListDb == null || districtListDb.Items!.Count == 0)
                 {
                     return result;
                 }
                 var districtIds = districtListDb.Items.Select(d => d.Id);
                 var communeRepository = Resolve<IRepository<Commune>>();
-                var communeListDb = await communeRepository!.GetAllDataByExpression(c => districtIds.Contains(c.DistrictId), 1, Int32.MaxValue);
+                var communeListDb = await communeRepository!.GetAllDataByExpression(c => districtIds.Contains(c.DistrictId), 0, 0, null, false, null);
                 if (communeListDb == null || communeListDb.Items!.Count == 0)
                 {
                     return result;
@@ -220,5 +220,19 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
+        public async Task<AppActionResult> GetServiceByFacilityId(Guid Id)
+        {
+            AppActionResult result = new();
+            try
+            {
+                result.Result = await _repository.GetAllDataByExpression(a => a.FacilityId == Id, 0, 0, null, false, a => a.Facility!);
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+
+            }
+            return result;
+        }
     }
 }
