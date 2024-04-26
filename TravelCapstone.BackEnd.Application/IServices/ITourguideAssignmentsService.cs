@@ -7,8 +7,8 @@ using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.Application.IServices
 {
-    public interface IMenuService
+    public interface ITourguideAssignmentsService
     {
-        Task<AppActionResult> GetMenuByFacilityId(Guid id, int pageIndex, int pageSize);
+        Task<AppActionResult> GetUnassignTourGuideByProvince(Guid provinceId);
     }
 }

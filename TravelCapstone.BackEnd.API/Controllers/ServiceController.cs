@@ -24,5 +24,6 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetServiceByProvinceIdAndRequestId(provinceId, requestId);
         }
+       
     }
 }

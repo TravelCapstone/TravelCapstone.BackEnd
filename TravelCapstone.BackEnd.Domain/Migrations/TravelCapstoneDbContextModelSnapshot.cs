@@ -1398,73 +1398,73 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("4f6da9e1-e1ae-40cc-9bbf-0e4f3f1f0612"),
+                            Id = new Guid("9014b2af-7189-488d-9ac0-16e465e5d4d5"),
                             FacilityTypeId = 0,
                             RatingId = 0
                         },
                         new
                         {
-                            Id = new Guid("8ea82025-f43c-4eba-b60f-5cc67436e028"),
+                            Id = new Guid("968b3495-bd82-4070-bd02-e9fdfbb4bc73"),
                             FacilityTypeId = 0,
                             RatingId = 0
                         },
                         new
                         {
-                            Id = new Guid("a10e4edc-54b6-44ac-8fd2-5f7f450f3ac7"),
+                            Id = new Guid("eb854862-de7f-42b4-8634-8d96299f46dc"),
                             FacilityTypeId = 0,
                             RatingId = 1
                         },
                         new
                         {
-                            Id = new Guid("5a883a5f-d485-4de1-8afa-a3fe5c9888a2"),
+                            Id = new Guid("97584536-d29e-4666-aed1-344a86f5a8dc"),
                             FacilityTypeId = 0,
                             RatingId = 2
                         },
                         new
                         {
-                            Id = new Guid("9140c68a-e11b-4dbe-83c1-41f5bc01e30d"),
+                            Id = new Guid("684a3dd3-bcfe-446c-bc0d-1dc9944ef0f7"),
                             FacilityTypeId = 0,
                             RatingId = 3
                         },
                         new
                         {
-                            Id = new Guid("78515336-6fb8-458c-9cc2-a5bbd897f671"),
+                            Id = new Guid("f44c551d-f2fe-479a-93f2-bd68eb377e66"),
                             FacilityTypeId = 0,
                             RatingId = 4
                         },
                         new
                         {
-                            Id = new Guid("f9044258-c1ef-45d9-a427-0adef716150b"),
+                            Id = new Guid("33927acd-fe0d-445c-9fd0-f6d102082d46"),
                             FacilityTypeId = 1,
                             RatingId = 5
                         },
                         new
                         {
-                            Id = new Guid("8a93a06c-83c8-49fe-a772-9c95787ecac9"),
+                            Id = new Guid("4b6dba92-c317-4161-b733-9208c0f4ba24"),
                             FacilityTypeId = 1,
                             RatingId = 6
                         },
                         new
                         {
-                            Id = new Guid("34b6e168-13b0-4f4e-bf0b-466c3b0ad024"),
+                            Id = new Guid("30274f05-9134-417e-84ed-bf10d04b9140"),
                             FacilityTypeId = 1,
                             RatingId = 7
                         },
                         new
                         {
-                            Id = new Guid("11c6720b-6040-4b4d-bece-7c7a57960f59"),
+                            Id = new Guid("490187d9-b7db-43ec-969e-98cf6d28bedb"),
                             FacilityTypeId = 1,
                             RatingId = 8
                         },
                         new
                         {
-                            Id = new Guid("f4ae7a28-9277-440e-b07a-4ab70c075669"),
+                            Id = new Guid("9b2a26c0-14d5-4ea4-846f-e5d981283b33"),
                             FacilityTypeId = 1,
                             RatingId = 9
                         },
                         new
                         {
-                            Id = new Guid("695e80ff-4ffe-4edd-88c0-64daf9825648"),
+                            Id = new Guid("fab2236e-eab6-4695-acd4-90f9474c0cef"),
                             FacilityTypeId = 2,
                             RatingId = 11
                         });
