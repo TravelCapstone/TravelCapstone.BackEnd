@@ -206,6 +206,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
         SeedEnumTable<Models.EnumModels.ServiceType, Domain.Enum.ServiceType>(builder);
         SeedEnumTable<Models.EnumModels.MealType, Domain.Enum.MealType>(builder);
         SeedEnumTable<Models.EnumModels.DietaryPreference, Domain.Enum.DietaryPreference>(builder);
+        SeedEnumTable<Models.EnumModels.ReferencePriceRating, Domain.Enum.ReferencePriceRating>(builder);
     }
 
     private static void SeedEnumTable<TEntity, TEnum>(ModelBuilder modelBuilder)
