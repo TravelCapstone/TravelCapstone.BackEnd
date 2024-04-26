@@ -8,7 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Common.Utils;
 using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
 
@@ -74,7 +76,19 @@ namespace TravelCapstone.BackEnd.Application.Services
 
         public Task<IActionResult> GetTemplate()
         {
-            throw new NotImplementedException();
+            IActionResult result = null;
+            try
+            {
+                List<ServiceCostHistoryRecord> sampleData = new List<ServiceCostHistoryRecord>();
+                sampleData.Add(new ServiceCostHistoryRecord
+                { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, PricePerAdult = 9, PricePerChild = 4 });
+                result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord>(sampleData, SD.ExcelHeaders.SERVICE_QUOTATION, "ProviderName_ddMMyyyy");
+
+            }
+            catch (Exception ex)
+            {
+            }
+            return result;
         }
 
         public Task<AppActionResult> UploadQuotation(IFormFile file)

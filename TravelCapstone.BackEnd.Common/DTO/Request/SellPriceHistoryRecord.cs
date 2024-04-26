@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace TravelCapstone.BackEnd.Common.DTO.Request
 {
-    public class ServiceCostHistoryRecord
+    public class SellPriceHistoryRecord
     {
-        public int No {  get; set; }
+        public int No { get; set; }
         public string ServiceName { get; set; } = null;
         public string Unit { get; set; }
         public int MOQ { get; set; }
         public double PricePerAdult { get; set; }
         public double PricePerChild { get; set; }
-
     }
 
-    public class MenuServiceCostHistoryRecord : ServiceCostHistoryRecord
+    public class MenuSellPriceHistoryRecord : SellPriceHistoryRecord
     {
         public string? MenuName { get; set; }
     }
 
-    public class VehicleServiceCostHistoryRecord : ServiceCostHistoryRecord
+    public class VehicleSellPriceHistoryRecord : SellPriceHistoryRecord
     {
         public string? VehicleName { get; set; }
     }
+
 
 }
