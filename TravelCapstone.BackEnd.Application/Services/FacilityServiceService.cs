@@ -29,7 +29,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AppActionResult> GetServiceByProvinceIdAndRequestId(Guid Id, Guid requestId)
+        public async Task<AppActionResult> GetServiceByProvinceIdAndRequestId(Guid Id, Guid requestId, int pageNumber, int pageSize)
         {
             AppActionResult result = new AppActionResult();
             try
