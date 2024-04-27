@@ -269,7 +269,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     {
                         result = BuildAppActionResultError(result, $"Không tìm thấy khách sạn với phân loại {hotel.Rating} tại tỉnh thuộc id {location.ProvinceId}");
                     }
-                    if (sellHotel.Items!.Any())
+                    if (!sellHotel.Items!.Any())
                     {
                         result = BuildAppActionResultError(result, $"Không tìm thấy gía khách sạn với phân loại {hotel.Rating} tại tỉnh thuộc id {location.ProvinceId}");
                     }
@@ -310,7 +310,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                        && a.FacilityService.ServiceTypeId == ServiceType.ENTERTAIMENT,
                      0, 0, null, false, null
                      );
-                if (entertaiment.Items!.Any())
+                if (!entertaiment.Items!.Any())
                 {
                     result = BuildAppActionResultError(result, $"Không tìm thấy dịch vụ vui chơi giải trí tại tỉnh thuộc id {location.ProvinceId}");
                 }
