@@ -81,7 +81,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             {
                 List<ServiceCostHistoryRecord> sampleData = new List<ServiceCostHistoryRecord>();
                 sampleData.Add(new ServiceCostHistoryRecord
-                { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, PricePerAdult = 9, PricePerChild = 4 });
+                { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, Price = 4 });
                 result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord, Object>(sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION, "ProviderName_ddMMyyyy");
 
             }

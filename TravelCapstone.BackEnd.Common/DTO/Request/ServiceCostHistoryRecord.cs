@@ -12,8 +12,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public string ServiceName { get; set; } = null;
         public string Unit { get; set; }
         public int MOQ { get; set; }
-        public double PricePerAdult { get; set; }
-        public double PricePerChild { get; set; }
+        public double Price { get; set; }
 
     }
 
@@ -21,10 +20,4 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
     {
         public string? MenuName { get; set; }
     }
-
-    public class VehicleServiceCostHistoryRecord : ServiceCostHistoryRecord
-    {
-        public string? VehicleName { get; set; }
-    }
-
 }

@@ -46,8 +46,8 @@ namespace TravelCapstone.BackEnd.Application.Services
             {
                 List<ServiceCostHistoryRecord> sampleData = new List<ServiceCostHistoryRecord>();
                 sampleData.Add(new ServiceCostHistoryRecord
-                { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, PricePerAdult = 9, PricePerChild = 4 });
-                result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord, Object>(sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION,"ProviderName_ddMMyyyy");
+                { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, Price = 4 });
+                result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord, Object>(sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION,"ProviderName");
 
             }
             catch (Exception ex)
@@ -264,7 +264,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         errorRecordCount++;
                     }
 
-                    if (record.PricePerAdult <= 0 || record.PricePerChild <= 0)
+                    if (record.Price <= 0)
                     {
                         error.Append($"{errorRecordCount + 1}.Đơn giá tối thiểu phải lớn hơn 0.\n");
                         errorRecordCount++;
@@ -345,8 +345,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                                 ServiceName = (worksheet.Cells[row, 2].Value == null) ? "" : worksheet.Cells[row, 2].Value.ToString(),
                                 Unit = (worksheet.Cells[row, 3].Value == null) ? "" : worksheet.Cells[row, 3].Value.ToString(),
                                 MOQ = (worksheet.Cells[row, 4].Value == null) ? 0 : int.Parse(worksheet.Cells[row, 4].Value.ToString()),
-                                PricePerAdult = (worksheet.Cells[row, 5].Value == null) ? 0 : double.Parse(worksheet.Cells[row, 5].Value.ToString()),
-                                PricePerChild = (worksheet.Cells[row, 6].Value == null) ? 0 : double.Parse(worksheet.Cells[row, 6].Value.ToString())
+                                Price = (worksheet.Cells[row, 5].Value == null) ? 0 : double.Parse(worksheet.Cells[row, 5].Value.ToString()),
                             };
                             records.Add(record);
                         }
@@ -471,6 +470,36 @@ namespace TravelCapstone.BackEnd.Application.Services
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public Task<AppActionResult> UploadMenuQuotation(IFormFile file)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AppActionResult> ValidateMenuExcelFile(IFormFile file)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IActionResult> GetMenuPriceQuotationTemplate()
+        {
+            IActionResult result = null;
+            try
+            {
+                List<MenuServiceCostHistoryRecord> sampleData = new List<MenuServiceCostHistoryRecord>();
+                sampleData.Add(new MenuServiceCostHistoryRecord
+                { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, Price = 4, MenuName="Thực đơn ăn sáng mặn" });
+                List<MenuRecord> menuSampleData = new List<MenuRecord>();
+                menuSampleData.Add(new MenuRecord
+                { No = 1, FacilityServiceName = "Facility Service name", MenuName = "Thực đơn ăn sáng mặn", DishName = "Canh chua cá mập", Description="Ngon", MenuType= "Soup" });
+                result = _fileService.GenerateExcelContent<MenuServiceCostHistoryRecord, MenuRecord>(sampleData, menuSampleData, SD.ExcelHeaders.SERVICE_QUOTATION, "Báo giá menu", SD.ExcelHeaders.MENU_SERVICE_QUOTATION,"Cập nhật menu");
+
+            }
+            catch (Exception ex)
+            {
             }
             return result;
         }
