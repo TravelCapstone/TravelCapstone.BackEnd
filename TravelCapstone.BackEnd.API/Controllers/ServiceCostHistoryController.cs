@@ -41,10 +41,10 @@ namespace TravelCapstone.BackEnd.API.Controllers
             return await _service.GetLastCostHistory(guids);
         }
 
-        [HttpGet("get-service-cost-by-facility-Id-and-service-type")]
-        public async Task<AppActionResult> GetServiceCostByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId)
+        [HttpGet("get-service-cost-by-facility-Id-and-service-type/{facilityId}/{serviceTypeId}/{pageNumber:int}/{pageSize:int}")]
+        public async Task<AppActionResult> GetServiceCostByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId, int pageNumber = 1, int pageSize = 10)
         {
-            return await _service.GetServiceCostByFacilityIdAndServiceType(facilityId, serviceTypeId);
+            return await _service.GetServiceCostByFacilityIdAndServiceType(facilityId, serviceTypeId, pageNumber, pageSize);
         }
 
     }

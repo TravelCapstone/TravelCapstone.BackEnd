@@ -24,7 +24,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
         public async Task<AppActionResult> GetMenuByFacilityId(Guid id, int pageIndex, int pageSize)
         {
-             var result = new AppActionResult();
+            var result = new AppActionResult();
             try
             {
                 var facilityRepository = Resolve<IRepository<Facility>>();
@@ -35,8 +35,57 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
                 if (!BuildAppActionResultIsError(result))
                 {
-                    result.Result = await _menuRepository.GetAllDataByExpression(p => p.FacilityService!.Facility == facility && p.FacilityService.ServiceTypeId == ServiceType.FOODANDBEVARAGE, pageIndex, pageSize, null, false, p => p.FacilityService!.Facility!);
+                    var menuDb = await _menuRepository!.GetAllDataByExpression(m => m.FacilityService.FacilityId == facility.Id, pageIndex, pageSize, null, false, m => m.FacilityService!.Facility);
+                    if (menuDb.Items != null && menuDb.Items.Count > 0)
+                    {
+                        List<MenuResponse> menuResponses = new List<MenuResponse>();
+                        var menuDishRepository = Resolve<IRepository<MenuDish>>();
+                        foreach (var item in menuDb.Items)
+                        {
+                            MenuResponse menu = new MenuResponse();
+                            menu.Menu = item;
+                            var menuDishDb = await menuDishRepository!.GetAllDataByExpression(m => m.MenuId == item.Id, 0, 0, null, false, m => m.Dish!);
+                            menu.Dishes = menuDishDb.Items!.Select(m => m.Dish).ToList()!;
+                            menuResponses.Add(menu);
+                        }
+                        result.Result = new PagedResult<MenuResponse>
+                        {
+                            Items = menuResponses
+                        };
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetAllMenu(int pageIndex, int pageSize)
+        {
+            var result = new AppActionResult();
+            try
+            {
+                var menuDb = await _menuRepository!.GetAllDataByExpression(null, pageIndex, pageSize, null, false, m => m.FacilityService!.Facility);
+                if(menuDb.Items != null && menuDb.Items.Count > 0)
+                {
+                    List<MenuResponse> menuResponses = new List<MenuResponse>();
+                    var menuDishRepository = Resolve<IRepository<MenuDish>>();
+                    foreach(var item in menuDb.Items)
+                    {
+                        MenuResponse menu = new MenuResponse();
+                        menu.Menu = item;
+                        var menuDishDb = await menuDishRepository!.GetAllDataByExpression(m => m.MenuId == item.Id, 0, 0, null, false, m => m.Dish!);
+                        menu.Dishes = menuDishDb.Items!.Select(m => m.Dish).ToList()!;
+                        menuResponses.Add(menu);
+                    }
+                    result.Result = new PagedResult<MenuResponse>
+                    {
+                        Items = menuResponses
+                    };
+                }
+
             }
             catch (Exception e)
             {

@@ -109,7 +109,7 @@ public class SD
     public class ExcelHeaders
     {
         public static List<String> SERVICE_QUOTATION = new List<string> { "No", "Tên dịch vụ", "Đơn vị", "MOQ", "Giá người lớn", "Giá trẻ em" };
-        public static List<String> MENU_SERVICE_QUOTATION = new List<string> { "No", "Tên dịch vụ", "Đơn vị", "MOQ", "Giá người lớn", "Giá trẻ em" };
+        public static List<String> MENU_SERVICE_QUOTATION = new List<string> { "No", "Tên dịch vụ", "Tên menu", "Đơn vị", "MOQ", "Giá người lớn"};
         public static List<String> TOURGUIDE_REGISTRATION = new List<string> { "No", "Tên", "Họ", "Email", "Số điện thoại", "Giới tính" };
         public static List<String> VEHICLE_REGISTRATION = new List<string> { "No", "Biển số", "Dung tích", "Số động cơ", "Số khung", "Thương hiệu", "Tên chủ sở hữu", "Màu" };
 

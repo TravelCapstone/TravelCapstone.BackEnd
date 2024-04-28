@@ -119,69 +119,70 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
             ConcurrencyStamp = "02962efa-1273-46c0-b103-7167b1742ef3",
             NormalizedName = "customer"
         });
-        builder.Entity<FacilityRating>().HasData(new FacilityRating
+       builder.Entity<FacilityRating>().HasData(new FacilityRating
         {
             FacilityTypeId = Enum.FacilityType.HOTEL,
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("34115F50-25D5-4750-8500-5CB917F27DA5"),
             RatingId = Enum.Rating.LODGING
         }); builder.Entity<FacilityRating>().HasData(new FacilityRating
         {
             FacilityTypeId = Enum.FacilityType.HOTEL,
-            Id = Guid.NewGuid(),
-            RatingId = Enum.Rating.LODGING
-        }); builder.Entity<FacilityRating>().HasData(new FacilityRating
-        {
-            FacilityTypeId = Enum.FacilityType.HOTEL,
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("1E955290-E063-439F-8E17-D2EDCB2AD69B"),
             RatingId = Enum.Rating.HOTEL_TWOSTAR
         }); builder.Entity<FacilityRating>().HasData(new FacilityRating
         {
             FacilityTypeId = Enum.FacilityType.HOTEL,
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("1BA853DB-84E4-4E9C-B750-DBE432D1A2B0"),
             RatingId = Enum.Rating.HOTEL_THREESTAR
         }); builder.Entity<FacilityRating>().HasData(new FacilityRating
         {
             FacilityTypeId = Enum.FacilityType.HOTEL,
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("EF3FC5D9-7C7A-44C3-8FC1-8DA12CA7E93B"),
             RatingId = Enum.Rating.HOTEL_FOURSTAR
         }); builder.Entity<FacilityRating>().HasData(new FacilityRating
         {
             FacilityTypeId = Enum.FacilityType.HOTEL,
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("F2603607-D947-4ACA-888E-9FD3BC3C0339"),
             RatingId = Enum.Rating.HOTEL_FIVESTAR
         });
         builder.Entity<FacilityRating>().HasData(new FacilityRating
         {
             FacilityTypeId = Enum.FacilityType.RESTAURANTS,
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("F48D19EE-36AE-49BD-88ED-A3D326B1B1D8"),
             RatingId = Enum.Rating.RESTAURENT_CASUAL
         }); builder.Entity<FacilityRating>().HasData(new FacilityRating
         {
             FacilityTypeId = Enum.FacilityType.RESTAURANTS,
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("23C8E757-AC2D-4232-A569-D5461DEB9B05"),
             RatingId = Enum.Rating.RESTAURENT_TWOSTAR
         }); builder.Entity<FacilityRating>().HasData(new FacilityRating
         {
             FacilityTypeId = Enum.FacilityType.RESTAURANTS,
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("A59BBB50-4FCC-473F-BBF4-B311F06B2ED8"),
             RatingId = Enum.Rating.RESTAURENT_THREESTAR
         });
         builder.Entity<FacilityRating>().HasData(new FacilityRating
         {
             FacilityTypeId = Enum.FacilityType.RESTAURANTS,
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("FA63BF87-51A3-46B7-A6DF-AA29FB9B9057"),
             RatingId = Enum.Rating.RESTAURENT_FOURSTAR
         });
         builder.Entity<FacilityRating>().HasData(new FacilityRating
         {
             FacilityTypeId = Enum.FacilityType.RESTAURANTS,
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("4B3961FF-AA19-41FD-9A3E-1A6B37F99D09"),
             RatingId = Enum.Rating.RESTAURENT_FIVESTAR
         });
         builder.Entity<FacilityRating>().HasData(new FacilityRating
         {
+            FacilityTypeId = Enum.FacilityType.HOTEL,
+            Id = Guid.Parse("D39D6346-6831-4155-B27A-A2A779271BA2"),
+            RatingId = Enum.Rating.RESORT
+        });
+        builder.Entity<FacilityRating>().HasData(new FacilityRating
+        {
             FacilityTypeId = Enum.FacilityType.ENTERTAINMENT,
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("994CB1A9-6D4E-4D34-B904-91B229A12D5C"),
             RatingId = Enum.Rating.TOURIST_AREA
         }); 
 
@@ -206,6 +207,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
         SeedEnumTable<Models.EnumModels.ServiceType, Domain.Enum.ServiceType>(builder);
         SeedEnumTable<Models.EnumModels.MealType, Domain.Enum.MealType>(builder);
         SeedEnumTable<Models.EnumModels.DietaryPreference, Domain.Enum.DietaryPreference>(builder);
+        SeedEnumTable<Models.EnumModels.ReferencePriceRating, Domain.Enum.ReferencePriceRating>(builder);
     }
 
     private static void SeedEnumTable<TEntity, TEnum>(ModelBuilder modelBuilder)
@@ -237,7 +239,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
                        .SetBasePath(Directory.GetCurrentDirectory())
                        .AddJsonFile("appsettings.json", true, true)
                        .Build();
-        string cs = config["ConnectionStrings:Host"];
+        string cs = config["ConnectionStrings:DB"];
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder.UseSqlServer(cs);

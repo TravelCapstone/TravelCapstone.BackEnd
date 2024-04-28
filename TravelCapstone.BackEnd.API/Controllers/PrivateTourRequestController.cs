@@ -46,4 +46,10 @@ public class PrivateTourRequestController : Controller
     {
         return await _service.CreateOptionsPrivateTour(request);
     }
-  }
+
+    [HttpPost("confirm-options-private-tour")]
+    public async Task<AppActionResult> ConfirmOptionPrivateTour(Guid optionId, string accountId)
+    {
+        return await _service.ConfirmOptionPrivateTour(optionId, accountId);
+    }
+}

@@ -9,10 +9,10 @@ using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.Application.IServices
 {
-    public interface iVehicleService
+    public interface IVehicleService
     {
-        public Task<AppActionResult> UploadQuotation(IFormFile file);
-        public Task<AppActionResult> ValidateExcelFile(IFormFile file);
+        //public Task<AppActionResult> UploadQuotation(IFormFile file);
+        //public Task<AppActionResult> ValidateExcelFile(IFormFile file);
         public Task<IActionResult> GetPriceQuotationTemplate();
     }
 }

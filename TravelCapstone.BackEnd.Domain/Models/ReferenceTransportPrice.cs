@@ -21,13 +21,9 @@ namespace TravelCapstone.BackEnd.Domain.Models
         public DateTime ArrivalDate { get; set; }
         public double AdultPrice { get; set; }
         public double ChildPrice { get; set; }
-        public Guid FacilityRatingId { get; set; }
-        [ForeignKey(nameof(FacilityRatingId))]
-        public FacilityRating? FacilityRating { get; set; }
-
-        public Enum.ServiceType ServiceTypeId { get; set; }
-        [ForeignKey(nameof(ServiceTypeId))]
-        public ServiceType? ServiceType { get; set; }
+        public Enum.ReferencePriceRating ReferencePriceRatingId { get; set; }
+        [ForeignKey(nameof(ReferencePriceRatingId))]
+        public ReferencePriceRating? ReferencePriceRating { get; set; }
         public string ProviderName { get; set; } = null!;
     }
 }
