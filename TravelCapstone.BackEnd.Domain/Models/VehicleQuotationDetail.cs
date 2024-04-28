@@ -23,10 +23,6 @@ namespace TravelCapstone.BackEnd.Domain.Models
         public double MinPrice {  get; set; }
         public double MaxPrice { get; set; }
 
-        public Guid FacilityId { get; set; } 
-        [ForeignKey(nameof(FacilityId))]
-        public Facility? Facility { get; set; }
-
         public Guid OptionQuotationId { get; set; }
         [ForeignKey(nameof(OptionQuotationId))]
         public OptionQuotation? OptionQuotation { get; set; }

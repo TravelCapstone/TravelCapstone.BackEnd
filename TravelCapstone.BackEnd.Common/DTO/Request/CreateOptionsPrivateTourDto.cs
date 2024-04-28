@@ -43,6 +43,8 @@ public class Entertainment
 public class Vehicle
 {
     public VehicleType VehicleType { get; set; }
-    public Guid StartPoint { get; set; }
-    public Guid EndPoint { get; set; }
+    public Guid? StartPoint { get; set; }
+    public Guid? EndPoint { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
 }
