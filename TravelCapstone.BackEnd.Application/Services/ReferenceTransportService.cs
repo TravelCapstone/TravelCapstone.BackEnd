@@ -76,7 +76,82 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
                 if (!BuildAppActionResultIsError(result))
                 {
-                    if (filter.StartDate == null && filter.EndDate == null)
+                    if (filter.StartDate != null && filter.EndDate != null)
+                    {
+                        result.Result = await _repository.GetAllDataByExpression(p =>
+                         p!.Departure!.Commune!.District!.ProvinceId == filter.FirstLocation.ProvinceId &&
+                         p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
+                         p!.Arrival!.Commune!.District!.ProvinceId == filter.SecondLocation.ProvinceId &&
+                         p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate
+                        ||
+                        p.Departure.Commune.District.ProvinceId == filter.SecondLocation.ProvinceId &&
+                        p.Arrival!.Commune!.District!.ProvinceId == filter.FirstLocation.ProvinceId &&
+                        p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
+                         p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate
+                        ,
+                        pageIndex, pageSize
+                        , null, false,
+                        p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!);
+                        if (filter.FirstLocation.DistrictId != null && filter.SecondLocation.DistrictId != null && filter.StartDate == null && filter.EndDate == null)
+                        {
+                            result.Result = await _repository.GetAllDataByExpression(p => p!.Departure!.Commune!.DistrictId == filter.FirstLocation.DistrictId &&
+                           p!.Arrival!.Commune!.DistrictId == filter.SecondLocation.DistrictId &&
+                           p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType
+                          || p.Departure.Commune.DistrictId == filter.SecondLocation.DistrictId &&
+                           p.Arrival!.Commune!.DistrictId == filter.FirstLocation.DistrictId &&
+                           p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType,
+                           pageIndex, pageSize
+                          , null, false,
+                           p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!);
+                            if (filter.FirstLocation.CommuneId != null && filter.SecondLocation.CommuneId != null && filter.StartDate == null && filter.EndDate == null)
+                            {
+                                result.Result = await _repository.GetAllDataByExpression(p =>
+                                p!.Departure!.CommuneId == filter.FirstLocation.CommuneId &&
+                                p!.Arrival!.CommuneId == filter.SecondLocation.CommuneId &&
+                                p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType
+
+                                || p.Departure.CommuneId == filter.SecondLocation.CommuneId &&
+                                p.Arrival!.CommuneId == filter.FirstLocation.CommuneId &&
+                                p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType,
+                                pageIndex, pageSize
+                                , null, false,
+                                p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!);
+
+                            }
+                            else
+                            {
+                                result.Result = await _repository.GetAllDataByExpression(p =>
+                               p!.Departure!.CommuneId == filter.FirstLocation.CommuneId &&
+                               p!.Arrival!.CommuneId == filter.SecondLocation.CommuneId &&
+                               p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
+                               p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate
+
+                               || p.Departure.CommuneId == filter.SecondLocation.CommuneId &&
+                               p.Arrival!.CommuneId == filter.FirstLocation.CommuneId &&
+                               p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
+                               p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate,
+                               pageIndex, pageSize
+                               , null, false,
+                               p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!);
+
+                            }
+                        }
+                        else
+                        {
+                            result.Result = await _repository.GetAllDataByExpression(p => p!.Departure!.Commune!.DistrictId == filter.FirstLocation.DistrictId &&
+                             p!.Arrival!.Commune!.DistrictId == filter.SecondLocation.DistrictId &&
+                            p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
+                            p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate
+
+                            || p.Departure.Commune.DistrictId == filter.SecondLocation.DistrictId &&
+                            p.Arrival!.Commune!.DistrictId == filter.FirstLocation.DistrictId &&
+                            p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
+                            p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate,
+                            pageIndex, pageSize, null, false,
+                            p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!);
+                        }
+                    }
+                    else
                     {
                         result.Result = await _repository.GetAllDataByExpression(p =>
                         p!.Departure!.Commune!.District!.ProvinceId == filter.FirstLocation.ProvinceId &&
@@ -88,81 +163,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                        , null, false,
                        p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!);
                     }
-                    else
-                    {
-                        result.Result = await _repository.GetAllDataByExpression(p =>
-                           p!.Departure!.Commune!.District!.ProvinceId == filter.FirstLocation.ProvinceId &&
-                           p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
-                           p!.Arrival!.Commune!.District!.ProvinceId == filter.SecondLocation.ProvinceId &&
-                           p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate
-                          ||
-                          p.Departure.Commune.District.ProvinceId == filter.SecondLocation.ProvinceId &&
-                          p.Arrival!.Commune!.District!.ProvinceId == filter.FirstLocation.ProvinceId &&
-                          p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
-                           p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate
-                          ,
-                          pageIndex, pageSize
-                          , null, false,
-                          p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!);
-                    }
-                    if (filter.FirstLocation.DistrictId != null && filter.SecondLocation.DistrictId != null && filter.StartDate == null && filter.EndDate == null)
-                    {
-                        result.Result = await _repository.GetAllDataByExpression(p => p!.Departure!.Commune!.DistrictId == filter.FirstLocation.DistrictId &&
-                       p!.Arrival!.Commune!.DistrictId == filter.SecondLocation.DistrictId &&
-                       p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType
-                      || p.Departure.Commune.DistrictId == filter.SecondLocation.DistrictId &&
-                       p.Arrival!.Commune!.DistrictId == filter.FirstLocation.DistrictId &&
-                       p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType,
-                       pageIndex, pageSize
-                      , null, false,
-                       p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!);
-                    }
-                    else
-                    {
-                        result.Result = await _repository.GetAllDataByExpression(p => p!.Departure!.Commune!.DistrictId == filter.FirstLocation.DistrictId &&
-                         p!.Arrival!.Commune!.DistrictId == filter.SecondLocation.DistrictId &&
-                        p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
-                        p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate
-
-                        || p.Departure.Commune.DistrictId == filter.SecondLocation.DistrictId &&
-                        p.Arrival!.Commune!.DistrictId == filter.FirstLocation.DistrictId &&
-                        p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
-                        p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate,
-                        pageIndex, pageSize, null, false,
-                        p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!);
-                    }
-                    if (filter.FirstLocation.CommuneId != null && filter.SecondLocation.CommuneId != null && filter.StartDate == null && filter.EndDate == null)
-                    {
-                        result.Result = await _repository.GetAllDataByExpression(p =>
-                        p!.Departure!.CommuneId == filter.FirstLocation.CommuneId &&
-                        p!.Arrival!.CommuneId == filter.SecondLocation.CommuneId &&
-                        p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType
-
-                        || p.Departure.CommuneId == filter.SecondLocation.CommuneId &&
-                        p.Arrival!.CommuneId == filter.FirstLocation.CommuneId &&
-                        p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType,
-                        pageIndex, pageSize
-                        , null, false,
-                        p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!);
-
-                    }
-                    else
-                    {
-                        result.Result = await _repository.GetAllDataByExpression(p =>
-                       p!.Departure!.CommuneId == filter.FirstLocation.CommuneId &&
-                       p!.Arrival!.CommuneId == filter.SecondLocation.CommuneId &&
-                       p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
-                       p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate
-
-                       || p.Departure.CommuneId == filter.SecondLocation.CommuneId &&
-                       p.Arrival!.CommuneId == filter.FirstLocation.CommuneId &&
-                       p!.Departure.PortType == filter.PortType && p!.Arrival!.PortType == filter.PortType &&
-                       p!.DepartureDate == filter.StartDate && p!.ArrivalDate == filter.EndDate,
-                       pageIndex, pageSize
-                       , null, false,
-                       p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!);
-
-                    }
+                   
+                
 
                 }
             }
