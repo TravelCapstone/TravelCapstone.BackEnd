@@ -16,7 +16,7 @@ namespace TravelCapstone.BackEnd.API.Controllers
         }
 
         [HttpPost("get-all-facility-by-filter")]
-        public async Task<AppActionResult> GetFacilityByProvinceId(FilterLocation filter, int pageNumber=1, int pageSize = 10)
+        public async Task<AppActionResult> GetFacilityByProvinceId([FromBody]FilterLocation filter, int pageNumber=1, int pageSize = 10)
         {
             return await _service.GetFacilityByProvinceId(filter,pageNumber,pageSize);
         }
@@ -24,6 +24,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         public async Task<AppActionResult> GetAllFacility( int pageNumber = 1, int pageSize = 10)
         {
             return await _service.GetAllFacility( pageNumber, pageSize);
+        }
+        [HttpPost("get-all-facility-by-location-and-ratingId/{ratingId}")]
+        public async Task<AppActionResult> GetAllFacilityByRatingId([FromBody] FilterLocation filter, TravelCapstone.BackEnd.Domain.Enum.Rating ratingId,int pageNumber = 1, int pageSize = 10)
+        {
+            return await _service.GetAllFacilityByRatingId(filter,ratingId,pageNumber, pageSize);
         }
     }
     }

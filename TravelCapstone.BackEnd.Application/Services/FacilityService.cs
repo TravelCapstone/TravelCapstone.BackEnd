@@ -8,6 +8,7 @@ using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Application.Services
@@ -36,6 +37,30 @@ namespace TravelCapstone.BackEnd.Application.Services
             try
             {
                result.Result = await _repository.GetAllDataByExpression(null, pageNumber, pageSize, null, false, a => a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetAllFacilityByRatingId(FilterLocation filter, Rating ratingId, int pageNumber, int pageSize)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                result.Result = await _repository.GetAllDataByExpression(a => a.Communce!.District!.ProvinceId == filter.ProvinceId &&  a.FacilityRating!.RatingId == ratingId, pageNumber, pageSize, null, false, a => a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
+                if (filter.DistrictId != null && filter.CommuneId == null)
+                {
+                    result.Result = await _repository.GetAllDataByExpression(a => a.Communce!.DistrictId == filter.DistrictId && a.FacilityRating!.RatingId == ratingId, pageNumber, pageSize, null, false, a => a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
+
+                }
+                else if (filter.DistrictId != null && filter.CommuneId != null)
+                {
+                    result.Result = await _repository.GetAllDataByExpression(a => a.CommunceId == filter.CommuneId && a.FacilityRating!.RatingId == ratingId, pageNumber, pageSize, null, false, a => a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
+
+                }
             }
             catch (Exception ex)
             {
