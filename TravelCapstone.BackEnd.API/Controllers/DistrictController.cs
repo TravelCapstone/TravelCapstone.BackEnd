@@ -4,10 +4,10 @@ using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
-    public class ProvinceController : Controller
+    public class DistrictController : Controller
     {
-        private readonly IProvinceService _service;
-        public ProvinceController(IProvinceService provinceService)
+        private readonly IDistrictService _service;
+        public DistrictController(IDistrictService provinceService)
         {
             _service = provinceService;
         }
@@ -15,7 +15,7 @@ namespace TravelCapstone.BackEnd.API.Controllers
         [HttpGet("get-all-province-by-private-tour-request-id/{id}")]
         public async Task<AppActionResult> GetAllProvinceByPrivateTourRequestId(Guid id)
         {
-            return await _service.GetAllProvinceByPrivateTourRequestId(id);
+            return await _service.GetAllDistrictByPrivateTourRequestId(id);
         }
 
     }
