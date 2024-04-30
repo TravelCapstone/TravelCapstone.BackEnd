@@ -38,5 +38,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetPriceOfVehicle(districtId, privatetourRequestId, numOfDay, vehicleType, pageNumber, pageSize);
         }
+
+        [HttpGet("get-reference-transport-by-province/{startPoint}/{endPoint}")]
+        public async Task<AppActionResult> GetReferenceTransportByProvince(Guid startPoint, Guid endPoint, VehicleType vehicleType, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _service.GetReferenceTransportByProvince(startPoint, endPoint, vehicleType, pageNumber, pageSize);
+        }
     }
 }

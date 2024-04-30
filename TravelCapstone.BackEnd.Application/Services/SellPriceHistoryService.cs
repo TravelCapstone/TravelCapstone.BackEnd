@@ -245,16 +245,16 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
-        public async Task<AppActionResult> GetPriceOfVehicle(Guid districtId, Guid privatetourRequestId, int numOfDay, VehicleType vehicleType, int pageNumber,int pageSize)
+        public async Task<AppActionResult> GetPriceOfVehicle(Guid provinceId, Guid privatetourRequestId, int numOfDay, VehicleType vehicleType, int pageNumber,int pageSize)
         {
             AppActionResult result = new AppActionResult();
             try
             {
-                var districtRepository = Resolve<IRepository<District>>();
-                var districtDb = await districtRepository!.GetById(districtId);
-                if (districtDb == null)
+                var provinceRepository = Resolve<IRepository<Province>>();
+                var  provinceDb = await provinceRepository!.GetById(provinceId);
+                if (provinceDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {districtId}");
+                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {provinceId}");
                     return result;
                 }
                 var privateTourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
@@ -266,7 +266,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     return result;
                 }
                 var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
-                var facilityServiceDb = await facilityServiceRepository!.GetAllDataByExpression(f => f.Facility!.Communce!.DistrictId == districtId && f.ServiceTypeId == ServiceType.VEHICLE, 0, 0, null, false, f => f.Facility!.FacilityRating!);
+                var facilityServiceDb = await facilityServiceRepository!.GetAllDataByExpression(f => f.Facility!.Communce!.District!.ProvinceId == provinceId && f.ServiceTypeId == ServiceType.VEHICLE, 0, 0, null, false, f => f.Facility!.FacilityRating!);
                 if (facilityServiceDb.Items != null && facilityServiceDb.Items.Count > 0)
                 {
                     var vehicleService = facilityServiceDb.Items.GroupBy(s => new { s.ServiceAvailabilityId, s.Facility!.FacilityRating!.RatingId, s.ServingQuantity }).ToDictionary(g => g.Key, g => g.ToList());
@@ -349,13 +349,60 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
+        public async Task<AppActionResult> GetReferenceTransportByProvince(Guid startPoint, Guid endPoint, VehicleType vehicleType, int pageNumber, int pageSize)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var provinceRepository = Resolve<IRepository<Province>>();
+                var startPointDb = await provinceRepository!.GetByExpression(p => p!.Id == startPoint);
+                var endpointDb = await provinceRepository!.GetByExpression(p => p!.Id == endPoint);
+                if (startPointDb == null || endpointDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy nơi bắt đầu {startPoint} hoặc nơi kết thúc {endpointDb}");
+                    return result;
+                }
+                var referenceTransportRepository = Resolve<IRepository<ReferenceTransportPrice>>();
+                if (vehicleType == VehicleType.PLANE || vehicleType == VehicleType.BOAT)
+                {
+                    var priceList = await referenceTransportRepository!.GetAllDataByExpression(a => a.Departure!.Commune!.District!.ProvinceId == startPoint && a.Arrival!.Commune!.District!.ProvinceId == endPoint
+                  || a.Departure.Commune.District.ProvinceId == endPoint && a.Arrival!.Commune!.District!.ProvinceId == startPoint
+                  , 0, 0, null, false, null
+                  );
+                    List<DetailedPriceReference> priceReference = new List<DetailedPriceReference>();
+                    foreach ( var item in priceList!.Items!)
+                    {
+                        DetailedPriceReference detailedPriceReference = new DetailedPriceReference();
+                        detailedPriceReference.MinPrice = priceList!.Items.Min( a => a.AdultPrice);
+                        detailedPriceReference.MaxPrice = priceList!.Items.Max(a => a.AdultPrice);
+                        detailedPriceReference.ServingQuantity = 1;
+                        detailedPriceReference.ServiceAvailability = ServiceAvailability.BOTH;
+                        detailedPriceReference.ServiceTypeId = ServiceType.VEHICLE;
+                        priceReference.Add(detailedPriceReference);
+                    }
+                    var invalidPriceReferences = priceReference.Where(d => d.MinPrice == 0 && d.MaxPrice == 0).ToList();
+                    invalidPriceReferences.ForEach(item => priceReference.Remove(item));
+
+                    result.Result = new PagedResult<DetailedPriceReference>
+                    {
+                        Items = priceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                    };
+                }
+
+            } catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
         public async Task<AppActionResult> GetSellPriceByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId, int pageNumber, int pageSize)
         {
             AppActionResult result = new AppActionResult();
             try
             {
                 var facilityRepository = Resolve<IRepository<Facility>>();
-                var facilityDb = await facilityRepository!.GetByExpression(f => f.Id == facilityId);
+                var facilityDb = await facilityRepository!.GetByExpression(f => f!.Id == facilityId);
                 if (facilityDb != null)
                 {
                     var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
