@@ -98,7 +98,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             };
             var utility = Resolve<Utility>();
             request.CreateDate = utility!.GetCurrentDateTimeInTimeZone();
-           
+
             await _repository.Insert(request);
             if (privateTourequestDTO.OtherLocation != null && privateTourequestDTO.OtherLocation.Count > 0)
             {
@@ -314,7 +314,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     }
                     if (!sellRestaurent.Items!.Any())
                     {
-                       
+
                         result = BuildAppActionResultError(result, $"Không tìm thấy giá nhà hàng với phân loại {restaurent.Rating.ToString()} tại huyện {district.Name}");
                     }
                 }
@@ -366,7 +366,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 foreach (var location in dto.Locations)
                 {
-                    var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId,0,0);
+                    var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId, 0, 0);
                     var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
                     foreach (var hotel in location.Hotels)
                     {
@@ -444,7 +444,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 foreach (var vehicle in dto.Vehicles)
                 {
-                    if(vehicle.VehicleType == VehicleType.PLANE || vehicle.VehicleType == VehicleType.BOAT)
+                    if (vehicle.VehicleType == VehicleType.PLANE || vehicle.VehicleType == VehicleType.BOAT)
                     {
                         var price = await referenceTransportPriceRepository!.GetAllDataByExpression(a => a.Departure!.Commune!.District!.ProvinceId == vehicle.StartPoint && a.Arrival!.Commune!.District!.ProvinceId == vehicle.EndPoint
                     || a.Departure.Commune.District.ProvinceId == vehicle.EndPoint && a.Arrival!.Commune!.District!.ProvinceId == vehicle.StartPoint
@@ -464,27 +464,29 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             });
 
                         }
-                    } else {
+                    }
+                    else
+                    {
                         var price = await sellPriceRepository!.GetAllDataByExpression(s => s.TransportServiceDetail.FacilityService.Facility.Communce.District.ProvinceId == vehicle.StartPoint
-                        && s.TransportServiceDetail.VehicleTypeId == vehicle.VehicleType,0,0, null, false, s => s.TransportServiceDetail.FacilityService);
+                        && s.TransportServiceDetail.VehicleTypeId == vehicle.VehicleType, 0, 0, null, false, s => s.TransportServiceDetail.FacilityService);
                         if (price.Items!.Any())
                         {
                             int totalVehicle = (int)Math.Ceiling((decimal)((privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren) / price.Items[0].TransportServiceDetail.FacilityService.ServingQuantity));
-                            
+
                             vehicleQuotationDetails.Add(new VehicleQuotationDetail
                             {
                                 Id = Guid.NewGuid(),
                                 OptionQuotationId = option.Id,
                                 MinPrice = totalVehicle * vehicle.NumOfRentingDay * price.Items!.Min(a => a.Price),
-                                MaxPrice = totalVehicle * vehicle.NumOfRentingDay *  price.Items!.Max(a => a.Price),
+                                MaxPrice = totalVehicle * vehicle.NumOfRentingDay * price.Items!.Max(a => a.Price),
                                 StartPointId = (Guid)vehicle.StartPoint,
                                 EndPointId = (Guid)vehicle.EndPoint,
                                 VehicleType = vehicle.VehicleType
                             });
                         }
                     }
-                    
-                    
+
+
                 }
                 quotationDetails.ForEach(q =>
                     {
@@ -499,7 +501,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 });
 
-                
+
                 option.MinTotal = option.MinTotal / totalPeople;
                 option.MaxTotal = option.MaxTotal / totalPeople;
 
@@ -589,17 +591,44 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         AppActionResult result = new AppActionResult();
         try
         {
-            
-                var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
-                var facilityServiceListDb = await facilityServiceRepository!.GetAllDataByExpression(
-                    s => s.Facility!.Communce!.District!.ProvinceId== provinceId
-                 && s!.ServiceTypeId == serviceTypeId,
-                0, 0, null, false);
-                result.Result = facilityServiceListDb;
-            
+
+            var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
+            var facilityServiceListDb = await facilityServiceRepository!.GetAllDataByExpression(
+                s => s.Facility!.Communce!.District!.ProvinceId == provinceId
+             && s!.ServiceTypeId == serviceTypeId,
+            0, 0, null, false);
+            result.Result = facilityServiceListDb;
+
         }
         catch (Exception e)
         {
+            result = BuildAppActionResultError(result, e.Message);
+        }
+        return result;
+    }
+
+    public async Task<AppActionResult> SendToCustomer(Guid privateTourRequestId)
+    {
+        AppActionResult result = new();
+        try
+        {
+            var privateTourRequest = await _repository.GetById(privateTourRequestId);
+            if( privateTourRequest == null )
+            {
+                result = BuildAppActionResultError(result, $"Yêu cầu tạo tour riêng tư với id {privateTourRequestId} không tồn tại");
+            }
+            else if(privateTourRequest.PrivateTourStatusId !=PrivateTourStatus.NEW ){ 
+                result = BuildAppActionResultError(result, $"Chức năng này chỉ hỗ trợ yêu cầu tạo tour riêng tư với status new với id {privateTourRequestId}");
+
+            }
+            if (!BuildAppActionResultIsError(result))
+            {
+                privateTourRequest!.PrivateTourStatusId = PrivateTourStatus.WAITINGFORCUSTOMER;
+                await _repository.Update(privateTourRequest);
+                await _unitOfWork.SaveChangesAsync();
+            }
+        }
+        catch (Exception e) {
             result = BuildAppActionResultError(result, e.Message);
         }
         return result;
