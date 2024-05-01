@@ -16,6 +16,7 @@ namespace TravelCapstone.BackEnd.Application.IServices
         public Task<AppActionResult> GetPriceOfMeal(Guid districtId, Guid privatetourRequestId, Guid ratingId, int numOfMeal, int pageNumber, int pageSize);
         public Task<AppActionResult> GetPriceOfVehicle(Guid provinceId ,Guid privatetourRequestId, int numOfDay, VehicleType vehicleType, int pageNumber, int pageSize);
         public Task<AppActionResult> GetSellPriceByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId, int pageNumber, int pageSize);
+        public Task<AppActionResult> GetAttractionSellPriceRange(Guid districtId, Guid privateTourRequestId, int numOfPlace, int pageNumber, int pageSize);
         public Task<AppActionResult> GetReferenceTransportByProvince(Guid startPoint, Guid endPoint , VehicleType vehicleType, int pageNumber, int pageSize);
         public Task<AppActionResult> UploadQuotation(IFormFile file);
         public Task<AppActionResult> ValidateExcelFile(IFormFile file);

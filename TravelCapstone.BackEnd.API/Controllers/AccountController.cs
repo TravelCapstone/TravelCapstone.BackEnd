@@ -30,6 +30,18 @@ public class AccountController : ControllerBase
         return await _accountService.GetAllAccount(pageIndex, pageSize);
     }
 
+    [HttpGet("get-accounts-by-role-name/{roleName}/{pageIndex:int}/{pageSize:int}")]
+    public async Task<AppActionResult> GetAccountsByRoleName(string roleName, int pageIndex = 1, int pageSize = 10)
+    {
+        return await _accountService.GetAccountsByRoleName(roleName, pageIndex, pageSize);
+    }
+
+    [HttpGet("get-accounts-by-role-id/{roleId}/{pageIndex:int}/{pageSize:int}")]
+    public async Task<AppActionResult> GetAccountsByRoleId(Guid roleId, int pageIndex = 1, int pageSize = 10)
+    {
+        return await _accountService.GetAccountsByRoleId(roleId, pageIndex, pageSize);
+    }
+
     [HttpPost("login")]
     public async Task<AppActionResult> Login(LoginRequestDto request)
     {

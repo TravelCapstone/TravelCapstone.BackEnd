@@ -29,7 +29,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AppActionResult> GetServicePriceRangeByProvinceIdAndRequestId(Guid Id, Guid requestId, int pageNumber, int pageSize)
+        public async Task<AppActionResult> GetServicePriceRangeByDistrictIdAndRequestId(Guid Id, Guid requestId, int pageNumber, int pageSize)
         {
             AppActionResult result = new AppActionResult();
             try
@@ -44,17 +44,16 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
                 ReferencedPriceRangeByProvince data = new ReferencedPriceRangeByProvince();
                 var districtRepository = Resolve<IRepository<District>>();
-                var districtDb = await districtRepository!.GetAllDataByExpression(d => d.ProvinceId == Id, 0, 0,null, false, null);
-                if (districtDb.Items == null || districtDb.Items.Count <= 0)
+                var districtDb = await districtRepository!.GetById(Id);
+                if (districtDb == null)
                 {
                     result.Result = null;
-                    result.Messages.Add($"Không tìm thấy danh sách huyện");
+                    result.Messages.Add($"Không tìm thấy huyện với id {Id}");
                     return result;
                 }
 
                 var communeRepository = Resolve<IRepository<Commune>>();
-                var districtIds = districtDb.Items.Select(s => s.Id);
-                var communeDb = await communeRepository!.GetAllDataByExpression(d => districtIds.Contains(d.DistrictId), 0, 0, null, false, null);
+                var communeDb = await communeRepository!.GetAllDataByExpression(d => d.DistrictId == districtDb.Id, 0, 0, null, false, null);
                 if (communeDb.Items == null || communeDb.Items.Count <= 0)
                 {
                     result.Result = null;
@@ -73,11 +72,9 @@ namespace TravelCapstone.BackEnd.Application.Services
                     var hotelPrice = await GetTypePriceReference(Domain.Enum.ServiceType.RESTING, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
                     var restaurantPrice = await GetMenuTypePriceReference(tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
                     var entertainmentPrice = await GetTypePriceReference(Domain.Enum.ServiceType.ENTERTAIMENT, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    var vehicleSupplyPrice = await GetTransportTypePriceReference(tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
                     data.HotelPrice = hotelPrice;
                     data.RestaurantPrice = restaurantPrice;
                     data.EntertainmentPrice = entertainmentPrice;
-                   data.VehicleSupplyPrice = vehicleSupplyPrice;
                 }
 
                 result.Result = data;
@@ -320,11 +317,11 @@ namespace TravelCapstone.BackEnd.Application.Services
                                 detailedPriceReference.MinPrice = currentPrice;
                             }
 
-                            if (detailedPriceReference.MaxPrice < currentPrice * item.SurchargePercent)
+                            if (detailedPriceReference.MaxSurChange < currentPrice * item.SurchargePercent)
                             {
-                                detailedPriceReference.MaxPrice = currentPrice * item.SurchargePercent;
+                                detailedPriceReference.MaxSurChange = currentPrice * item.SurchargePercent;
                             }
-                            else
+                            else if(detailedPriceReference.MinSurChange > currentPrice * item.SurchargePercent) 
                             {
                                 detailedPriceReference.MinSurChange = currentPrice * item.SurchargePercent;
                             }

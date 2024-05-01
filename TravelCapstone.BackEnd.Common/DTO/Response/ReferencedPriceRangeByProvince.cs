@@ -14,7 +14,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Response
         public PriceReference HotelPrice { get; set; } = null!;
         public PriceReference RestaurantPrice { get; set; } = null!;
         public PriceReference EntertainmentPrice { get; set; } = null!;
-        public PriceReference VehicleSupplyPrice { get; set; } = null!;
+        //public PriceReference VehicleSupplyPrice { get; set; } = null!;
     }
 
     public class PriceReference

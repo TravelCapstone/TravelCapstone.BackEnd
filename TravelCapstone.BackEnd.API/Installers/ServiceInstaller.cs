@@ -30,7 +30,7 @@ public class ServiceInstaller : IInstaller
         services.AddScoped<IServiceCostHistoryService, ServiceCostHistoryService>();
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IFacilityServiceService, FacilityServiceService>();
-        services.AddScoped<IProvinceService, ProvinceService>();
+        services.AddScoped<IDistrictService, DistrictService>();
      //   services.AddScoped<IFakeDataGenerator,FakeDataGenerator>();
         services.AddScoped<IAirportService, AirportService>();
         services.AddScoped<IReferenceTransportService, ReferenceTransportService>();

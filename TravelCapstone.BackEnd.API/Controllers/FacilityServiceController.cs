@@ -21,9 +21,9 @@ namespace TravelCapstone.BackEnd.API.Controllers
         }
 
         [HttpGet("get-service-price-range-by-province-id-and-tour-request-id/{provinceId}/{requestId}")]
-        public async Task<AppActionResult> GetServiceByProvinceIdAndPrivateTourRequestId(Guid provinceId, Guid requestId, int pageNumber=1, int pageSize=10)
+        public async Task<AppActionResult> GetServicePriceRangeByDistrictIdAndRequestId(Guid provinceId, Guid requestId, int pageNumber=1, int pageSize=10)
         {
-            return await _service.GetServicePriceRangeByProvinceIdAndRequestId(provinceId, requestId, pageNumber, pageSize);
+            return await _service.GetServicePriceRangeByDistrictIdAndRequestId(provinceId, requestId, pageNumber, pageSize);
         }
         [HttpGet("get-service-by-facilityId/{facilityId}")]
         public async Task<AppActionResult> GetServiceByFacilityId(Guid facilityId, int pageNumber =1, int pageSize = 10)

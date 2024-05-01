@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Bogus;
 using EnumsNET;
 using NPOI.SS.Formula;
 using System.ComponentModel.Design;
@@ -75,11 +76,29 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 return result;
             }
 
-            var request = _mapper.Map<PrivateTourRequest>(privateTourequestDTO);
+            var request = new PrivateTourRequest
+            {
+                Id = Guid.NewGuid(),
+                DietaryPreferenceId = privateTourequestDTO.DietaryPreference,
+                PrivateTourStatusId = PrivateTourStatus.NEW,
+                StartDate = privateTourequestDTO.StartDate,
+                EndDate = privateTourequestDTO.EndDate,
+                Description = privateTourequestDTO.Description,
+                NumOfAdult = privateTourequestDTO.NumOfAdult,
+                NumOfChildren = privateTourequestDTO.NumOfChildren,
+                TourId = privateTourequestDTO.TourId,
+                IsEnterprise = privateTourequestDTO.IsEnterprise,
+                Note = privateTourequestDTO.Note,
+                RecommendedTourUrl = privateTourequestDTO.RecommnendedTourUrl,
+                StartLocation = privateTourequestDTO.StartLocation,
+                StartLocationCommuneId = privateTourequestDTO.StartCommuneId,
+                WishPrice = privateTourequestDTO.WishPrice,
+                MainDestinationId = privateTourequestDTO.MainDestinationId,
+                CreateBy = privateTourequestDTO.AccountId
+            };
             var utility = Resolve<Utility>();
             request.CreateDate = utility!.GetCurrentDateTimeInTimeZone();
-            request.Id = Guid.NewGuid();
-            request.PrivateTourStatusId = PrivateTourStatus.NEW;
+           
             await _repository.Insert(request);
             if (privateTourequestDTO.OtherLocation != null && privateTourequestDTO.OtherLocation.Count > 0)
             {
@@ -232,7 +251,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         var result = new AppActionResult();
         var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
         var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
-        var provinceRepository = Resolve<IRepository<Province>>();
+        var districtRepository = Resolve<IRepository<District>>();
         var facilityRepository = Resolve<IRepository<Facility>>();
         var facilityRatingRepository = Resolve<IRepository<FacilityRating>>();
         var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
@@ -243,22 +262,22 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         {
             foreach (var location in dto.Locations)
             {
-                var province = await provinceRepository!.GetById(location.ProvinceId);
-                if (province == null)
+                var district = await districtRepository!.GetById(location.DistrictId);
+                if (district == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy tỉnh với id {location.ProvinceId}");
+                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {location.DistrictId}");
                 }
                 foreach (var hotel in location.Hotels)
                 {
                     var listHotel = await facilityRepository!.GetAllDataByExpression(
-                        a => a.Communce!.District!.ProvinceId == location.ProvinceId
+                        a => a.Communce!.DistrictId == location.DistrictId
                        && hotel.Rating == a.FacilityRating!.RatingId &&
                        a.FacilityRating.FacilityTypeId == FacilityType.HOTEL,
                         0,
                         0, null, false,
                         null);
                     var sellHotel = await sellPriceRepository!.GetAllDataByExpression(
-                        a => a.FacilityService!.Facility!.Communce!.District!.ProvinceId == location.ProvinceId
+                        a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
                         && a.FacilityService.ServiceTypeId == ServiceType.RESTING
                         && hotel.Rating == a.FacilityService.Facility.FacilityRating!.RatingId
                         ,
@@ -266,17 +285,17 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         );
                     if (!listHotel.Items!.Any())
                     {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy khách sạn với phân loại {hotel.Rating.ToString()} tại tỉnh thuộc id {location.ProvinceId}");
+                        result = BuildAppActionResultError(result, $"Không tìm thấy khách sạn với phân loại {hotel.Rating.ToString()} tại huyện {district.Name}");
                     }
                     if (!sellHotel.Items!.Any())
                     {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy gía khách sạn với phân loại {hotel.Rating.ToString()} tại tỉnh thuộc id {location.ProvinceId}");
+                        result = BuildAppActionResultError(result, $"Không tìm thấy gía khách sạn với phân loại {hotel.Rating.ToString()} tại huyện {district.Name}");
                     }
                 }
                 foreach (var restaurent in location.Restaurants)
                 {
                     var listRestaurent = await facilityRepository!.GetAllDataByExpression(
-                        a => a.Communce!.District!.ProvinceId == location.ProvinceId
+                        a => a.Communce!.DistrictId == location.DistrictId
                         && restaurent.Rating == a.FacilityRating!.RatingId &&
                        (a.FacilityRating.FacilityTypeId == FacilityType.RESTAURANTS
                        || a.FacilityRating.FacilityTypeId == FacilityType.HOTEL),
@@ -284,47 +303,53 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         0, null, false,
                         null);
                     var sellRestaurent = await sellPriceRepository!.GetAllDataByExpression(
-                       a => a.Menu.FacilityService!.Facility!.Communce!.District!.ProvinceId == location.ProvinceId
+                       a => a.Menu.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
                          && a.Menu.FacilityService.ServiceTypeId == ServiceType.FOODANDBEVARAGE
                         && restaurent.Rating == a.Menu.FacilityService.Facility.FacilityRating!.RatingId,
                        0, 0, null, false, null
                        );
                     if (!listRestaurent.Items!.Any())
                     {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy nhà hàng với phân loại {restaurent.Rating.ToString()} tại tỉnh thuộc id {location.ProvinceId}");
+                        result = BuildAppActionResultError(result, $"Không tìm thấy nhà hàng với phân loại {restaurent.Rating.ToString()} tại huyện {district.Name}");
                     }
                     if (!sellRestaurent.Items!.Any())
                     {
                        
-                        result = BuildAppActionResultError(result, $"Không tìm thấy giá nhà hàng với phân loại {restaurent.Rating.ToString()} tại tỉnh thuộc id {location.ProvinceId}");
+                        result = BuildAppActionResultError(result, $"Không tìm thấy giá nhà hàng với phân loại {restaurent.Rating.ToString()} tại huyện {district.Name}");
                     }
                 }
 
-                var entertaiment = await facilityRepository!.GetAllDataByExpression(
-                         a => a.Communce!.District!.ProvinceId == location.ProvinceId &&
+                if (location.Entertainment != null)
+                {
+                    var entertaiment = await facilityRepository!.GetAllDataByExpression(
+                         a => a.Communce!.DistrictId == location.DistrictId &&
                        a.FacilityRating!.FacilityTypeId == FacilityType.ENTERTAINMENT,
                          0,
                          0, null, false,
                          null);
-                var sellEntertaiment = await sellPriceRepository!.GetAllDataByExpression(
-                     a => a.FacilityService!.Facility!.Communce!.District!.ProvinceId == location.ProvinceId
-                       && a.FacilityService.ServiceTypeId == ServiceType.ENTERTAIMENT,
-                     0, 0, null, false, null
-                     );
-                if (!entertaiment.Items!.Any())
-                {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy dịch vụ vui chơi giải trí tại tỉnh thuộc id {location.ProvinceId}");
-                }
-                if (!sellEntertaiment.Items!.Any())
-                {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy giá dịch vụ giải trí tại tỉnh thuộc id {location.ProvinceId}");
+                    var sellEntertaiment = await sellPriceRepository!.GetAllDataByExpression(
+                         a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
+                           && a.FacilityService.ServiceTypeId == ServiceType.ENTERTAIMENT,
+                         0, 0, null, false, null
+                         );
+                    if (!entertaiment.Items!.Any())
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy dịch vụ vui chơi giải trí tại huyện {district.Name}");
+                    }
+                    if (!sellEntertaiment.Items!.Any())
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy giá dịch vụ giải trí tại huyện {district.Name}");
+                    }
                 }
             }
             if (!BuildAppActionResultIsError(result))
             {
                 var privateTourRequest = await _repository.GetById(dto.PrivateTourRequestId);
                 var totalPeople = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren;
-
+                //Calculate based on fixed formula: Children price = 70% Adult price
+                // => NumOfAdult * Price + NumOfChildren * 0.7 * Price = Total
+                // => Price = Total / (NumOfAdult + NumOfChildren * 0.7)
+                double AdultBasedQuantity = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren * 0.7;
 
                 OptionQuotation option = new OptionQuotation
                 {
@@ -341,7 +366,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 foreach (var location in dto.Locations)
                 {
-                    var estimateService = await facilityService!.GetServicePriceRangeByProvinceIdAndRequestId(location.ProvinceId, dto.PrivateTourRequestId,0,0);
+                    var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId,0,0);
                     var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
                     foreach (var hotel in location.Hotels)
                     {
@@ -352,48 +377,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         double min = sellPriceHotel!.MinPrice;
 
                         double max = sellPriceHotel!.MaxPrice;
-                        double minQuotation = 0;
-                        double maxQuotation = 0;
-
-                        if (privateTourRequest.NumOfChildren == 0)
-                        {
-                            if (privateTourRequest.NumOfAdult % sellPriceHotel.ServingQuantity == 0)
-                            {
-                                minQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min;
-                                maxQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max;
-
-                            }
-                            else
-                            {
-                                minQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * min;
-                                maxQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * max;
-                            }
-
-                        }
-                        else if (privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren == sellPriceHotel.ServingQuantity)
-                        {
-                            minQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min;
-                            maxQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max;
-
-                        }
-                        else
-                        {
-                            if (privateTourRequest.NumOfAdult % sellPriceHotel.ServingQuantity == 0)
-                            {
-                                minQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min) +
-                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min) * (privateTourRequest.NumOfChildren * sellPriceHotel.MinSurChange);
-                                maxQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max +
-                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max) * (privateTourRequest.NumOfChildren * sellPriceHotel.MaxSurChange);
-
-                            }
-                            else
-                            {
-                                minQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * min +
-                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min) * (privateTourRequest.NumOfChildren * sellPriceHotel.MinSurChange);
-                                maxQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * max +
-                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max) * (privateTourRequest.NumOfChildren * sellPriceHotel.MaxSurChange);
-                            }
-                        }
+                        double minQuotation = hotel.NumOfDay * hotel.NumOfRoom * min;
+                        double maxQuotation = hotel.NumOfDay * hotel.NumOfRoom * max;
                         var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && hotel.Rating == a.RatingId);
                         quotationDetails.Add(new QuotationDetail
                         {
@@ -422,8 +407,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             OptionQuotationId = option.Id,
                             QuantityOfAdult = privateTourRequest.NumOfAdult,
                             QuantityOfChild = privateTourRequest.NumOfChildren,
-                            MinPrice = totalPeople * sellPriceRestaurent!.MinPrice,
-                            MaxPrice = totalPeople * sellPriceRestaurent!.MaxPrice,
+                            MinPrice = totalPeople * sellPriceRestaurent!.MinPrice * restaurent.MealPerDay,
+                            MaxPrice = totalPeople * sellPriceRestaurent!.MaxPrice * restaurent.MealPerDay,
                             FacilityRatingId = restaurentRating!.Id,
                             StartDate = restaurent.StartDate,
                             EndDate = restaurent.EndDate,
@@ -438,8 +423,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                   && a.ServingQuantity == 1 && a.ServiceAvailability == ServiceAvailability.CHILD).FirstOrDefault();
 
-                    double minQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MinPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MinPrice;
-                    double maxQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MaxPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MaxPrice;
+                    double minQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MinPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MinPrice * location.Entertainment.QuantityLocation;
+                    double maxQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MaxPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MaxPrice * location.Entertainment.QuantityLocation;
 
                     quotationDetails.Add(new QuotationDetail
                     {
@@ -485,22 +470,13 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         if (price.Items!.Any())
                         {
                             int totalVehicle = (int)Math.Ceiling((decimal)((privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren) / price.Items[0].TransportServiceDetail.FacilityService.ServingQuantity));
-                            DateTime? endDate = vehicle.EndDate;
-                            DateTime? startDate = vehicle.StartDate;
-                            int totalDay = 1;
-                            if (endDate.HasValue && startDate.HasValue)
-                            {
-                                TimeSpan difference = endDate.Value - startDate.Value;
-                                totalDay = (int)Math.Ceiling(difference.TotalDays);
-
-                                // Use totalDay as needed
-                            }
+                            
                             vehicleQuotationDetails.Add(new VehicleQuotationDetail
                             {
                                 Id = Guid.NewGuid(),
                                 OptionQuotationId = option.Id,
-                                MinPrice = totalVehicle * totalDay * price.Items!.Min(a => a.Price),
-                                MaxPrice = totalVehicle * totalDay *  price.Items!.Max(a => a.Price),
+                                MinPrice = totalVehicle * vehicle.NumOfRentingDay * price.Items!.Min(a => a.Price),
+                                MaxPrice = totalVehicle * vehicle.NumOfRentingDay *  price.Items!.Max(a => a.Price),
                                 StartPointId = (Guid)vehicle.StartPoint,
                                 EndPointId = (Guid)vehicle.EndPoint,
                                 VehicleType = vehicle.VehicleType
@@ -522,6 +498,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     option.MaxTotal += q.MaxPrice;
 
                 });
+
+                
+                option.MinTotal = option.MinTotal / totalPeople;
+                option.MaxTotal = option.MaxTotal / totalPeople;
+
                 await optionQuotationRepository!.Insert(option);
                 await quotationDetailRepository!.InsertRange(quotationDetails);
                 await vehicleQuotationDetailRepository!.InsertRange(vehicleQuotationDetails);

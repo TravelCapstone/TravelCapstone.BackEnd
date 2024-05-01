@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Common.DTO;
 using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Common.Utils;
@@ -390,6 +391,112 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
 
             } catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetAttractionSellPriceRange(Guid districtId, Guid privateTourRequestId, int numOfPlace, int pageNumber, int pageSize)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var districtRepository = Resolve<IRepository<District>>();
+                var districtDb = await districtRepository!.GetById(districtId);
+                if(districtDb == null )
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {districtId}");
+                    return result;
+                }
+                var privateTourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
+
+                var privateTourRequestDb = await privateTourRequestRepository!.GetById(privateTourRequestId);
+                if (privateTourRequestDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour với id {privateTourRequestId}");
+                    return result;
+                }
+
+                var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
+                var facilityServiceDb = await facilityServiceRepository!.GetAllDataByExpression(f => f.Facility!.Communce!.DistrictId == districtId && f.ServiceTypeId == ServiceType.ENTERTAIMENT, 0, 0, null, false, f => f.Facility.FacilityRating);
+                if (facilityServiceDb.Items != null && facilityServiceDb.Items.Count > 0)
+                {
+                    var hotelService = facilityServiceDb.Items
+                    .GroupBy(s => new { s.ServiceAvailabilityId, s.Facility!.FacilityRating!.RatingId, s.ServingQuantity }) // Group by ServiceRating
+                    .ToDictionary(g => g.Key, g => g.ToList());
+                    double MinPrice = Double.MaxValue;
+                    double MaxPrice = 0;
+                    double MinSurchange = Double.MaxValue;
+                    double MaxSurchange = 0;
+                    List<DetailedPriceReference> priceReference = new List<DetailedPriceReference>();
+                    foreach (var kvp in hotelService)
+                    {
+                        if (kvp.Value.Count == 0) continue;
+                        MinPrice = Double.MaxValue;
+                        MaxPrice = 0;
+                        MinSurchange = Double.MaxValue;
+                        MaxSurchange = 0;
+                        var serviceRating = kvp.Key;
+                        double currentPrice;
+                        int total = 0;
+                        DetailedPriceReference detailedPriceReference = new DetailedPriceReference();
+                        int i = 0;
+                        foreach (var item in kvp.Value)
+                        {
+                            if (i == 0)
+                            {
+                                detailedPriceReference.ServiceTypeId = item.ServiceTypeId;
+                                detailedPriceReference.RatingId = item.Facility!.FacilityRating!.RatingId;
+                                detailedPriceReference.ServiceAvailability = item.ServiceAvailabilityId;
+                                detailedPriceReference.ServingQuantity = item.ServingQuantity;
+                                detailedPriceReference.Unit = item.UnitId;
+                                i++;
+                            }
+                            total = detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.BOTH ? privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren :
+                                    detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.ADULT ? privateTourRequestDb.NumOfAdult : privateTourRequestDb.NumOfChildren;
+                            var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.FacilityServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, null);
+                            if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
+                            {
+                                currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
+                                                                    .ThenByDescending(s => s.MOQ)
+                                                                    .FirstOrDefault()!.Price;
+                                if (currentPrice > detailedPriceReference.MaxPrice)
+                                {
+                                    detailedPriceReference.MaxPrice = currentPrice * numOfPlace;
+                                }
+                                else if (currentPrice < detailedPriceReference.MinPrice)
+                                {
+                                    detailedPriceReference.MinPrice = currentPrice * numOfPlace;
+                                }
+
+                                if (detailedPriceReference.MaxSurChange < currentPrice * item.SurchargePercent)
+                                {
+                                    detailedPriceReference.MaxSurChange = currentPrice * item.SurchargePercent * numOfPlace;
+                                }
+                                else if(detailedPriceReference.MinSurChange > currentPrice * item.SurchargePercent)
+                                {
+                                    detailedPriceReference.MinSurChange = currentPrice * item.SurchargePercent * numOfPlace;
+                                }
+                            }
+                        }
+                        detailedPriceReference.MinSurChange = Math.Min(detailedPriceReference.MinSurChange, detailedPriceReference.MaxSurChange);
+                        detailedPriceReference.MinPrice = Math.Min(detailedPriceReference.MinPrice, detailedPriceReference.MaxPrice);
+                        priceReference.Add(detailedPriceReference);
+
+                    };
+                    var invalidPriceReferences = priceReference.Where(d => d.MinPrice == 0 && d.MaxPrice == 0).ToList();
+                    invalidPriceReferences.ForEach(item => priceReference.Remove(item));
+
+                    result.Result = new PagedResult<DetailedPriceReference>
+                    {
+                        Items = priceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                    };
+                }
+
+                
+            }
+            catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
             }

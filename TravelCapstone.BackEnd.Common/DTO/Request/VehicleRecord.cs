@@ -13,6 +13,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public string VehicleType { get; set; }
         public string Plate { get; set; } = null!;
         public int Capacity { get; set; }
+        public int SeatCapacity { get; set; }
         public string EngineNumber { get; set; } = null!;
         public string ChassisNumber { get; set; } = null!;
         public string Brand { get; set; } = null!;

@@ -19,11 +19,12 @@ public class Hotel
     public DateTime EndDate { get; set; }
     public  Rating Rating { get; set; }
     public int ServingQuantity { get; set; }
+    public int NumOfRoom { get; set; }
 }
 
 public class Location
 {
-    public Guid ProvinceId { get; set; }
+    public Guid DistrictId { get; set; }
     public List<Hotel> Hotels { get; set; } = new List<Hotel>();
     public List<Restaurant> Restaurants { get; set; } = new List<Restaurant>();
     public Entertainment Entertainment { get; set; } = null!;  
@@ -34,6 +35,7 @@ public class Restaurant
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public Rating Rating { get; set; }
+    public int MealPerDay { get; set; } = 1;
 }
 public class Entertainment
 {
@@ -45,6 +47,5 @@ public class Vehicle
     public VehicleType VehicleType { get; set; }
     public Guid? StartPoint { get; set; }
     public Guid? EndPoint { get; set; }
-    public DateTime? StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
+    public int NumOfRentingDay { get; set; } = 1;
 }
