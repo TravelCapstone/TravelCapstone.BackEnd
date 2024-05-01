@@ -620,7 +620,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                                 currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
                                                                .ThenByDescending(s => s.MOQ)
                                                                .FirstOrDefault()!.Price;
-                                detailedServicePriceReference.SellPriceHistory = sellPriceHistory;
+                                detailedServicePriceReference.SellPriceHistory = sellPriceHistory.Items.ToList();
                                 detailedServicePriceReference.CurrentPrice = currentPrice;  
                                 detailedServicePriceReference.PriceOfPerson = (currentPrice * quantityOfService) / total; 
                             }

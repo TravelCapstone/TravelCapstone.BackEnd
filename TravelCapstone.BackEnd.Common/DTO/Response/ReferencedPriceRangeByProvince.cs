@@ -41,7 +41,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Response
 
     public class DetailedServicePriceReference
     {
-        public PagedResult<SellPriceHistory> SellPriceHistory { get; set; } = null!;
+        public List<SellPriceHistory> SellPriceHistory { get; set; } = null!;
         public double CurrentPrice { get; set; }
         public double PriceOfPerson { get; set; }       
     }
