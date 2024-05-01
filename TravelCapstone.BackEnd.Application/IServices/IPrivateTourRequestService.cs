@@ -16,6 +16,7 @@ public interface IPrivateTourRequestService
     Task<AppActionResult> CreateOptionsPrivateTour(CreateOptionsPrivateTourDto dto);
 
     Task<AppActionResult> ConfirmOptionPrivateTour(Guid optionId, string accountId);
+    Task<AppActionResult> SendToCustomer(Guid privateTourRequestId);
    // Task<AppActionResult> GetServiceRatingListByServiceType(Guid provinceId, Domain.Enum.FacilityType serviceTypeId);
 
 }

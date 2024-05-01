@@ -52,4 +52,9 @@ public class PrivateTourRequestController : Controller
     {
         return await _service.ConfirmOptionPrivateTour(optionId, accountId);
     }
+    [HttpPut("send-to-customer/{privateTourRequestId}")]
+    public async Task<AppActionResult> SendToCustomer(Guid privateTourRequestId)
+    {
+        return await _service.SendToCustomer(privateTourRequestId);
+    }
 }
