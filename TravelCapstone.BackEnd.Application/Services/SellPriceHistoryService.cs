@@ -110,11 +110,11 @@ namespace TravelCapstone.BackEnd.Application.Services
                                 }
                                 if (detailedPriceReference.MaxSurChange < currentPrice * item.SurchargePercent)
                                 {
-                                    detailedPriceReference.MaxPrice = (currentPrice * numOfDay * room * item.SurchargePercent) / total;
+                                    detailedPriceReference.MaxPrice = ((currentPrice * numOfDay * room) + (currentPrice * numOfDay * room * item.SurchargePercent)) / total;
                                 }
                                 else if (currentPrice * item.SurchargePercent < detailedPriceReference.MinSurChange)
                                 {
-                                    detailedPriceReference.MinSurChange = (currentPrice * room * numOfDay * item.SurchargePercent) / total;
+                                    detailedPriceReference.MinSurChange = ((currentPrice * numOfDay * room) + (currentPrice * numOfDay * room * item.SurchargePercent)) / total;
                                 }
                             }
                         }
@@ -216,11 +216,11 @@ namespace TravelCapstone.BackEnd.Application.Services
                                 }
                                 if (detailedPriceReference.MaxSurChange < currentPrice * item.SurchargePercent)
                                 {
-                                    detailedPriceReference.MaxPrice = (currentPrice * numOfMeal * numOfTable * item.SurchargePercent) / total;
+                                    detailedPriceReference.MaxPrice = ((currentPrice * numOfMeal * numOfTable) + (currentPrice * numOfMeal * numOfTable * item.SurchargePercent)) / total;
                                 }
                                 else if (detailedPriceReference.MinSurChange < currentPrice)
                                 {
-                                    detailedPriceReference.MinSurChange = (currentPrice * numOfMeal * numOfTable * item.SurchargePercent) / total;
+                                    detailedPriceReference.MinSurChange = ((currentPrice * numOfMeal * numOfTable) + (currentPrice * numOfMeal * numOfTable * item.SurchargePercent)) / total;
                                 }
                             }
                         }
@@ -315,15 +315,15 @@ namespace TravelCapstone.BackEnd.Application.Services
                                 }
                                 else if (currentPrice < detailedPriceReference.MinPrice)
                                 {
-                                    detailedPriceReference.MaxPrice = (currentPrice * numOfDay * numOfVehicle) / total;
+                                    detailedPriceReference.MinPrice = (currentPrice * numOfDay * numOfVehicle) / total;
                                 }
                                 if (detailedPriceReference.MaxSurChange < currentPrice * item.SurchargePercent)
                                 {
-                                    detailedPriceReference.MaxPrice = (currentPrice * numOfDay * numOfVehicle * item.SurchargePercent) / total;
+                                    detailedPriceReference.MaxPrice = ((currentPrice * numOfDay * numOfVehicle) + (currentPrice * numOfDay * numOfVehicle * item.SurchargePercent)) / total;
                                 }
                                 else if (detailedPriceReference.MinSurChange < currentPrice)
                                 {
-                                    detailedPriceReference.MinSurChange = (currentPrice * numOfDay * numOfVehicle * item.SurchargePercent) / total;
+                                    detailedPriceReference.MinSurChange = ((currentPrice * numOfDay * numOfVehicle) + (currentPrice * numOfDay * numOfVehicle * item.SurchargePercent)) / total;
                                 }
                             }
                         }
