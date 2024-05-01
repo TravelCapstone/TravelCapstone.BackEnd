@@ -19,6 +19,7 @@ public class Hotel
     public DateTime EndDate { get; set; }
     public  Rating Rating { get; set; }
     public int ServingQuantity { get; set; }
+    public int NumOfRoom { get; set; }
 }
 
 public class Location

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Bogus;
 using EnumsNET;
 using NPOI.SS.Formula;
 using System.ComponentModel.Design;
@@ -327,7 +328,10 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             {
                 var privateTourRequest = await _repository.GetById(dto.PrivateTourRequestId);
                 var totalPeople = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren;
-
+                //Calculate based on fixed formula: Children price = 70% Adult price
+                // => NumOfAdult * Price + NumOfChildren * 0.7 * Price = Total
+                // => Price = Total / (NumOfAdult + NumOfChildren * 0.7)
+                double AdultBasedQuantity = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren * 0.7;
 
                 OptionQuotation option = new OptionQuotation
                 {
@@ -355,48 +359,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         double min = sellPriceHotel!.MinPrice;
 
                         double max = sellPriceHotel!.MaxPrice;
-                        double minQuotation = 0;
-                        double maxQuotation = 0;
-
-                        if (privateTourRequest.NumOfChildren == 0)
-                        {
-                            if (privateTourRequest.NumOfAdult % sellPriceHotel.ServingQuantity == 0)
-                            {
-                                minQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min;
-                                maxQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max;
-
-                            }
-                            else
-                            {
-                                minQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * min;
-                                maxQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * max;
-                            }
-
-                        }
-                        else if (privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren == sellPriceHotel.ServingQuantity)
-                        {
-                            minQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min;
-                            maxQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max;
-
-                        }
-                        else
-                        {
-                            if (privateTourRequest.NumOfAdult % sellPriceHotel.ServingQuantity == 0)
-                            {
-                                minQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min) +
-                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min) * (privateTourRequest.NumOfChildren * sellPriceHotel.MinSurChange);
-                                maxQuotation = privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max +
-                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max) * (privateTourRequest.NumOfChildren * sellPriceHotel.MaxSurChange);
-
-                            }
-                            else
-                            {
-                                minQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * min +
-                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * min) * (privateTourRequest.NumOfChildren * sellPriceHotel.MinSurChange);
-                                maxQuotation = (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity + 1) * max +
-                                    (privateTourRequest.NumOfAdult / sellPriceHotel.ServingQuantity * max) * (privateTourRequest.NumOfChildren * sellPriceHotel.MaxSurChange);
-                            }
-                        }
+                        double minQuotation = hotel.NumOfDay * hotel.NumOfRoom * min;
+                        double maxQuotation = hotel.NumOfDay * hotel.NumOfRoom * max;
                         var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && hotel.Rating == a.RatingId);
                         quotationDetails.Add(new QuotationDetail
                         {
@@ -425,8 +389,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             OptionQuotationId = option.Id,
                             QuantityOfAdult = privateTourRequest.NumOfAdult,
                             QuantityOfChild = privateTourRequest.NumOfChildren,
-                            MinPrice = totalPeople * sellPriceRestaurent!.MinPrice,
-                            MaxPrice = totalPeople * sellPriceRestaurent!.MaxPrice,
+                            MinPrice = totalPeople * sellPriceRestaurent!.MinPrice * restaurent.MealPerDay,
+                            MaxPrice = totalPeople * sellPriceRestaurent!.MaxPrice * restaurent.MealPerDay,
                             FacilityRatingId = restaurentRating!.Id,
                             StartDate = restaurent.StartDate,
                             EndDate = restaurent.EndDate,
@@ -441,8 +405,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                   && a.ServingQuantity == 1 && a.ServiceAvailability == ServiceAvailability.CHILD).FirstOrDefault();
 
-                    double minQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MinPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MinPrice;
-                    double maxQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MaxPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MaxPrice;
+                    double minQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MinPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MinPrice * location.Entertainment.QuantityLocation;
+                    double maxQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MaxPrice) + privateTourRequest.NumOfChildren * sellPriceChildrenEntertainment.MaxPrice * location.Entertainment.QuantityLocation;
 
                     quotationDetails.Add(new QuotationDetail
                     {
@@ -517,12 +481,9 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 });
 
-                //Calculate based on fixed formula: Children price = 70% Adult price
-                // => NumOfAdult * Price + NumOfChildren * 0.7 * Price = Total
-                // => Price = Total / (NumOfAdult + NumOfChildren * 0.7)
-                double AdultBasedQuantity = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren * 0.7;
-                option.MinTotal = option.MinTotal / AdultBasedQuantity;
-                option.MaxTotal = option.MaxTotal / AdultBasedQuantity;
+                
+                option.MinTotal = option.MinTotal / totalPeople;
+                option.MaxTotal = option.MaxTotal / totalPeople;
 
                 await optionQuotationRepository!.Insert(option);
                 await quotationDetailRepository!.InsertRange(quotationDetails);
