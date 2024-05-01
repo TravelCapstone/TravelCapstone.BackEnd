@@ -25,7 +25,6 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<AttendanceRoute> AttendanceRoutes { get; set; }
     public DbSet<Commune> Communes { get; set; }
     public DbSet<DayPlan> DayPlans { get; set; }
-    public DbSet<Destination> Destinations { get; set; }
     public DbSet<District> Districts { get; set; }
     public DbSet<Driver> Drivers { get; set; }
     public DbSet<Material> Materials { get; set; }
@@ -239,7 +238,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
                        .SetBasePath(Directory.GetCurrentDirectory())
                        .AddJsonFile("appsettings.json", true, true)
                        .Build();
-        string cs = config["ConnectionStrings:Host"];
+        string cs = config["ConnectionStrings:DB"];
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder.UseSqlServer(cs);

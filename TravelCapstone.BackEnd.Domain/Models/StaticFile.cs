@@ -13,8 +13,8 @@ namespace TravelCapstone.BackEnd.Domain.Models
         [Key]
         public Guid Id { get; set; }
         public string Url { get; set; } = null!;
-        public Guid DestinationId { get; set; }
-        [ForeignKey(nameof(DestinationId))]
-        public Destination? Destination { get; set; } 
+        public Guid FacilityId { get; set; }
+        [ForeignKey(nameof(FacilityId))]
+        public Facility? Facility { get; set; } 
     }
 }

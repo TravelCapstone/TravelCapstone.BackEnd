@@ -18,11 +18,11 @@ public class Route
 
     public Guid? StartPointId { get; set; }
 
-    [ForeignKey(nameof(StartPointId))] public Destination? StartPoint { get; set; }
+    [ForeignKey(nameof(StartPointId))] public Facility? StartPoint { get; set; }
 
     public Guid EndPointId { get; set; }
 
-    [ForeignKey(nameof(EndPointId))] public Destination? EndPoint { get; set; }
+    [ForeignKey(nameof(EndPointId))] public Facility? EndPoint { get; set; }
 
     public Guid? ParentRouteId { get; set; }
 

@@ -60,9 +60,9 @@ namespace TravelCapstone.BackEnd.Application.Services
                     destinationIds.Add((Guid)route.StartPointId!);
                     destinationIds.Add(route.EndPointId);
                 }
-                var destinationRepository = Resolve<IRepository<Destination>>();
-                var destinationDb = await destinationRepository!.GetAllDataByExpression(r => destinationIds.Contains(r.Id), 1, Int32.MaxValue, null, false, r => r.Communce!.District!.Province!);
-                data.InsertRange(Math.Max(0, data.Count - 1), destinationDb!.Items!.Select(r => r.Communce!.District!.Province).ToList()!);
+                //var destinationRepository = Resolve<IRepository<Destination>>();
+                //var destinationDb = await destinationRepository!.GetAllDataByExpression(r => destinationIds.Contains(r.Id), 1, Int32.MaxValue, null, false, r => r.Communce!.District!.Province!);
+                //data.InsertRange(Math.Max(0, data.Count - 1), destinationDb!.Items!.Select(r => r.Communce!.District!.Province).ToList()!);
                 result.Result = data.DistinctBy(p => p.Id);
             } catch ( Exception ex )
             {
