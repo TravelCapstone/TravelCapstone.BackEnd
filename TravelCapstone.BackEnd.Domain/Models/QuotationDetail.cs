@@ -24,5 +24,7 @@ public class QuotationDetail
     public Guid OptionQuotationId { get; set; }
     [ForeignKey(nameof(OptionQuotationId))]
     public OptionQuotation? OptionQuotation { get; set; }
-
+    public Guid DistrictId { get; set; }
+    [ForeignKey(nameof(DistrictId))]
+    public District? District { get; set; }
 }
