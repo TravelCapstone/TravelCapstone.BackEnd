@@ -266,11 +266,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         );
                     if (!listHotel.Items!.Any())
                     {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy khách sạn với phân loại {hotel.Rating.ToString()} tại tỉnh thuộc id {location.DistrictId}");
+                        result = BuildAppActionResultError(result, $"Không tìm thấy khách sạn với phân loại {hotel.Rating.ToString()} tại huyện {district.Name}");
                     }
                     if (!sellHotel.Items!.Any())
                     {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy gía khách sạn với phân loại {hotel.Rating.ToString()} tại tỉnh thuộc id {location.DistrictId}");
+                        result = BuildAppActionResultError(result, $"Không tìm thấy gía khách sạn với phân loại {hotel.Rating.ToString()} tại huyện {district.Name}");
                     }
                 }
                 foreach (var restaurent in location.Restaurants)
@@ -291,33 +291,36 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                        );
                     if (!listRestaurent.Items!.Any())
                     {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy nhà hàng với phân loại {restaurent.Rating.ToString()} tại tỉnh thuộc id {location.DistrictId}");
+                        result = BuildAppActionResultError(result, $"Không tìm thấy nhà hàng với phân loại {restaurent.Rating.ToString()} tại huyện {district.Name}");
                     }
                     if (!sellRestaurent.Items!.Any())
                     {
                        
-                        result = BuildAppActionResultError(result, $"Không tìm thấy giá nhà hàng với phân loại {restaurent.Rating.ToString()} tại tỉnh thuộc id {location.DistrictId}");
+                        result = BuildAppActionResultError(result, $"Không tìm thấy giá nhà hàng với phân loại {restaurent.Rating.ToString()} tại huyện {district.Name}");
                     }
                 }
 
-                var entertaiment = await facilityRepository!.GetAllDataByExpression(
+                if (location.Entertainment != null)
+                {
+                    var entertaiment = await facilityRepository!.GetAllDataByExpression(
                          a => a.Communce!.DistrictId == location.DistrictId &&
                        a.FacilityRating!.FacilityTypeId == FacilityType.ENTERTAINMENT,
                          0,
                          0, null, false,
                          null);
-                var sellEntertaiment = await sellPriceRepository!.GetAllDataByExpression(
-                     a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
-                       && a.FacilityService.ServiceTypeId == ServiceType.ENTERTAIMENT,
-                     0, 0, null, false, null
-                     );
-                if (!entertaiment.Items!.Any())
-                {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy dịch vụ vui chơi giải trí tại tỉnh thuộc id {location.DistrictId}");
-                }
-                if (!sellEntertaiment.Items!.Any())
-                {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy giá dịch vụ giải trí tại tỉnh thuộc id {location.DistrictId}");
+                    var sellEntertaiment = await sellPriceRepository!.GetAllDataByExpression(
+                         a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
+                           && a.FacilityService.ServiceTypeId == ServiceType.ENTERTAIMENT,
+                         0, 0, null, false, null
+                         );
+                    if (!entertaiment.Items!.Any())
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy dịch vụ vui chơi giải trí tại huyện {district.Name}");
+                    }
+                    if (!sellEntertaiment.Items!.Any())
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy giá dịch vụ giải trí tại huyện {district.Name}");
+                    }
                 }
             }
             if (!BuildAppActionResultIsError(result))

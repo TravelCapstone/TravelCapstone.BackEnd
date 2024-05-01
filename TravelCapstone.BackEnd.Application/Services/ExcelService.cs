@@ -21,7 +21,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             _logger = logger;
         }
 
-        public async Task<string> CheckHeader(IFormFile file, List<string> headerTemplate)
+        public async Task<string> CheckHeader(IFormFile file, List<string> headerTemplate, int sheetNumber = 0)
         {
             if (file == null || file.Length == 0)
             {
@@ -37,7 +37,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     using (ExcelPackage package = new ExcelPackage(stream))
                     {
-                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is in the first sheet
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[sheetNumber]; // Assuming data is in the first sheet
 
                         int colCount = worksheet.Columns.Count();
                         if (colCount != headerTemplate.Count && worksheet.Cells[1, colCount].Value != null)

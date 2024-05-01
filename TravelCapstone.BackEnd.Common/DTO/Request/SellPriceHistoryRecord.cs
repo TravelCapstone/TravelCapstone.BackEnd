@@ -21,10 +21,5 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public string? MenuName { get; set; }
     }
 
-    public class VehicleSellPriceHistoryRecord : SellPriceHistoryRecord
-    {
-        public string? VehicleName { get; set; }
-    }
-
 
 }

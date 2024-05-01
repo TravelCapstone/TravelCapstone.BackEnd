@@ -317,11 +317,11 @@ namespace TravelCapstone.BackEnd.Application.Services
                                 detailedPriceReference.MinPrice = currentPrice;
                             }
 
-                            if (detailedPriceReference.MaxPrice < currentPrice * item.SurchargePercent)
+                            if (detailedPriceReference.MaxSurChange < currentPrice * item.SurchargePercent)
                             {
-                                detailedPriceReference.MaxPrice = currentPrice * item.SurchargePercent;
+                                detailedPriceReference.MaxSurChange = currentPrice * item.SurchargePercent;
                             }
-                            else
+                            else if(detailedPriceReference.MinSurChange > currentPrice * item.SurchargePercent) 
                             {
                                 detailedPriceReference.MinSurChange = currentPrice * item.SurchargePercent;
                             }

@@ -18,6 +18,9 @@ using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Common.Utils;
 using TravelCapstone.BackEnd.Domain.Models;
 using Utility = TravelCapstone.BackEnd.Common.Utils.Utility;
+using Firebase.Auth;
+using StackExchange.Redis;
+using NPOI.SS.Formula.Functions;
 
 namespace TravelCapstone.BackEnd.Application.Services;
 
@@ -452,7 +455,7 @@ public class AccountService : GenericBackendService, IAccountService
                 });
             }
 
-            var verifiedToken = await FirebaseAuth.DefaultInstance
+            var verifiedToken = await FirebaseAdmin.Auth.FirebaseAuth.DefaultInstance
                 .VerifyIdTokenAsync(accessTokenFromGoogle);
             var emailClaim = verifiedToken.Claims.FirstOrDefault(c => c.Key == "email");
             var nameClaim = verifiedToken.Claims.FirstOrDefault(c => c.Key == "name");
@@ -861,9 +864,9 @@ public class AccountService : GenericBackendService, IAccountService
         {
             foreach (var account in tourGuideAccountList)
             {
-                _emailService.SendEmail(account.Email,
-                    $"Thông tin tài khoản của hướng dẫn viên {account.FirstName} {account.LastName} tại Cóc Travel",
-                    $"Tài khoản của bạn: \nTên đăng nhập: {account.Email} \nMật khẩu: {SD.DEFAULT_PASSWORD}\n Vui lòng không chia sẻ thông tin tài khoản của bạn với bất kì ai");
+                _emailService?.SendEmail(account.Email, $"Thông tin tài khoản của hướng dẫn viên {account.FirstName} {account.LastName} tại Cóc Travel",
+                   TemplateMappingHelper.GetTemplateOTPEmail(TemplateMappingHelper.ContentEmailType.TOURGUIDE_ACCOUNT_CREATION,
+                       $"Tên đăng nhập: {account.Email} \nMật khẩu: {SD.DEFAULT_PASSWORD}\n Vui lòng không chia sẻ thông tin tài khoản của bạn với bất kì ai", $"{account.FirstName} {account.LastName}"));
             }
         }
         catch (Exception ex)
@@ -911,6 +914,70 @@ public class AccountService : GenericBackendService, IAccountService
         catch (Exception ex)
         {
         }
+        return result;
+    }
+
+    public async Task<AppActionResult> GetAccountsByRoleName(string roleName, int pageNumber, int pageSize)
+    {
+        var result = new AppActionResult();
+
+        try
+        {
+            var roleRepository = Resolve<IRepository<IdentityRole>>();
+            var roleDb = await roleRepository!.GetByExpression(r => r.NormalizedName.Equals(roleName.ToLower()));
+            if(roleDb != null)
+            {
+                var userRoleRepository = Resolve<IRepository<IdentityUserRole<string>>>();
+                var userRoleDb = await userRoleRepository!.GetAllDataByExpression(u => u.RoleId == roleDb.Id, 0, 0, null, false, null);
+                if(userRoleDb.Items != null && userRoleDb.Items.Count > 0) 
+                {
+                    var accountIds = userRoleDb.Items.Select(u => u.UserId).Distinct().ToList();
+                    var accountDb = await _accountRepository.GetAllDataByExpression(a => accountIds.Contains(a.Id), pageNumber, pageSize, null, false, null);
+                    result.Result = accountDb;
+                }
+            }
+            else
+            {
+                result = BuildAppActionResultError(result, $"Không tìm thấy vai trò {roleName}");
+            }
+        }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+
+        return result;
+    }
+
+    public async Task<AppActionResult> GetAccountsByRoleId(Guid Id, int pageNumber, int pageSize)
+    {
+        var result = new AppActionResult();
+
+        try
+        {
+            var roleRepository = Resolve<IRepository<IdentityRole>>();
+            var roleDb = await roleRepository!.GetById(Id);
+            if (roleDb != null)
+            {
+                var userRoleRepository = Resolve<IRepository<IdentityUserRole<string>>>();
+                var userRoleDb = await userRoleRepository!.GetAllDataByExpression(u => u.RoleId == roleDb.Id, 0, 0, null, false, null);
+                if (userRoleDb.Items != null && userRoleDb.Items.Count > 0)
+                {
+                    var accountIds = userRoleDb.Items.Select(u => u.UserId).Distinct().ToList();
+                    var accountDb = await _accountRepository.GetAllDataByExpression(a => accountIds.Contains(a.Id), pageNumber, pageSize, null, false, null);
+                    result.Result = accountDb;
+                }
+            }
+            else
+            {
+                result = BuildAppActionResultError(result, $"Không tìm thấy vai trò với id {Id}");
+            }
+        }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+
         return result;
     }
 }

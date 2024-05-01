@@ -9,6 +9,6 @@ namespace TravelCapstone.BackEnd.Application.IServices
 {
     public interface IExcelService
     {
-        public Task<string> CheckHeader(IFormFile file, List<string> headerTemplate);
+        public Task<string> CheckHeader(IFormFile file, List<string> headerTemplate, int sheetNumber = 0);
     }
 }

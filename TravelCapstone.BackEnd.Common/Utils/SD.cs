@@ -97,6 +97,37 @@ public class SD
         public static string PHONENUMBER = "^0\\d{9,10}$";
         public static string EMAIL = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         public static string NAME = "^[\\p{L}\\s,'.-]+$";
+        public static string CHASSISNUMBER = "^[A-HJ-NPR-Z0-9]{12,17}$";
+        public static string ENGINENUMBER = "^[A-Za-z0-9]{6,17}$";
+        public static string PLATE = "^(?!13)[0-9]{2}[A-Z]{1}[A-Z0-9]{0,1}-[0-9]{4,5}$";
+
+    }
+
+    public class CommonInformation
+    {
+        public static List<String> COMMON_BUS_BRAND_NAME_LIST = new List<string>
+        {
+            "Hyundai",
+            "Toyota",
+            "Kia",
+            "Ford",
+            "Mercedes-Benz",
+            "Mitsubishi",
+            "Hino",
+            "Isuzu",
+            "Thaco",
+            "Daewoo",
+            "VinFast",
+            "Fuso",
+            "Yutong",
+            "Suzuki",
+            "Volkswagen",
+            "Honda",
+            "Volvo",
+            "Nissan",
+            "Scania",
+            "Ford Transit"
+        };
     }
     public class EnumType
     {
@@ -108,10 +139,17 @@ public class SD
 
     public class ExcelHeaders
     {
-        public static List<String> SERVICE_QUOTATION = new List<string> { "No", "Tên dịch vụ", "Đơn vị", "MOQ", "Giá người lớn", "Giá trẻ em" };
-        public static List<String> MENU_SERVICE_QUOTATION = new List<string> { "No", "Tên dịch vụ", "Tên menu", "Đơn vị", "MOQ", "Giá người lớn"};
-        public static List<String> TOURGUIDE_REGISTRATION = new List<string> { "No", "Tên", "Họ", "Email", "Số điện thoại", "Giới tính" };
-        public static List<String> VEHICLE_REGISTRATION = new List<string> { "No", "Biển số", "Dung tích", "Số động cơ", "Số khung", "Thương hiệu", "Tên chủ sở hữu", "Màu" };
+        public static List<string> SERVICE_QUOTATION = new List<string> { "No", "Tên dịch vụ", "Đơn vị", "MOQ", "Giá người lớn", "Giá trẻ em" };
+        public static List<string> MENU_SERVICE_QUOTATION = new List<string> { "No", "Tên dịch vụ", "Tên menu", "Đơn vị", "MOQ", "Giá người lớn"};
+        public static List<string> TOURGUIDE_REGISTRATION = new List<string> { "No", "Tên", "Họ", "Email", "Số điện thoại", "Giới tính" };
+        public static List<string> VEHICLE_REGISTRATION = new List<string> { "No", "Biển số", "Dung tích", "Số động cơ", "Số khung", "Thương hiệu", "Tên chủ sở hữu", "Màu" };
+        public static List<string> MENU_DISH = new List<string> { "No", "Tên dịch vụ", "Tên menu", "Tên món", "Mô tả", "Loại món" };
+        //public int No { get; set; }
+        //public string? FacilityServiceName { get; set; }
+        //public string? MenuName { get; set; }
+        //public string? DishName { get; set; }
+        //public string? Description { get; set; }
+        //public string? MenuType { get; set; }
 
     }
 
