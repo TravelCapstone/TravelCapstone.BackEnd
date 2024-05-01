@@ -14,6 +14,23 @@ namespace TravelCapstone.BackEnd.API.Controllers
             _service = service;
         }
 
+        [HttpGet("get-sell-price-by-facility-service-id/{facilityServiceId}")]
+        public async Task<AppActionResult> GetServiceLatestPrice(Guid facilityServiceId)
+        {
+            return await _service.GetServiceLatestPrice(facilityServiceId);
+        }
+
+        [HttpGet("get-sell-price-by-menu-id/{menuId}")]
+        public async Task<AppActionResult> GetMenuServiceLatestPrice(Guid menuId)
+        {
+            return await _service.GetMenuServiceLatestPrice(menuId);
+        }
+
+        [HttpGet("get-sell-price-by-transport-service-id/{transportDetailId}")]
+        public async Task<AppActionResult> GetTransportServiceLatestPrice(Guid transportDetailId)
+        {
+            return await _service.GetTransportServiceLatestPrice(transportDetailId);
+        }
 
         [HttpGet("get-sell-price-by-facility-Id-and-service-type/{facilityId}/{serviceTypeId}/{pageNumber:int}/{pageSize:int}")]
         public async Task<AppActionResult> GetSellPriceByFacilityIdAndServiceType(Guid facilityId, ServiceType serviceTypeId, int pageNumber = 1, int pageSize = 10)

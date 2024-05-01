@@ -566,5 +566,100 @@ namespace TravelCapstone.BackEnd.Application.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<AppActionResult> GetServiceLatestPrice(Guid facilityServiceId)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
+                var facilityServiceDb = await facilityServiceRepository!.GetById(facilityServiceId);
+                if (facilityServiceDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy dịch vụ với id {facilityServiceId}");
+                    return result;
+                }
+
+                var sellPriceDb = await _repository.GetAllDataByExpression(s => s.FacilityServiceId == facilityServiceId, 0, 0, s => s.Date, false, null);
+                var sellPriceGroup = sellPriceDb.Items!.GroupBy(s => s.MOQ).ToDictionary(g => g.Key, g => g.ToList());
+                List<SellPriceHistory> data = new List<SellPriceHistory>();
+                foreach (var kvp in sellPriceGroup)
+                {
+                    data.Add(kvp.Value.MaxBy(s => s.Date)!);
+                }
+                result.Result = new PagedResult<SellPriceHistory>
+                {
+                    Items = data,
+                };
+            } catch(Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetMenuServiceLatestPrice(Guid menuId)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var menuRepository = Resolve<IRepository<Domain.Models.Menu>>();
+                var menuDb = await menuRepository!.GetById(menuId);
+                if (menuDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy menu với id {menuId}");
+                    return result;
+                }
+
+                var sellPriceDb = await _repository.GetAllDataByExpression(s => s.MenuId == menuId, 0, 0, s => s.Date, false, null);
+                var sellPriceGroup = sellPriceDb.Items!.GroupBy(s => s.MOQ).ToDictionary(g => g.Key, g => g.ToList());
+                List<SellPriceHistory> data = new List<SellPriceHistory>();
+                foreach (var kvp in sellPriceGroup)
+                {
+                    data.Add(kvp.Value.MaxBy(s => s.Date)!);
+                }
+                result.Result = new PagedResult<SellPriceHistory>
+                {
+                    Items = data,
+                };
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetTransportServiceLatestPrice(Guid transportDetailId)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var transportServiceDetailRepository = Resolve<IRepository<Domain.Models.TransportServiceDetail>>();
+                var transportServiceDetailDb = await transportServiceDetailRepository!.GetById(transportDetailId);
+                if (transportDetailId == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy chi tiết phương tiện với id {transportDetailId}");
+                    return result;
+                }
+
+                var sellPriceDb = await _repository.GetAllDataByExpression(s => s.TransportServiceDetailId == transportDetailId, 0, 0, s => s.Date, false, null);
+                var sellPriceGroup = sellPriceDb.Items!.GroupBy(s => s.MOQ).ToDictionary(g => g.Key, g => g.ToList());
+                List<SellPriceHistory> data = new List<SellPriceHistory>();
+                foreach (var kvp in sellPriceGroup)
+                {
+                    data.Add(kvp.Value.MaxBy(s => s.Date)!);
+                }
+                result.Result = new PagedResult<SellPriceHistory>
+                {
+                    Items = data,
+                };
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
     }
 }
