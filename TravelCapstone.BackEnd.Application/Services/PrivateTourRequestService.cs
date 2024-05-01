@@ -76,11 +76,29 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 return result;
             }
 
-            var request = _mapper.Map<PrivateTourRequest>(privateTourequestDTO);
+            var request = new PrivateTourRequest
+            {
+                Id = Guid.NewGuid(),
+                DietaryPreferenceId = privateTourequestDTO.DietaryPreference,
+                PrivateTourStatusId = PrivateTourStatus.NEW,
+                StartDate = privateTourequestDTO.StartDate,
+                EndDate = privateTourequestDTO.EndDate,
+                Description = privateTourequestDTO.Description,
+                NumOfAdult = privateTourequestDTO.NumOfAdult,
+                NumOfChildren = privateTourequestDTO.NumOfChildren,
+                TourId = privateTourequestDTO.TourId,
+                IsEnterprise = privateTourequestDTO.IsEnterprise,
+                Note = privateTourequestDTO.Note,
+                RecommendedTourUrl = privateTourequestDTO.RecommnendedTourUrl,
+                StartLocation = privateTourequestDTO.StartLocation,
+                StartLocationCommuneId = privateTourequestDTO.StartCommuneId,
+                WishPrice = privateTourequestDTO.WishPrice,
+                MainDestinationId = privateTourequestDTO.MainDestinationId,
+                CreateBy = privateTourequestDTO.AccountId
+            };
             var utility = Resolve<Utility>();
             request.CreateDate = utility!.GetCurrentDateTimeInTimeZone();
-            request.Id = Guid.NewGuid();
-            request.PrivateTourStatusId = PrivateTourStatus.NEW;
+           
             await _repository.Insert(request);
             if (privateTourequestDTO.OtherLocation != null && privateTourequestDTO.OtherLocation.Count > 0)
             {

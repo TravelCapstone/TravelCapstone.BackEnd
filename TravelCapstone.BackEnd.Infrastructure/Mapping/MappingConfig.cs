@@ -2,6 +2,7 @@
 using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Domain.Models;
+using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.Infrastructure.Mapping;
 
@@ -22,24 +23,23 @@ public class MappingConfig
                 .ForMember(desc => desc.UserName, act => act.MapFrom(src => src.UserName))
                 ;
 
-            config.CreateMap<PrivateTourRequestDTO, PrivateTourRequest>()
-                .ForMember(desc => desc.StartDate, act => act.MapFrom(src => src.StartDate))
-                .ForMember(desc => desc.EndDate, act => act.MapFrom(src => src.EndDate))
-                .ForMember(desc => desc.Description, act => act.MapFrom(src => src.Description))
-                .ForMember(desc => desc.NumOfAdult, act => act.MapFrom(src => src.NumOfAdult))
-                .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
-                .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
-                .ForMember(desc => desc.IsEnterprise, act => act.MapFrom(src => src.IsEnterprise))
-                .ForMember(desc => desc.Note, act => act.MapFrom(src => src.Note))
-                .ForMember(desc => desc.RecommendedTourUrl, act => act.MapFrom(src => src.RecommnendedTourUrl))
-                .ForMember(desc => desc.StartLocation, act => act.MapFrom(src => src.StartLocation))
-                .ForMember(desc => desc.StartLocationCommuneId, act => act.MapFrom(src => src.StartCommuneId))
-                .ForMember(desc => desc.DietaryPreferenceId, act => act.MapFrom(src => src.DietaryPreference))
-                .ForMember(desc => desc.WishPrice, act => act.MapFrom(src => src.WishPrice))
-                .ForMember(desc => desc.MainDestinationId, act => act.MapFrom(src => src.MainDestinationId))
-                .ForMember(desc => desc.CreateBy, act => act.MapFrom(src => src.AccountId))
-                .ReverseMap()
-                ;
+            //config.CreateMap<PrivateTourRequestDTO, PrivateTourRequest>()
+            //    .ForMember(desc => desc.StartDate, act => act.MapFrom(src => src.StartDate))
+            //    .ForMember(desc => desc.EndDate, act => act.MapFrom(src => src.EndDate))
+            //    .ForMember(desc => desc.Description, act => act.MapFrom(src => src.Description))
+            //    .ForMember(desc => desc.NumOfAdult, act => act.MapFrom(src => src.NumOfAdult))
+            //    .ForMember(desc => desc.NumOfChildren, act => act.MapFrom(src => src.NumOfChildren))
+            //    .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
+            //    .ForMember(desc => desc.IsEnterprise, act => act.MapFrom(src => src.IsEnterprise))
+            //    .ForMember(desc => desc.Note, act => act.MapFrom(src => src.Note))
+            //    .ForMember(desc => desc.RecommendedTourUrl, act => act.MapFrom(src => src.RecommnendedTourUrl))
+            //    .ForMember(desc => desc.StartLocation, act => act.MapFrom(src => src.StartLocation))
+            //    .ForMember(desc => desc.StartLocationCommuneId, act => act.MapFrom(src => src.StartCommuneId))
+            //    .ForMember(desc => desc.WishPrice, act => act.MapFrom(src => src.WishPrice))
+            //    .ForMember(dest => dest.DietaryPreferenceId, opt => opt.MapFrom(src => src.DietaryPreference))
+            //    .ForMember(desc => desc.MainDestinationId, act => act.MapFrom(src => src.MainDestinationId))
+            //    .ForMember(desc => desc.CreateBy, act => act.MapFrom(src => src.AccountId))
+            //    ;
 
             config.CreateMap<PrivateTourRequest, PrivateTourResponseDto>()
                 .ForMember(desc => desc.StartDate, act => act.MapFrom(src => src.StartDate))
