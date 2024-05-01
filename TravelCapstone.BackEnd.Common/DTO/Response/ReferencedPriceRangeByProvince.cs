@@ -38,4 +38,11 @@ namespace TravelCapstone.BackEnd.Common.DTO.Response
         public double MaxPrice { get; set; } = 0;
         public double MinPrice { get; set; } = double.MaxValue;
     }
+
+    public class DetailedServicePriceReference
+    {
+        public PagedResult<SellPriceHistory> SellPriceHistory { get; set; } = null!;
+        public double CurrentPrice { get; set; }
+        public double PriceOfPerson { get; set; }       
+    }
 }
