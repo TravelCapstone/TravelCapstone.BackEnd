@@ -86,6 +86,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 Description = privateTourequestDTO.Description,
                 NumOfAdult = privateTourequestDTO.NumOfAdult,
                 NumOfChildren = privateTourequestDTO.NumOfChildren,
+                NumOfDay = privateTourequestDTO.NumOfDay,
+                NumOfNight = privateTourequestDTO.NumOfNight,
                 TourId = privateTourequestDTO.TourId,
                 IsEnterprise = privateTourequestDTO.IsEnterprise,
                 Note = privateTourequestDTO.Note,

@@ -12,7 +12,7 @@ public class Material
     [ForeignKey(nameof(MaterialTypeId))]
     public Models.EnumModels.MaterialType? MaterialType { get; set; }
     public int Quantity { get; set; }
-    public Guid DayPlanId { get; set; }
+    public Guid TourId { get; set; }
 
-    [ForeignKey(nameof(DayPlanId))] public DayPlan? DayPlan { get; set; }
+    [ForeignKey(nameof(TourId))] public Tour? Tour { get; set; }
 }
