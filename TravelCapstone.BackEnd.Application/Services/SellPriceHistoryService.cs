@@ -128,7 +128,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     result.Result = new PagedResult<DetailedPriceReference>
                     {
-                        Items = priceReferences.Skip(pageNumber - 1).Take(pageSize).ToList()
+                        Items = priceReferences,
                     };
 
                 }
@@ -234,7 +234,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     result.Result = new PagedResult<DetailedPriceReference>
                     {
-                        Items = priceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                        Items = priceReference,
                     };
                 }
 
@@ -337,7 +337,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     result.Result = new PagedResult<DetailedPriceReference>
                     {
-                        Items = priceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                        Items = priceReference,
                     };
                 }
 
@@ -386,7 +386,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     result.Result = new PagedResult<DetailedPriceReference>
                     {
-                        Items = priceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                        Items = priceReference,
                     };
                 }
 
@@ -491,7 +491,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     result.Result = new PagedResult<DetailedPriceReference>
                     {
-                        Items = priceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                        Items = priceReference,
                     };
                 }
 
@@ -721,7 +721,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                         result.Result = new PagedResult<DetailedServicePriceReference>
                         {
-                            Items = servicePriceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                            Items = servicePriceReference,
                         };
                     }
                 }
@@ -790,7 +790,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                         result.Result = new PagedResult<DetailedServicePriceReference>
                         {
-                            Items = servicePriceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                            Items = servicePriceReference,
                         };
                     }
                 }
