@@ -688,40 +688,47 @@ namespace TravelCapstone.BackEnd.Application.Services
                 f.ServingQuantity == servingQuantity && f.Facility!.FacilityRating!.Id == ratingId, 0, 0, null, false, f => f.Facility!.FacilityRating!, f => f.Facility!.Communce!.District!.Province!);
                 if (facilityServiceDb.Items != null && facilityServiceDb.Items.Count > 0)
                 {
-                    var facilityServiceService = facilityServiceDb.Items.GroupBy(s => new { s.ServiceAvailabilityId, s.Facility!.FacilityRating!.RatingId, s.ServingQuantity }).ToDictionary(g => g.Key, g => g.ToList());
-                    double MinPrice = Double.MaxValue;
-                    double MaxPrice = 0;
-                    double MinSurchange = Double.MaxValue;
-                    double MaxSurchange = 0;
                     List<DetailedServicePriceReference> servicePriceReference = new List<DetailedServicePriceReference>();
-                    foreach (var kvp in facilityServiceService)
+                    foreach (var kvp in facilityServiceDb.Items)
                     {
-                        if (kvp.Value.Count == 0) continue;
-                        var serviceRating = kvp.Key;
-                        double currentPrice = 0;
-                        double priceOfPerson = 0;
+                        var serviceRating = kvp.Facility!.FacilityRating;
+                        SellPriceHistory currentPrice;
                         double total = 0;
                         double quantityOfService = 0;
                         DetailedServicePriceReference detailedServicePriceReference = new DetailedServicePriceReference();
-                        foreach (var item in kvp.Value)
-                        {
-                            total = item.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.BOTH ? privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren :
-                              item.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.ADULT ? privateTourRequestDb.NumOfAdult : privateTourRequestDb.NumOfChildren;
 
-                            quantityOfService = Math.Ceiling((double)total / item.ServingQuantity);
-                            var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.FacilityServiceId == item.Id || s.Menu!.FacilityServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!);
+                        total = kvp.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.BOTH ? privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren :
+                          kvp.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.ADULT ? privateTourRequestDb.NumOfAdult : privateTourRequestDb.NumOfChildren;
+
+                        quantityOfService = Math.Ceiling((double)total / kvp.ServingQuantity);
+                        if (kvp.ServiceTypeId == ServiceType.RESTING)
+                        {
+                            var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.FacilityServiceId == kvp.Id && s.MOQ <= quantityOfService, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!);
                             if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
                             {
                                 currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
                                                                .ThenByDescending(s => s.MOQ)
-                                                               .FirstOrDefault()!.Price;
-                                detailedServicePriceReference.SellPriceHistory = sellPriceHistory.Items.ToList();
-                                detailedServicePriceReference.CurrentPrice = currentPrice;
-                                detailedServicePriceReference.PriceOfPerson = (currentPrice * quantityOfService) / total;
+                                                               .FirstOrDefault()!;
+                                detailedServicePriceReference.SellPriceHistory = currentPrice;
+                                detailedServicePriceReference.PriceOfPerson = (currentPrice.Price * quantityOfService) / total;
+                                detailedServicePriceReference.FacilityServices = kvp;
                             }
-                            servicePriceReference.Add(detailedServicePriceReference);
                         }
-                        var invalidPriceReferences = servicePriceReference.Where(d => d.CurrentPrice == 0).ToList();
+                        else if (kvp.ServiceTypeId == ServiceType.FOODANDBEVARAGE)
+                        {
+                            var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.Menu!.FacilityServiceId == kvp.Id && s.MOQ <= quantityOfService, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!);
+                            if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
+                            {
+                                currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
+                                                               .ThenByDescending(s => s.MOQ)
+                                                               .FirstOrDefault()!;
+                                detailedServicePriceReference.SellPriceHistory = currentPrice;
+                                detailedServicePriceReference.PriceOfPerson = (currentPrice.Price * quantityOfService) / total;
+                                detailedServicePriceReference.FacilityServices = kvp;
+                            }
+                        }
+                        servicePriceReference.Add(detailedServicePriceReference);
+                        var invalidPriceReferences = servicePriceReference.Where(d => d.PriceOfPerson == 0).ToList();
                         invalidPriceReferences.ForEach(item => servicePriceReference.Remove(item));
 
                         result.Result = new PagedResult<DetailedServicePriceReference>
