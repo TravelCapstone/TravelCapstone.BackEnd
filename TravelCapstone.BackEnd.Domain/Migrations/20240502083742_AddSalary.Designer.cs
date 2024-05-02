@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240502083742_AddSalary")]
+    partial class AddSalary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2435,9 +2437,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("EndPointDistrictId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("EndPointId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2456,9 +2455,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid>("OptionQuotationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("StartPointDistrictId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("StartPointId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2467,13 +2463,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EndPointDistrictId");
-
                     b.HasIndex("EndPointId");
 
                     b.HasIndex("OptionQuotationId");
-
-                    b.HasIndex("StartPointDistrictId");
 
                     b.HasIndex("StartPointId");
 
@@ -3352,10 +3344,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.VehicleQuotationDetail", b =>
                 {
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.District", "EndPointDistrict")
-                        .WithMany()
-                        .HasForeignKey("EndPointDistrictId");
-
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Province", "EndPoint")
                         .WithMany()
                         .HasForeignKey("EndPointId")
@@ -3368,10 +3356,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.District", "StartPointDistrict")
-                        .WithMany()
-                        .HasForeignKey("StartPointDistrictId");
-
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Province", "StartPoint")
                         .WithMany()
                         .HasForeignKey("StartPointId")
@@ -3380,13 +3364,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.Navigation("EndPoint");
 
-                    b.Navigation("EndPointDistrict");
-
                     b.Navigation("OptionQuotation");
 
                     b.Navigation("StartPoint");
-
-                    b.Navigation("StartPointDistrict");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.VehicleRoute", b =>

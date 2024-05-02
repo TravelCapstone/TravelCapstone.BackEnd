@@ -204,10 +204,14 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 return result;
             }
             data.PrivateTourResponse = _mapper.Map<PrivateTourResponseDto>(privateTourRequestDb);
+            var requestedLocationRepository = Resolve<IRepository<RequestedLocation>>();
+            var requestedLocationDb = await requestedLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == privateTourRequestDb.Id, 0, 0, null, false, r => r.Province!);
+            data.PrivateTourResponse.OtherLocation = requestedLocationDb.Items;
             var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
             var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
             var vehicleQuotationDetailRepository = Resolve<IRepository<VehicleQuotationDetail>>();
-            var optionsDb = await optionQuotationRepository!.GetAllDataByExpression(q => q.PrivateTourRequestId == id, 0, 0, null, false, null);
+            var optionsDb = await optionQuotationRepository!.GetAllDataByExpression(q => q.PrivateTourRequestId == id, 0, 0, null, false, q => q.PrivateTourRequest.Commune.District.Province!, q => q.PrivateTourRequest.Province!);
+
             if (optionsDb.Items!.Count != 3)
             {
                 result.Messages.Add($"Số lượng lựa chọn hiện tại: {optionsDb.Items.Count} không phù hợp");
@@ -223,16 +227,21 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             {
                 OptionResponseDto option = new OptionResponseDto();
                 option.OptionQuotation = item;
-                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, null);
-                var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, null);
+                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, q => q.District, q => q.FacilityRating.Rating);
+                var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, q => q.EndPoint,p => p.StartPoint, p => p.EndPointDistrict, p => p.StartPointDistrict);
+                 
                 option.QuotationDetails = quotationDetailDb.Items!.ToList();
-                option.VehicleQuotationDetails = vehicleQuotationDetailDb.Items!.ToList();
+                option.VehicleQuotationDetails = await GetOrderedList(vehicleQuotationDetailDb.Items!.ToList());
                 if (item.OptionClassId == OptionClass.ECONOMY)
                     data.Option1 = option;
                 else if (item.OptionClassId == OptionClass.MIDDLE)
                     data.Option2 = option;
                 else data.Option3 = option;
+
             }
+
+            
+
             List<Province> provinces = new List<Province>();
             var list = await requestLocationRepository!.GetAllDataByExpression(a => a.PrivateTourRequestId == id, 0, 0, null, false, a => a.Province!);
             foreach (var item in list.Items!)
@@ -244,6 +253,79 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         catch (Exception e)
         {
             result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+        }
+        return result;
+    }
+
+    private async Task<List<VehicleQuotationDetail>?> GetOrderedList(List<VehicleQuotationDetail> vehicleQuotationDetails)
+    {
+        List<VehicleQuotationDetail> result = null;
+        try
+        {
+            if(vehicleQuotationDetails == null || vehicleQuotationDetails.Count == 0)
+            {
+                return result;
+            }
+            result = new List<VehicleQuotationDetail>();
+            var tourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
+            var optionRepository = Resolve<IRepository<OptionQuotation>>();
+            var optionDb = await optionRepository!.GetByExpression(o => vehicleQuotationDetails[0].OptionQuotationId == o.Id);
+            if(optionDb != null)
+            {
+                var tourRequestDb = await tourRequestRepository!.GetByExpression(t => t.Id == optionDb.PrivateTourRequestId, t => t.Commune.District!);
+                if(tourRequestDb != null)
+                {
+                    Guid start = tourRequestDb.Commune.District!.ProvinceId;
+                    List<VehicleQuotationDetail> current = null;
+                    while(vehicleQuotationDetails.Count > 0)
+                    {
+                        current = vehicleQuotationDetails.Where(v => v.StartPointId == start).ToList();
+                        if(current.Count == 0) {
+                            break;
+                        } else if(current.Count == 1)
+                        {
+                            result.Add(current[0]);
+                            vehicleQuotationDetails.Remove(current[0]);
+                            start = current[0].EndPointId;
+                            current.Remove(current[0]);
+                        } else
+                        {
+                            var inProvince = current.Where(v => v.EndPointId == null).ToList();
+                            while(inProvince.Count > 0)
+                            {
+                                result.Add(inProvince[0]);
+                                inProvince.Remove(inProvince[0]);
+                                current.Remove(inProvince[0]);
+                            }
+                            inProvince = current.Where(v => v.EndPointId == v.StartPointId).ToList();
+                            if (inProvince.Count > 1)
+                            {
+                                var listEndDistrictIds = inProvince.Select(i => i.EndPointDistrictId).ToList();
+                                var startDistrict = inProvince.Where(i => !listEndDistrictIds.Contains(i.StartPointDistrictId)).FirstOrDefault()!.StartPointDistrictId;
+                                VehicleQuotationDetail innerCurrent = null; 
+                                while(inProvince.Count > 0)
+                                {
+                                    innerCurrent = inProvince.Where(i => i.StartPointDistrictId == startDistrict).FirstOrDefault()!;
+                                    result.Add(innerCurrent);
+                                    inProvince.Remove(innerCurrent);
+                                    vehicleQuotationDetails.Remove(innerCurrent);
+                                    startDistrict = (Guid)innerCurrent.EndPointDistrictId;
+                                }
+                            } else
+                            {
+                                result.Add(inProvince[0]);
+                                vehicleQuotationDetails.Remove(inProvince[0]);
+                            }
+                        }
+                    }
+
+                }
+            }
+            
+
+        } catch(Exception e)
+        {
+            
         }
         return result;
     }
@@ -410,24 +492,34 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         var restaurentRating = await facilityRatingRepository!.GetByExpression(a => restaurent.Rating == a.RatingId);
                         var sellPriceRestaurent = estimate.RestaurantPrice.DetailedPriceReferences.Where(
                           a => restaurent.Rating == a.RatingId
-                          && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 10
+                          && a.ServiceAvailability == restaurent.ServiceAvailability && a.ServingQuantity == restaurent.ServingQuantity
                           ).FirstOrDefault();
-                        quotationDetails.Add(new QuotationDetail
+                        if(sellPriceRestaurent != null)
                         {
-                            Id = Guid.NewGuid(),
-                            OptionQuotationId = option.Id,
-                            QuantityOfAdult = privateTourRequest.NumOfAdult,
-                            QuantityOfChild = privateTourRequest.NumOfChildren,
-                            ServingQuantity = 10,
-                            MealPerDay = restaurent.MealPerDay,
-                            Quantity = (int)Math.Ceiling((double)((privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren) / 10)),
-                            MinPrice = totalPeople * sellPriceRestaurent!.MinPrice * restaurent.MealPerDay,
-                            MaxPrice = totalPeople * sellPriceRestaurent!.MaxPrice * restaurent.MealPerDay,
-                            FacilityRatingId = restaurentRating!.Id,
-                            StartDate = restaurent.StartDate,
-                            EndDate = restaurent.EndDate,
-                            DistrictId = location.DistrictId
-                        });
+                            int total = restaurent.ServiceAvailability == ServiceAvailability.BOTH ? privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren :
+                                              restaurent.ServiceAvailability == ServiceAvailability.ADULT ? privateTourRequest.NumOfAdult : privateTourRequest.NumOfChildren;
+                            int quantity = (int)Math.Ceiling((double)(total) / restaurent.ServingQuantity);
+                            quotationDetails.Add(new QuotationDetail
+                            {
+                                Id = Guid.NewGuid(),
+                                OptionQuotationId = option.Id,
+                                QuantityOfAdult = (restaurent.ServiceAvailability == ServiceAvailability.BOTH || restaurent.ServiceAvailability == ServiceAvailability.ADULT)? privateTourRequest.NumOfAdult : 0,
+                                QuantityOfChild = (restaurent.ServiceAvailability == ServiceAvailability.BOTH || restaurent.ServiceAvailability == ServiceAvailability.CHILD) ? privateTourRequest.NumOfChildren : 0,
+                                ServingQuantity = 10,
+                                MealPerDay = restaurent.MealPerDay,
+                                Quantity = quantity,
+                                MinPrice = quantity * sellPriceRestaurent!.MinPrice * restaurent.MealPerDay,
+                                MaxPrice = quantity * sellPriceRestaurent!.MaxPrice * restaurent.MealPerDay,
+                                FacilityRatingId = restaurentRating!.Id,
+                                StartDate = restaurent.StartDate,
+                                EndDate = restaurent.EndDate,
+                                DistrictId = location.DistrictId
+                            });
+                        } else
+                        {
+                            result = BuildAppActionResultError(result, $"Không tìm thấy báo giá ăn uống tại huyện có id {location.DistrictId} tại nhà hàng {restaurent.Rating} cho dịch vụ {restaurent.ServiceAvailability} {restaurent.ServingQuantity} người ");
+                            return result;
+                        }
                     }
                    if(estimate.EntertainmentPrice.DetailedPriceReferences.Count > 0)
                     {
@@ -485,8 +577,12 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 OptionQuotationId = option.Id,
                                 MinPrice = totalPeople * price.Items!.Min(a => a.AdultPrice),
                                 MaxPrice = totalPeople * price.Items!.Max(a => a.AdultPrice),
+                                NumOfRentingDay = 1,
+                                NumOfVehicle = 1,
                                 StartPointId = (Guid)vehicle.StartPoint,
                                 EndPointId = (Guid)vehicle.EndPoint,
+                                StartPointDistrictId = vehicle.StartPointDistrict != null? (Guid)vehicle.StartPointDistrict : null,
+                                EndPointDistrictId = vehicle.EndPointDistrict != null? (Guid)vehicle.EndPointDistrict : null,
                                 VehicleType = vehicle.VehicleType,
                             });
 
@@ -506,8 +602,12 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 OptionQuotationId = option.Id,
                                 MinPrice = totalVehicle * vehicle.NumOfRentingDay * price.Items!.Min(a => a.Price),
                                 MaxPrice = totalVehicle * vehicle.NumOfRentingDay * price.Items!.Max(a => a.Price),
+                                NumOfRentingDay = vehicle.NumOfRentingDay,
+                                NumOfVehicle = vehicle.NumOfVehicle,
                                 StartPointId = (Guid)vehicle.StartPoint,
                                 EndPointId = (Guid)vehicle.EndPoint,
+                                StartPointDistrictId = vehicle.StartPointDistrict != null ? (Guid)vehicle.StartPointDistrict : null,
+                                EndPointDistrictId = vehicle.EndPointDistrict != null ? (Guid)vehicle.EndPointDistrict : null,
                                 VehicleType = vehicle.VehicleType
                             });
                         }
