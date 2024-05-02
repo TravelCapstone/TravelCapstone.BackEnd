@@ -129,47 +129,49 @@ namespace TravelCapstone.BackEnd.Application.Services
                     int total = 0;
                     DetailedPriceReference detailedPriceReference = new DetailedPriceReference();
                     int i = 0;
-                    foreach (var item in kvp.Value)
+                    if(kvp.Value.Count > 0)
                     {
-                        if (i == 0)
-                        {
-                            detailedPriceReference.ServiceTypeId = item.ServiceTypeId;
-                            detailedPriceReference.RatingId = item.Facility!.FacilityRating!.RatingId;
-                            detailedPriceReference.ServiceAvailability = item.ServiceAvailabilityId;
-                            detailedPriceReference.ServingQuantity = item.ServingQuantity;
-                            detailedPriceReference.Unit = item.UnitId;
-                            i++;
-                        }
+                        detailedPriceReference.ServiceTypeId = kvp.Value[0].ServiceTypeId;
+                        detailedPriceReference.RatingId = kvp.Value[0].Facility!.FacilityRating!.RatingId;
+                        detailedPriceReference.ServiceAvailability = kvp.Value[0].ServiceAvailabilityId;
+                        detailedPriceReference.ServingQuantity = kvp.Value[0].ServingQuantity;
+                        detailedPriceReference.Unit = kvp.Value[0].UnitId;
                         total = detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.BOTH ? NumOfAdult + NumOfChild :
                                 detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.ADULT ? NumOfAdult : NumOfChild;
-                        var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.FacilityServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, null);
-                        if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
+                        total = (int)Math.Ceiling((double)(total / detailedPriceReference.ServingQuantity));
+                        if (total == 0) continue;
+                        foreach (var item in kvp.Value)
                         {
-                            currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
-                                                                .ThenByDescending(s => s.MOQ)
-                                                                .FirstOrDefault()!.Price;
-                            if (currentPrice > detailedPriceReference.MaxPrice)
-                            {
-                                detailedPriceReference.MaxPrice = currentPrice;
-                            }
-                            else if (currentPrice < detailedPriceReference.MinPrice)
-                            {
-                                detailedPriceReference.MinPrice = currentPrice;
-                            }
+                                var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.FacilityServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, null);
+                                if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
+                                {
+                                    currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
+                                                                        .ThenByDescending(s => s.MOQ)
+                                                                        .FirstOrDefault()!.Price;
+                                    if (currentPrice > detailedPriceReference.MaxPrice)
+                                    {
+                                        detailedPriceReference.MaxPrice = currentPrice;
+                                    }
+                                    else if (currentPrice < detailedPriceReference.MinPrice)
+                                    {
+                                        detailedPriceReference.MinPrice = currentPrice;
+                                    }
 
-                            if (detailedPriceReference.MaxPrice < currentPrice * item.SurchargePercent)
-                            {
-                                detailedPriceReference.MaxPrice = currentPrice * item.SurchargePercent;
+                                    if (detailedPriceReference.MaxPrice < currentPrice * item.SurchargePercent)
+                                    {
+                                        detailedPriceReference.MaxPrice = currentPrice * item.SurchargePercent;
+                                    }
+                                    else
+                                    {
+                                        detailedPriceReference.MinSurChange = currentPrice * item.SurchargePercent;
+                                    }
+                                }
                             }
-                            else
-                            {
-                                detailedPriceReference.MinSurChange = currentPrice * item.SurchargePercent;
-                            }
-                        }
+                        detailedPriceReference.MinSurChange = Math.Min(detailedPriceReference.MinSurChange, detailedPriceReference.MaxSurChange);
+                        detailedPriceReference.MinPrice = Math.Min(detailedPriceReference.MinPrice, detailedPriceReference.MaxPrice);
+                        priceReference.DetailedPriceReferences.Add(detailedPriceReference);
                     }
-                    detailedPriceReference.MinSurChange = Math.Min(detailedPriceReference.MinSurChange, detailedPriceReference.MaxSurChange);
-                    detailedPriceReference.MinPrice = Math.Min(detailedPriceReference.MinPrice, detailedPriceReference.MaxPrice);
-                    priceReference.DetailedPriceReferences.Add(detailedPriceReference);
+                    
 
                 };
                 var invalidPriceReferences = priceReference.DetailedPriceReferences.Where(d => d.MinPrice == 0 && d.MaxPrice == 0).ToList();
@@ -208,49 +210,50 @@ namespace TravelCapstone.BackEnd.Application.Services
                     double currentPrice;
                     int total = 0;
                     DetailedPriceReference detailedPriceReference = new DetailedPriceReference();
-                    int i = 0;
-                    foreach (var item in kvp.Value)
+                    if(kvp.Value.Count > 0)
                     {
-                        if (i == 0)
-                        {
-                            detailedPriceReference.ServiceTypeId = item.ServiceTypeId;
-                            detailedPriceReference.RatingId = item.Facility!.FacilityRating!.RatingId;
-                            detailedPriceReference.ServiceAvailability = item.ServiceAvailabilityId;
-                            detailedPriceReference.ServingQuantity = item.ServingQuantity;
-                            detailedPriceReference.Unit = item.UnitId;
-                            i++;
-                        }
+                        detailedPriceReference.ServiceTypeId = kvp.Value[0].ServiceTypeId;
+                        detailedPriceReference.RatingId = kvp.Value[0].Facility!.FacilityRating!.RatingId;
+                        detailedPriceReference.ServiceAvailability = kvp.Value[0].ServiceAvailabilityId;
+                        detailedPriceReference.ServingQuantity = kvp.Value[0].ServingQuantity;
+                        detailedPriceReference.Unit = kvp.Value[0].UnitId;
                         total = detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.BOTH ? NumOfAdult + NumOfChild :
-                                detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.ADULT ? NumOfAdult : NumOfChild;
-                        var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.Menu.FacilityServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, null);
-                        if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
+                                    detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.ADULT ? NumOfAdult : NumOfChild;
+                        if(total > 0)
                         {
-                            currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
-                                                                .ThenByDescending(s => s.MOQ)
-                                                                .FirstOrDefault()!.Price;
-                            if (currentPrice > detailedPriceReference.MaxPrice)
+                            total = (int)Math.Ceiling((double)((double)total /detailedPriceReference.ServingQuantity));
+                            foreach (var item in kvp.Value)
                             {
-                                detailedPriceReference.MaxPrice = currentPrice;
-                            }
-                            else if (currentPrice < detailedPriceReference.MinPrice)
-                            {
-                                detailedPriceReference.MinPrice = currentPrice;
-                            }
+                                var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.Menu.FacilityServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, null);
+                                if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
+                                {
+                                    currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
+                                                                        .ThenByDescending(s => s.MOQ)
+                                                                        .FirstOrDefault()!.Price;
+                                    if (currentPrice > detailedPriceReference.MaxPrice)
+                                    {
+                                        detailedPriceReference.MaxPrice = currentPrice;
+                                    }
+                                    else if (currentPrice < detailedPriceReference.MinPrice)
+                                    {
+                                        detailedPriceReference.MinPrice = currentPrice;
+                                    }
 
-                            if (detailedPriceReference.MaxPrice < currentPrice * item.SurchargePercent)
-                            {
-                                detailedPriceReference.MaxPrice = currentPrice * item.SurchargePercent;
+                                    if (detailedPriceReference.MaxSurChange < currentPrice * item.SurchargePercent)
+                                    {
+                                        detailedPriceReference.MaxSurChange = currentPrice * item.SurchargePercent;
+                                    }
+                                    else if (detailedPriceReference.MinSurChange > currentPrice * item.SurchargePercent)
+                                    {
+                                        detailedPriceReference.MinSurChange = currentPrice * item.SurchargePercent;
+                                    }
+                                }
                             }
-                            else
-                            {
-                                detailedPriceReference.MinSurChange = currentPrice * item.SurchargePercent;
-                            }
+                            detailedPriceReference.MinSurChange = Math.Min(detailedPriceReference.MinSurChange, detailedPriceReference.MaxSurChange);
+                            detailedPriceReference.MinPrice = Math.Min(detailedPriceReference.MinPrice, detailedPriceReference.MaxPrice);
+                            priceReference.DetailedPriceReferences.Add(detailedPriceReference);
                         }
                     }
-                    detailedPriceReference.MinSurChange = Math.Min(detailedPriceReference.MinSurChange, detailedPriceReference.MaxSurChange);
-                    detailedPriceReference.MinPrice = Math.Min(detailedPriceReference.MinPrice, detailedPriceReference.MaxPrice);
-                    priceReference.DetailedPriceReferences.Add(detailedPriceReference);
-
                 };
                 var invalidPriceReferences = priceReference.DetailedPriceReferences.Where(d => d.MinPrice == 0 && d.MaxPrice == 0).ToList();
                 invalidPriceReferences.ForEach(item => priceReference.DetailedPriceReferences.Remove(item));
@@ -288,48 +291,53 @@ namespace TravelCapstone.BackEnd.Application.Services
                     double currentPrice;
                     int total = 0;
                     DetailedPriceReference detailedPriceReference = new DetailedPriceReference();
-                    int i = 0;
-                    foreach (var item in kvp.Value)
+                    if(kvp.Value.Count > 0)
                     {
-                        if (i == 0)
-                        {
-                            detailedPriceReference.ServiceTypeId = item.ServiceTypeId;
-                            detailedPriceReference.RatingId = item.Facility!.FacilityRating!.RatingId;
-                            detailedPriceReference.ServiceAvailability = item.ServiceAvailabilityId;
-                            detailedPriceReference.ServingQuantity = item.ServingQuantity;
-                            detailedPriceReference.Unit = item.UnitId;
-                            i++;
-                        }
+                        detailedPriceReference.ServiceTypeId = kvp.Value[0].ServiceTypeId;
+                        detailedPriceReference.RatingId = kvp.Value[0].Facility!.FacilityRating!.RatingId;
+                        detailedPriceReference.ServiceAvailability = kvp.Value[0].ServiceAvailabilityId;
+                        detailedPriceReference.ServingQuantity = kvp.Value[0].ServingQuantity;
+                        detailedPriceReference.Unit = kvp.Value[0].UnitId;
                         total = detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.BOTH ? NumOfAdult + NumOfChild :
                                 detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.ADULT ? NumOfAdult : NumOfChild;
-                        var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.TransportServiceDetail.FacilityServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, null);
-                        if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
+                        if(total > 0)
                         {
-                            currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
-                                                                .ThenByDescending(s => s.MOQ)
-                                                                .FirstOrDefault()!.Price;
-                            if (currentPrice > detailedPriceReference.MaxPrice)
+                            total = (int)Math.Ceiling((double)(total / detailedPriceReference.ServingQuantity));
+                            foreach (var item in kvp.Value)
                             {
-                                detailedPriceReference.MaxPrice = currentPrice;
-                            }
-                            else if (currentPrice < detailedPriceReference.MinPrice)
-                            {
-                                detailedPriceReference.MinPrice = currentPrice;
-                            }
 
-                            if (detailedPriceReference.MaxSurChange < currentPrice * item.SurchargePercent)
-                            {
-                                detailedPriceReference.MaxSurChange = currentPrice * item.SurchargePercent;
+
+                                var sellPriceHistory = await sellPriceRepository!.GetAllDataByExpression(s => s.TransportServiceDetail.FacilityServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, null);
+                                if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
+                                {
+                                    currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
+                                                                        .ThenByDescending(s => s.MOQ)
+                                                                        .FirstOrDefault()!.Price;
+                                    if (currentPrice > detailedPriceReference.MaxPrice)
+                                    {
+                                        detailedPriceReference.MaxPrice = currentPrice;
+                                    }
+                                    else if (currentPrice < detailedPriceReference.MinPrice)
+                                    {
+                                        detailedPriceReference.MinPrice = currentPrice;
+                                    }
+
+                                    if (detailedPriceReference.MaxSurChange < currentPrice * item.SurchargePercent)
+                                    {
+                                        detailedPriceReference.MaxSurChange = currentPrice * item.SurchargePercent;
+                                    }
+                                    else if (detailedPriceReference.MinSurChange > currentPrice * item.SurchargePercent)
+                                    {
+                                        detailedPriceReference.MinSurChange = currentPrice * item.SurchargePercent;
+                                    }
+                                }
                             }
-                            else if(detailedPriceReference.MinSurChange > currentPrice * item.SurchargePercent) 
-                            {
-                                detailedPriceReference.MinSurChange = currentPrice * item.SurchargePercent;
-                            }
+                            detailedPriceReference.MinSurChange = Math.Min(detailedPriceReference.MinSurChange, detailedPriceReference.MaxSurChange);
+                            detailedPriceReference.MinPrice = Math.Min(detailedPriceReference.MinPrice, detailedPriceReference.MaxPrice);
+                            priceReference.DetailedPriceReferences.Add(detailedPriceReference);
                         }
                     }
-                    detailedPriceReference.MinSurChange = Math.Min(detailedPriceReference.MinSurChange, detailedPriceReference.MaxSurChange);
-                    detailedPriceReference.MinPrice = Math.Min(detailedPriceReference.MinPrice, detailedPriceReference.MaxPrice);
-                    priceReference.DetailedPriceReferences.Add(detailedPriceReference);
+                    
 
                 };
                 var invalidPriceReferences = priceReference.DetailedPriceReferences.Where(d => d.MinPrice == 0 && d.MaxPrice == 0).ToList();

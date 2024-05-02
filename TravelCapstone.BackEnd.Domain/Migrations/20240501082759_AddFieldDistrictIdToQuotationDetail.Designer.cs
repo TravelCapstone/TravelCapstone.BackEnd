@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240501082759_AddFieldDistrictIdToQuotationDetail")]
+    partial class AddFieldDistrictIdToQuotationDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1537,20 +1539,20 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("DayPlanId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("MaterialTypeId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("TourId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("MaterialTypeId");
+                    b.HasIndex("DayPlanId");
 
-                    b.HasIndex("TourId");
+                    b.HasIndex("MaterialTypeId");
 
                     b.ToTable("Materials");
                 });
@@ -1941,17 +1943,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<double>("MaxPrice")
                         .HasColumnType("float");
 
-                    b.Property<int>("MealPerDay")
-                        .HasColumnType("int");
-
                     b.Property<double>("MinPrice")
                         .HasColumnType("float");
 
                     b.Property<Guid>("OptionQuotationId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
 
                     b.Property<int>("QuantityOfAdult")
                         .HasColumnType("int");
@@ -1960,9 +1956,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("ServiceTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServingQuantity")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("StartDate")
@@ -2748,21 +2741,21 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Material", b =>
                 {
+                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.DayPlan", "DayPlan")
+                        .WithMany()
+                        .HasForeignKey("DayPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.MaterialType", "MaterialType")
                         .WithMany()
                         .HasForeignKey("MaterialTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
-                        .WithMany()
-                        .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("DayPlan");
 
                     b.Navigation("MaterialType");
-
-                    b.Navigation("Tour");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Menu", b =>

@@ -37,7 +37,9 @@ public class TourService : GenericBackendService, ITourService
             detail.DayPlanDtos = new List<DayPlanDto>();
             var tour = await _repository.GetById(id);
             detail.Tour = tour;
-
+                var materials =
+                    await materialRepository!.GetAllDataByExpression(a => a.TourId == id, 0, 0, null, false, null);
+            detail.Materials = materials.Items!;
             var listPlan = await dayPlanRepository!.GetAllDataByExpression(
                 a => a.TourId == id,
                 0,
@@ -52,13 +54,10 @@ public class TourService : GenericBackendService, ITourService
                     null,
                     false,
                     a => a.StartPoint!, a => a.EndPoint!);
-                var materials =
-                    await materialRepository!.GetAllDataByExpression(a => a.DayPlanId == item.Id, 0, 0, null, false, null);
                 detail.DayPlanDtos.Add(new DayPlanDto
                 {
                     DayPlan = item,
                     Routes = route.Items!,
-                    Materials = materials.Items!
                 });
             }
 

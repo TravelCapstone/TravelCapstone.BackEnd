@@ -567,6 +567,101 @@ namespace TravelCapstone.BackEnd.Application.Services
             throw new NotImplementedException();
         }
 
+        public async Task<AppActionResult> GetServiceLatestPrice(Guid facilityServiceId)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
+                var facilityServiceDb = await facilityServiceRepository!.GetById(facilityServiceId);
+                if (facilityServiceDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy dịch vụ với id {facilityServiceId}");
+                    return result;
+                }
+
+                var sellPriceDb = await _repository.GetAllDataByExpression(s => s.FacilityServiceId == facilityServiceId, 0, 0, s => s.Date, false, null);
+                var sellPriceGroup = sellPriceDb.Items!.GroupBy(s => s.MOQ).ToDictionary(g => g.Key, g => g.ToList());
+                List<SellPriceHistory> data = new List<SellPriceHistory>();
+                foreach (var kvp in sellPriceGroup)
+                {
+                    data.Add(kvp.Value.MaxBy(s => s.Date)!);
+                }
+                result.Result = new PagedResult<SellPriceHistory>
+                {
+                    Items = data,
+                };
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetMenuServiceLatestPrice(Guid menuId)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var menuRepository = Resolve<IRepository<Domain.Models.Menu>>();
+                var menuDb = await menuRepository!.GetById(menuId);
+                if (menuDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy menu với id {menuId}");
+                    return result;
+                }
+
+                var sellPriceDb = await _repository.GetAllDataByExpression(s => s.MenuId == menuId, 0, 0, s => s.Date, false, null);
+                var sellPriceGroup = sellPriceDb.Items!.GroupBy(s => s.MOQ).ToDictionary(g => g.Key, g => g.ToList());
+                List<SellPriceHistory> data = new List<SellPriceHistory>();
+                foreach (var kvp in sellPriceGroup)
+                {
+                    data.Add(kvp.Value.MaxBy(s => s.Date)!);
+                }
+                result.Result = new PagedResult<SellPriceHistory>
+                {
+                    Items = data,
+                };
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetTransportServiceLatestPrice(Guid transportDetailId)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var transportServiceDetailRepository = Resolve<IRepository<Domain.Models.TransportServiceDetail>>();
+                var transportServiceDetailDb = await transportServiceDetailRepository!.GetById(transportDetailId);
+                if (transportDetailId == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy chi tiết phương tiện với id {transportDetailId}");
+                    return result;
+                }
+
+                var sellPriceDb = await _repository.GetAllDataByExpression(s => s.TransportServiceDetailId == transportDetailId, 0, 0, s => s.Date, false, null);
+                var sellPriceGroup = sellPriceDb.Items!.GroupBy(s => s.MOQ).ToDictionary(g => g.Key, g => g.ToList());
+                List<SellPriceHistory> data = new List<SellPriceHistory>();
+                foreach (var kvp in sellPriceGroup)
+                {
+                    data.Add(kvp.Value.MaxBy(s => s.Date)!);
+                }
+                result.Result = new PagedResult<SellPriceHistory>
+                {
+                    Items = data,
+                };
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
         public async Task<AppActionResult> GetAveragePriceOfService(Guid districId, Guid privatetourRequestId, Guid ratingId, ServiceType serviceType, int servingQuantity, int pageNumber, int pageSize)
         {
             AppActionResult result = new AppActionResult();
@@ -589,7 +684,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
 
                 var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
-                var facilityServiceDb = await facilityServiceRepository!.GetAllDataByExpression(f => f.Facility!.Communce!.DistrictId == districId && f.ServiceTypeId == serviceType && 
+                var facilityServiceDb = await facilityServiceRepository!.GetAllDataByExpression(f => f.Facility!.Communce!.DistrictId == districId && f.ServiceTypeId == serviceType &&
                 f.ServingQuantity == servingQuantity && f.Facility!.FacilityRating!.Id == ratingId, 0, 0, null, false, f => f.Facility!.FacilityRating!, f => f.Facility!.Communce!.District!.Province!);
                 if (facilityServiceDb.Items != null && facilityServiceDb.Items.Count > 0)
                 {
@@ -610,8 +705,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                         DetailedServicePriceReference detailedServicePriceReference = new DetailedServicePriceReference();
                         foreach (var item in kvp.Value)
                         {
-                             total = item.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.BOTH ? privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren :
-                               item.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.ADULT ? privateTourRequestDb.NumOfAdult : privateTourRequestDb.NumOfChildren;
+                            total = item.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.BOTH ? privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren :
+                              item.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.ADULT ? privateTourRequestDb.NumOfAdult : privateTourRequestDb.NumOfChildren;
 
                             quantityOfService = Math.Ceiling((double)total / item.ServingQuantity);
                             var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.FacilityServiceId == item.Id || s.Menu!.FacilityServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!);
@@ -621,8 +716,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                                                                .ThenByDescending(s => s.MOQ)
                                                                .FirstOrDefault()!.Price;
                                 detailedServicePriceReference.SellPriceHistory = sellPriceHistory.Items.ToList();
-                                detailedServicePriceReference.CurrentPrice = currentPrice;  
-                                detailedServicePriceReference.PriceOfPerson = (currentPrice * quantityOfService) / total; 
+                                detailedServicePriceReference.CurrentPrice = currentPrice;
+                                detailedServicePriceReference.PriceOfPerson = (currentPrice * quantityOfService) / total;
                             }
                             servicePriceReference.Add(detailedServicePriceReference);
                         }
@@ -636,7 +731,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                     }
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 result = BuildAppActionResultError(result, ex.Message);
             }
             return result;
