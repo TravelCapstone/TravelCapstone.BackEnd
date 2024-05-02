@@ -181,14 +181,14 @@ namespace TravelCapstone.BackEnd.Application.Services
                     return result;
                 }
 
-                string menuErrorHeader = await _excelService.CheckHeader(file, SD.ExcelHeaders.MENU_DISH, 1);
-                if (!string.IsNullOrEmpty(errorHeader))
-                {
-                    data.IsValidated = false;
-                    data.HeaderError = errorHeader;
-                    result.Result = data;
-                    return result;
-                }
+                //string menuErrorHeader = await _excelService.CheckHeader(file, SD.ExcelHeaders.MENU_DISH, 1);
+                //if (!string.IsNullOrEmpty(errorHeader))
+                //{
+                //    data.IsValidated = false;
+                //    data.HeaderError = errorHeader;
+                //    result.Result = data;
+                //    return result;
+                //}
 
                 var serviceRepository = Resolve<IRepository<Facility>>();
                 var serviceProviderRepository = Resolve<IRepository<ServiceProvider>>();

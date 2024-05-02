@@ -50,5 +50,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetAttractionSellPriceRange(districtId, privateTourRequestId, numOfPlace, pageNumber, pageSize);
         }
+
+        [HttpGet("get-average-price-of-service/{districId}/{privatetourRequestId}")]
+        public async Task<AppActionResult> GetAveragePriceOfService(Guid districId, Guid privatetourRequestId, Guid ratingId, ServiceType serviceType, int servingQuantity, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _service.GetAveragePriceOfService(districId, privatetourRequestId, ratingId, serviceType, servingQuantity, pageNumber, pageSize);
+        }
     }
 }
