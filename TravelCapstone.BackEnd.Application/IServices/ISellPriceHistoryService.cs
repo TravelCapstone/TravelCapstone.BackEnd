@@ -12,6 +12,7 @@ namespace TravelCapstone.BackEnd.Application.IServices
 {
     public interface ISellPriceHistoryService
     {
+        public Task<AppActionResult> GetAveragePriceOfMealService(Guid districId, Guid privatetourRequestId, Guid ratingId, MealType mealType, int servingQuantity, int pageNumber, int pageSize);
         public Task<AppActionResult> GetAveragePriceOfService(Guid districId, Guid privatetourRequestId, Guid ratingId, ServiceType serviceType, int servingQuantity , int pageNumber, int pageSize);
         public Task<AppActionResult> GetMinMaxPriceOfHotel(Guid districtId, Guid privatetourRequestId, Guid ratingId, int numOfDay, int pageNumber, int pageSize);
         public Task<AppActionResult> GetPriceOfMeal(Guid districtId, Guid privatetourRequestId, Guid ratingId, int numOfMeal, int pageNumber, int pageSize);
