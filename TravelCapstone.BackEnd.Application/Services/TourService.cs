@@ -32,7 +32,7 @@ public class TourService : GenericBackendService, ITourService
         {
             var dayPlanRepository = Resolve<IRepository<DayPlan>>();
             var routeRepository = Resolve<IRepository<Route>>();
-            var materialRepository = Resolve<IRepository<Material>>();
+            var materialRepository = Resolve<IRepository<MaterialAssignment>>();
             var detail = new TourDetail();
             detail.DayPlanDtos = new List<DayPlanDto>();
             var tour = await _repository.GetById(id);
