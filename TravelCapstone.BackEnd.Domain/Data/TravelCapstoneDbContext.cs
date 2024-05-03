@@ -27,7 +27,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<DayPlan> DayPlans { get; set; }
     public DbSet<District> Districts { get; set; }
     public DbSet<Driver> Drivers { get; set; }
-    public DbSet<MaterialAssignment> MaterialAssignments { get; set; }
+    public DbSet<Material> Materials { get; set; }
     public DbSet<MaterialAssignment> MaterialAssignments { get; set; }
     public DbSet<OptionQuotation> OptionQuotations { get; set; }
     public DbSet<Order> Orders { get; set; }

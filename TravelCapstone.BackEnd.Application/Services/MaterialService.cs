@@ -35,7 +35,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             try
             {
                 var tourRepository = Resolve<IRepository<Tour>>();
-                var tourDb = await tourRepository.GetById(request.TourId);
+                var tourDb = await tourRepository!.GetById(request.TourId);
                 if (tourDb == null)
                 {
                     result = BuildAppActionResultError(result, $"Không tìm thấy tour với id {request.TourId}");

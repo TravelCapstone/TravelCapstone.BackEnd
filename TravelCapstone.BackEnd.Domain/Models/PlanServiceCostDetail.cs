@@ -14,9 +14,13 @@ public class PlanServiceCostDetail
     public DateTime EndDate { get; set; }
     public Guid TourId { get; set; }
     [ForeignKey(nameof(TourId))] public Tour Tour { get; set; } = null!;
-
     public Guid? SellPriceHistoryId { get; set; }
 
     [ForeignKey(nameof(SellPriceHistoryId))]
     public SellPriceHistory? SellPriceHistory { get; set; }
+
+    public Guid? ReferenceTransportPriceId { get; set; }
+
+    [ForeignKey(nameof(ReferenceTransportPriceId))]
+    public ReferenceTransportPrice? ReferenceTransportPrice { get; set; }
 }

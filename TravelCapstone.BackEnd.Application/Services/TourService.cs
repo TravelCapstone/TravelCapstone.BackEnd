@@ -1,4 +1,5 @@
 using AutoMapper;
+using System.ComponentModel.DataAnnotations.Schema;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Request;
@@ -143,4 +144,140 @@ public class TourService : GenericBackendService, ITourService
         return result;
     }
 
+    public async Task<AppActionResult> CreateTour(CreatePlanDetailDto dto)
+    {
+        AppActionResult result = new AppActionResult();
+        try
+        {
+            // create tour
+            // add tour guide
+            // add material
+            // add plan detail
+            // add day plan
+            // add Route + Vehicle Route
+            var privateTourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
+            var privateTourRequestDb = await privateTourRequestRepository!.GetById(dto.privateTourRequestId);
+            if(privateTourRequestDb == null)
+            {
+                result = BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour với {dto.privateTourRequestId}");
+                return result;
+            }
+
+            var optionRepository = Resolve<IRepository<OptionQuotation>>();
+            var optionDb = await optionRepository!.GetByExpression(o => o.PrivateTourRequestId == privateTourRequestDb.Id && o.OptionQuotationStatusId == Domain.Enum.OptionQuotationStatus.ACTIVE);
+            if(optionDb == null)
+            {
+                result = BuildAppActionResultError(result, $"Không tìm thấy lựa chọn đã được duyệt từ yêu cầu tạo tour");
+                return result;
+            }
+
+            Tour tour = new Tour()
+            {
+                Id = Guid.NewGuid(),
+                Name = privateTourRequestDb.Description!,//Check lại
+                Description = privateTourRequestDb.Description!,
+                BasedOnTourId = privateTourRequestDb.TourId,
+                StartDate = dto.StartDate,
+                EndDate = dto.EndDate,
+                TourStatusId = Domain.Enum.TourStatus.NEW
+
+            };
+
+            await _repository.Insert(tour);
+            await _unitOfWork.SaveChangesAsync();
+
+            //Add tour guide
+            var tourguideAssignmentRepository = Resolve<IRepository<TourguideAssignment>>();
+            foreach(var item in dto.Tourguides)
+            {
+                await tourguideAssignmentRepository!.Insert(new TourguideAssignment
+                {
+                    Id = Guid.NewGuid(),
+                    ProvinceId = item.ProvinceId,
+                    AccountId = item.TourguideId,
+                    TourId = tour.Id
+                });
+            }
+
+            //Add material
+            dto.Material.TourId = tour.Id;  
+            var materialService = Resolve<IMaterialService>();
+            await materialService!.AddMaterialtoTour(dto.Material);
+
+
+            //Add plan detail
+            var planDetailRepository = Resolve<IRepository<PlanServiceCostDetail>>();
+            foreach(var item in dto.Locations)
+            {
+                int numOfDay = (item.EndDate.Date - item.StartDate.Date).Days;
+                if(item is EatingPlanLocation)
+                {
+                    var eating = item as EatingPlanLocation;
+                    await planDetailRepository!.Insert(new PlanServiceCostDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = $"Dịch vụ ăn uống vào ngày {eating.StartDate.Date} lúc {eating.StartDate.Hour} giờ",
+                        Description = "",
+                        Quantity = eating.NumOfServiceUse * eating.MealPerDay * numOfDay,
+                        StartDate = eating.StartDate,
+                        EndDate = eating.EndDate,
+                        TourId = tour.Id,
+                        SellPriceHistoryId = eating.SellPriceHistoryId,
+});
+                } else
+                {
+                    await planDetailRepository!.Insert(new PlanServiceCostDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = $"Dịch vụ ăn uống vào ngày {item.StartDate.Date} lúc {item.StartDate.Hour} giờ",
+                        Description = "",
+                        Quantity = item.NumOfServiceUse * numOfDay,
+                        StartDate = item.StartDate,
+                        EndDate = item.EndDate,
+                        TourId = tour.Id,
+                        SellPriceHistoryId = item.SellPriceHistoryId,
+                    });
+                }
+            }
+
+            foreach (var item in dto.Vehicles)
+            {
+                int numOfDay = (item.EndDate - item.StartDate).Value.Days;
+                if (item.VehicleType == Domain.Enum.VehicleType.PLANE || item.VehicleType == Domain.Enum.VehicleType.BOAT)
+                {
+                    await planDetailRepository!.Insert(new PlanServiceCostDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = $"Dịch vụ di chuyển vào ngày {item.StartDate.Value.Date} lúc {item.StartDate.Value.Hour} giờ",
+                        Description = "",
+                        Quantity = privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren,
+                        StartDate = (DateTime)item.StartDate,
+                        EndDate = (DateTime)item.EndDate,
+                        TourId = tour.Id,
+                        ReferenceTransportPriceId = item.ReferencePriceId,
+                    });
+                }
+                else
+                {
+                    await planDetailRepository!.Insert(new PlanServiceCostDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = $"Dịch vụ di chuyển vào ngày {item.StartDate.Value.Date} lúc {item.StartDate.Value.Hour} giờ",
+                        Description = "",
+                        Quantity = item.NumOfVehicle * numOfDay,
+                        StartDate = (DateTime)item.StartDate,
+                        EndDate = (DateTime)item.EndDate,
+                        TourId = tour.Id,
+                        SellPriceHistoryId = item.SellPriceHistoryId,
+                    });
+                }
+            }
+
+
+        } catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+        return result;
+    }
 }

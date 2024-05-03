@@ -18,5 +18,8 @@ namespace TravelCapstone.BackEnd.Domain.Models
         public Guid ProvinceId { get; set; }
         [ForeignKey(nameof(ProvinceId))]
         public Province? Province { get; set; }
+        public Guid TourId { get; set; }
+        [ForeignKey(nameof(TourId))]
+        public Tour? Tour { get; set; }
     }
 }
