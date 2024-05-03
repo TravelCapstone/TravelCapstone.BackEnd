@@ -773,7 +773,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                         quantityOfService = Math.Ceiling((double)total / kvp.ServingQuantity);
 
-                        var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.Menu!.FacilityServiceId == kvp.Id && s.Menu.MealTypeId == mealType && s.MOQ <= quantityOfService, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!);
+                        var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.Menu!.FacilityServiceId == kvp.Id && s.Menu.MealTypeId == mealType && s.MOQ <= quantityOfService, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!, p => p.Menu!);
                         if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
                         {
                             currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
