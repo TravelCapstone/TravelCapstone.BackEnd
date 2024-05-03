@@ -30,6 +30,10 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetServiceByFacilityId(facilityId, pageNumber,pageSize);
         }
-
+        [HttpGet("get-list-service-for-plan/{privateTourRequestId}/{quotationDetailId}")]
+        public async Task<AppActionResult> GetListServiceForPlan(Guid privateTourRequestId, Guid quotationDetailId, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _service.GetListServiceForPlan(privateTourRequestId, quotationDetailId, pageNumber, pageSize);
+        }
     }
 }

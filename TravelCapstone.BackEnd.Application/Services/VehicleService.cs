@@ -46,7 +46,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             {
                 List<VehicleRecord> sampleData = new List<VehicleRecord>();
                 sampleData.Add(new VehicleRecord
-                { No = 1, VehicleType = "X7", Plate = "PLATE INFO", Capacity = 7, EngineNumber = "ENGINE NUMBER", ChassisNumber = "CHASSIS NUMBER", Brand = "Toyota", Owner = "Nguyen Van Anh", Color = "Vàng"});
+                { No = 1, VehicleType = "X7", Plate = "PLATE INFO", Capacity = 7, EngineNumber = "ENGINE NUMBER", ChassisNumber = "CHASSIS NUMBER", Brand = "Toyota", Owner = "Nguyen Van Anh", Color = "Vàng" });
                 result = _fileService.GenerateExcelContent<VehicleRecord, Object>(sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION, "ProviderName_ddMMyyyy");
 
             }
@@ -87,7 +87,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                 foreach (var record in records)
                 {
-                    
+
                     data.Add(new Vehicle
                     {
                         Id = Guid.NewGuid(),
@@ -150,7 +150,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 int i = 2;
                 int invalidRowInput = 0;
                 data.Errors = new string[records.Count];
-                Dictionary<string,int> chassisNumberSet = new Dictionary<string, int>();
+                Dictionary<string, int> chassisNumberSet = new Dictionary<string, int>();
                 Dictionary<string, int> engineNumberSet = new Dictionary<string, int>();
                 var vehicleRepository = Resolve<IRepository<Vehicle>>();
                 foreach (VehicleRecord record in records)
@@ -168,7 +168,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                     {
                         error.Append($"{errorRecordCount + 1}. Ô biển số trống.\n");
                         errorRecordCount++;
-                    } else if(!Regex.IsMatch(record.Plate, SD.Regex.PLATE))
+                    }
+                    else if (!Regex.IsMatch(record.Plate, SD.Regex.PLATE))
                     {
                         error.Append($"{errorRecordCount + 1}. Biển số xe không hợp lệ.\n");
                         errorRecordCount++;
@@ -183,7 +184,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                     {
                         error.Append($"{errorRecordCount + 1}. Số động cơ không hợp lệ.\n");
                         errorRecordCount++;
-                    } else
+                    }
+                    else
                     {
                         if (engineNumberSet.ContainsKey(record.EngineNumber))
                         {
@@ -193,7 +195,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         else
                         {
                             var vehicleDb = await vehicleRepository!.GetAllDataByExpression(v => v.EngineNumber.Equals(record.EngineNumber), 0, 0, null, false, null);
-                            if(vehicleDb.Items != null && vehicleDb.Items.Count > 0)
+                            if (vehicleDb.Items != null && vehicleDb.Items.Count > 0)
                             {
                                 error.Append($"{errorRecordCount + 1}. Số động cơ {record.EngineNumber} đã tồn tại trong hệ thống.\n");
                                 errorRecordCount++;
@@ -203,7 +205,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                                 engineNumberSet.Add(record.EngineNumber, i - 1);
                             }
                         }
-                        
+
                     }
 
                     if (string.IsNullOrEmpty(record.ChassisNumber))
@@ -261,7 +263,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         error.Append($"{errorRecordCount + 1}. Số chỗ ngồi là 1 số nguyên dương.\n");
                         errorRecordCount++;
                     }
-                    else if( record.SeatCapacity != 7 || record.SeatCapacity != 15 || record.SeatCapacity != 30 || record.SeatCapacity != 45)
+                    else if (record.SeatCapacity != 7 || record.SeatCapacity != 15 || record.SeatCapacity != 30 || record.SeatCapacity != 45)
                     {
                         error.Append($"{errorRecordCount + 1}.(Cảnh báo) Kiểm tra kĩ thông tin số chỗ ngồi.\n");
                         errorRecordCount++;
@@ -285,7 +287,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         error.Append($"{errorRecordCount + 1}. Ô màu trống.\n");
                         errorRecordCount++;
                         continue;
-                    }                 
+                    }
                     if (errorRecordCount != 0)
                     {
                         data.Errors[i - 2] = error.ToString();
@@ -409,6 +411,39 @@ namespace TravelCapstone.BackEnd.Application.Services
             }
             return string.Empty;
         }
-    
+
+        public async Task<AppActionResult> GetAvailableVehicle(DateTime startTime, DateTime endTime, int pageNumber, int pageSize)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var routeRepository = Resolve<IRepository<Route>>();
+                var routeDb = await routeRepository!.GetAllDataByExpression(p => p.StartTime == startTime && p.EndTime == endTime, 0, 0, null, false, null);
+                if (routeDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy lịch trình yêu cầu với thời gian {startTime} và {endTime}");
+                    return result;
+                }
+                else if (routeDb.Items != null && routeDb.Items.Count > 0)
+                {
+                    foreach (var item in routeDb.Items)
+                    {
+                        var vehicleRouteRepository = Resolve<IRepository<VehicleRoute>>();
+                        var vehicleRouteDb = await vehicleRouteRepository!.GetAllDataByExpression(p => p.RouteId == item.Id, 0, 0, null, false, p => p.Vehicle!);
+                        if (vehicleRouteDb.Items != null && vehicleRouteDb.Items.Count > 0){
+                            foreach (var vehicle in vehicleRouteDb.Items)
+                            {
+                                result.Result = await _repository.GetAllDataByExpression(p => p.Id != vehicle.VehicleId, pageNumber, pageSize, null, false, null);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
     }
 }

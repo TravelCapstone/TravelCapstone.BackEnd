@@ -10,5 +10,6 @@ namespace TravelCapstone.BackEnd.Application.IServices {
         Task<AppActionResult> GetServiceByProvinceIdAndServiceType(Guid Id, ServiceType type, int pageNumber, int pageSize); 
         Task<AppActionResult> GetServicePriceRangeByDistrictIdAndRequestId(Guid Id, Guid requestId, int pageNumber, int pageSize);
         Task<AppActionResult> GetServiceByFacilityId(Guid Id, int pageNumber, int pageSize);
+        Task<AppActionResult> GetListServiceForPlan(Guid privateTourRequestId, Guid quotationDetailId, int pageNumber, int pageSize);
     }
 }
