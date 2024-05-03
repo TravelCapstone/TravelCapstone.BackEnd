@@ -128,7 +128,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     result.Result = new PagedResult<DetailedPriceReference>
                     {
-                        Items = priceReferences.Skip(pageNumber - 1).Take(pageSize).ToList()
+                        Items = priceReferences,
                     };
 
                 }
@@ -209,7 +209,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                                                             .FirstOrDefault()!.Price;
                                 if (currentPrice > detailedPriceReference.MaxPrice)
                                 {
-                                    detailedPriceReference.MaxPrice = (currentPrice * numOfMeal * numOfTable) / total;   
+                                    detailedPriceReference.MaxPrice = (currentPrice * numOfMeal * numOfTable) / total;
                                 }
                                 else if (currentPrice < detailedPriceReference.MinPrice)
                                 {
@@ -234,7 +234,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     result.Result = new PagedResult<DetailedPriceReference>
                     {
-                        Items = priceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                        Items = priceReference,
                     };
                 }
 
@@ -246,13 +246,13 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
-        public async Task<AppActionResult> GetPriceOfVehicle(Guid provinceId, Guid privatetourRequestId, int numOfDay, VehicleType vehicleType, int pageNumber,int pageSize)
+        public async Task<AppActionResult> GetPriceOfVehicle(Guid provinceId, Guid privatetourRequestId, int numOfDay, VehicleType vehicleType, int pageNumber, int pageSize)
         {
             AppActionResult result = new AppActionResult();
             try
             {
                 var provinceRepository = Resolve<IRepository<Province>>();
-                var  provinceDb = await provinceRepository!.GetById(provinceId);
+                var provinceDb = await provinceRepository!.GetById(provinceId);
                 if (provinceDb == null)
                 {
                     result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {provinceId}");
@@ -337,7 +337,7 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     result.Result = new PagedResult<DetailedPriceReference>
                     {
-                        Items = priceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                        Items = priceReference,
                     };
                 }
 
@@ -371,10 +371,10 @@ namespace TravelCapstone.BackEnd.Application.Services
                   , 0, 0, null, false, null
                   );
                     List<DetailedPriceReference> priceReference = new List<DetailedPriceReference>();
-                    foreach ( var item in priceList!.Items!)
+                    foreach (var item in priceList!.Items!)
                     {
                         DetailedPriceReference detailedPriceReference = new DetailedPriceReference();
-                        detailedPriceReference.MinPrice = priceList!.Items.Min( a => a.AdultPrice);
+                        detailedPriceReference.MinPrice = priceList!.Items.Min(a => a.AdultPrice);
                         detailedPriceReference.MaxPrice = priceList!.Items.Max(a => a.AdultPrice);
                         detailedPriceReference.ServingQuantity = 1;
                         detailedPriceReference.ServiceAvailability = ServiceAvailability.BOTH;
@@ -386,11 +386,12 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     result.Result = new PagedResult<DetailedPriceReference>
                     {
-                        Items = priceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                        Items = priceReference,
                     };
                 }
 
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
             }
@@ -404,7 +405,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             {
                 var districtRepository = Resolve<IRepository<District>>();
                 var districtDb = await districtRepository!.GetById(districtId);
-                if(districtDb == null )
+                if (districtDb == null)
                 {
                     result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {districtId}");
                     return result;
@@ -474,7 +475,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                                 {
                                     detailedPriceReference.MaxSurChange = currentPrice * item.SurchargePercent * numOfPlace;
                                 }
-                                else if(detailedPriceReference.MinSurChange > currentPrice * item.SurchargePercent)
+                                else if (detailedPriceReference.MinSurChange > currentPrice * item.SurchargePercent)
                                 {
                                     detailedPriceReference.MinSurChange = currentPrice * item.SurchargePercent * numOfPlace;
                                 }
@@ -490,11 +491,11 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                     result.Result = new PagedResult<DetailedPriceReference>
                     {
-                        Items = priceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                        Items = priceReference,
                     };
                 }
 
-                
+
             }
             catch (Exception ex)
             {
@@ -688,45 +689,115 @@ namespace TravelCapstone.BackEnd.Application.Services
                 f.ServingQuantity == servingQuantity && f.Facility!.FacilityRating!.Id == ratingId, 0, 0, null, false, f => f.Facility!.FacilityRating!, f => f.Facility!.Communce!.District!.Province!);
                 if (facilityServiceDb.Items != null && facilityServiceDb.Items.Count > 0)
                 {
-                    var facilityServiceService = facilityServiceDb.Items.GroupBy(s => new { s.ServiceAvailabilityId, s.Facility!.FacilityRating!.RatingId, s.ServingQuantity }).ToDictionary(g => g.Key, g => g.ToList());
-                    double MinPrice = Double.MaxValue;
-                    double MaxPrice = 0;
-                    double MinSurchange = Double.MaxValue;
-                    double MaxSurchange = 0;
                     List<DetailedServicePriceReference> servicePriceReference = new List<DetailedServicePriceReference>();
-                    foreach (var kvp in facilityServiceService)
+                    foreach (var kvp in facilityServiceDb.Items)
                     {
-                        if (kvp.Value.Count == 0) continue;
-                        var serviceRating = kvp.Key;
-                        double currentPrice = 0;
-                        double priceOfPerson = 0;
+                        var serviceRating = kvp.Facility!.FacilityRating;
+                        SellPriceHistory currentPrice;
                         double total = 0;
                         double quantityOfService = 0;
                         DetailedServicePriceReference detailedServicePriceReference = new DetailedServicePriceReference();
-                        foreach (var item in kvp.Value)
-                        {
-                            total = item.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.BOTH ? privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren :
-                              item.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.ADULT ? privateTourRequestDb.NumOfAdult : privateTourRequestDb.NumOfChildren;
 
-                            quantityOfService = Math.Ceiling((double)total / item.ServingQuantity);
-                            var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.FacilityServiceId == item.Id || s.Menu!.FacilityServiceId == item.Id && s.MOQ <= total, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!);
+                        total = kvp.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.BOTH ? privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren :
+                          kvp.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.ADULT ? privateTourRequestDb.NumOfAdult : privateTourRequestDb.NumOfChildren;
+
+                        quantityOfService = Math.Ceiling((double)total / kvp.ServingQuantity);
+                        if (kvp.ServiceTypeId == ServiceType.RESTING)
+                        {
+                            var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.FacilityServiceId == kvp.Id && s.MOQ <= quantityOfService, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!);
                             if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
                             {
                                 currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
                                                                .ThenByDescending(s => s.MOQ)
-                                                               .FirstOrDefault()!.Price;
-                                detailedServicePriceReference.SellPriceHistory = sellPriceHistory.Items.ToList();
-                                detailedServicePriceReference.CurrentPrice = currentPrice;
-                                detailedServicePriceReference.PriceOfPerson = (currentPrice * quantityOfService) / total;
+                                                               .FirstOrDefault()!;
+                                detailedServicePriceReference.SellPriceHistory = currentPrice;
+                                detailedServicePriceReference.PriceOfPerson = (currentPrice.Price * quantityOfService) / total;
+                                detailedServicePriceReference.FacilityServices = kvp;
                             }
-                            servicePriceReference.Add(detailedServicePriceReference);
                         }
-                        var invalidPriceReferences = servicePriceReference.Where(d => d.CurrentPrice == 0).ToList();
+                        servicePriceReference.Add(detailedServicePriceReference);
+                        var invalidPriceReferences = servicePriceReference.Where(d => d.PriceOfPerson == 0).ToList();
                         invalidPriceReferences.ForEach(item => servicePriceReference.Remove(item));
 
                         result.Result = new PagedResult<DetailedServicePriceReference>
                         {
-                            Items = servicePriceReference.Skip(pageNumber - 1).Take(pageSize).ToList()
+                            Items = servicePriceReference,
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetAveragePriceOfMealService(Guid districId, Guid privatetourRequestId, Guid ratingId, MealType mealType, int servingQuantity, int pageNumber, int pageSize)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var districtRespository = Resolve<IRepository<District>>();
+                var districtDb = await districtRespository!.GetById(districId);
+                if (districtDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {districId}");
+                    return result;
+                }
+
+                var privateTourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
+                var privateTourRequestDb = await privateTourRequestRepository!.GetById(privatetourRequestId);
+                if (privateTourRequestDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour với id {privatetourRequestId}");
+                    return result;
+                }
+
+                var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
+                var facilityServiceDb = await facilityServiceRepository!.GetAllDataByExpression(f => f.Facility!.Communce!.DistrictId == districId && f.ServiceTypeId == ServiceType.FOODANDBEVARAGE &&
+                f.ServingQuantity == servingQuantity && f.Facility!.FacilityRating!.Id == ratingId, 0, 0, null, false, f => f.Facility!.FacilityRating!, f => f.Facility!.Communce!.District!.Province!);
+                if (facilityServiceDb.Items != null && facilityServiceDb.Items.Count > 0)
+                {
+                    List<DetailedServiceMealPriceReference> servicePriceReference = new List<DetailedServiceMealPriceReference>();
+                    foreach (var kvp in facilityServiceDb.Items)
+                    {
+                        var serviceRating = kvp.Facility!.FacilityRating;
+                        SellPriceHistory currentPrice;
+                        double total = 0;
+                        double quantityOfService = 0;
+                        DetailedServiceMealPriceReference detailedServicePriceReference = new DetailedServiceMealPriceReference();
+
+                        total = kvp.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.BOTH ? privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren :
+                          kvp.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.ADULT ? privateTourRequestDb.NumOfAdult : privateTourRequestDb.NumOfChildren;
+
+                        quantityOfService = Math.Ceiling((double)total / kvp.ServingQuantity);
+
+                        var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.Menu!.FacilityServiceId == kvp.Id && s.Menu.MealTypeId == mealType && s.MOQ <= quantityOfService, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!);
+                        if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
+                        {
+                            currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
+                                                           .ThenByDescending(s => s.MOQ)
+                                                           .FirstOrDefault()!;
+                            detailedServicePriceReference.SellPriceHistory = currentPrice;
+                            detailedServicePriceReference.PriceOfPerson = (currentPrice.Price * quantityOfService) / total;
+                            detailedServicePriceReference.FacilityServices = kvp;
+
+                            var menuDishRepository = Resolve<IRepository<MenuDish>>();
+                            var menuDishDb = await menuDishRepository!.GetAllDataByExpression(p => p.MenuId == currentPrice.MenuId, 0, 0, null, false, p => p.Dish!);
+                            if (menuDishDb.Items != null && menuDishDb.Items.Count > 0)
+                            {
+                                detailedServicePriceReference.MenuDishes = menuDishDb.Items.ToList();
+                            }
+                        }
+
+                        servicePriceReference.Add(detailedServicePriceReference);
+                        var invalidPriceReferences = servicePriceReference.Where(d => d.PriceOfPerson == 0).ToList();
+                        invalidPriceReferences.ForEach(item => servicePriceReference.Remove(item));
+
+                        result.Result = new PagedResult<DetailedServiceMealPriceReference>
+                        {
+                            Items = servicePriceReference,
                         };
                     }
                 }

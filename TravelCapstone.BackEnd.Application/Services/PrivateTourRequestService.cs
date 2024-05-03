@@ -227,9 +227,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             {
                 OptionResponseDto option = new OptionResponseDto();
                 option.OptionQuotation = item;
-                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, q => q.District, q => q.FacilityRating.Rating);
-                var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, q => q.EndPoint,p => p.StartPoint, p => p.EndPointDistrict, p => p.StartPointDistrict);
-                 
+                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false,a => a.District!.Province!, a => a.ServiceType!, a=> a.FacilityRating!.FacilityType!, a => a.FacilityRating!.Rating!);
+                var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, a=> a.StartPoint!, a => a.EndPoint!);
                 option.QuotationDetails = quotationDetailDb.Items!.ToList();
                 option.VehicleQuotationDetails = await GetOrderedList(vehicleQuotationDetailDb.Items!.ToList());
                 if (item.OptionClassId == OptionClass.ECONOMY)
