@@ -10,13 +10,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
 {
     public class CreatePlanDetailDto
     {
-        public Guid privateTourRequestId { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public List<PlanLocation> Locations { get; set; } = new List<PlanLocation>();
-        public List<PlanVehicle> Vehicles { get; set; } = new List<PlanVehicle>();
-        public List<Tourguide> Tourguides { get; set; } = new List<Tourguide>();
-        public AddMaterialRequest Material { get; set; }
+        public List<PlanLocation> Locations {  get; set; } = new List<Location>();
     }
 
     public class Tourguide
