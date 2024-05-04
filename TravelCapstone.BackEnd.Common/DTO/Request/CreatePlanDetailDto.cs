@@ -10,7 +10,35 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
 {
     public class CreatePlanDetailDto
     {
-        public List<PlanLocation> Locations {  get; set; } = new List<Location>();
+        public Guid privateTourRequestId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public List<PlanLocation> Locations { get; set; } = new List<PlanLocation>();
+        public List<PlanVehicle> Vehicles { get; set; } = new List<PlanVehicle>();
+        public List<Tourguide> Tourguides { get; set; } = new List<Tourguide>();
+        public AddMaterialRequest Material { get; set; }
+
+        public List<DayPlanRoute> DetailPlanRoutes { get; set; } = new List<DayPlanRoute>();
+    }
+
+    public class DayPlanRoute
+    {
+        public DateTime Date { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public List<DetailDayPlanRoute> DetailDayPlanRoutes { get; set; } = new List<DetailDayPlanRoute>();
+    }
+
+    public class DetailDayPlanRoute
+    {
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public string Name { get; set; } = null!;
+        public string? Note {  get; set; }
+        public Guid? StartFacilityId { get; set; }
+        public Guid? StartPortId { get; set; }
+        public Guid? EndFacilityId { get; set; }
+        public Guid? EndPortId { get; set; }
     }
 
     public class Tourguide
@@ -32,7 +60,6 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
     public class EatingPlanLocation : PlanLocation
     {
         public int MealPerDay { get; set; }
-        public List<DateTime> eatingTimes { get; set; } = new List<DateTime> { };
     }
 
     public class PlanVehicle
@@ -41,8 +68,8 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public Guid? VehicleId { get; set; }
         public Guid? StartPoint { get; set; }
         public Guid? EndPoint { get; set; }
-        public Guid? StartPointDistrict { get; set; }
-        public Guid? EndPointDistrict { get; set; }
+        public Guid? PortStartPoint { get; set; }
+        public Guid? PortEndPoint { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public Guid? DriverId { get; set; }

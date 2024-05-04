@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TravelCapstone.BackEnd.API.Middlewares;
 using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.API.Controllers;
@@ -27,5 +28,12 @@ public class TourController : ControllerBase
     public async Task<AppActionResult> GetAll(string? keyword, int pageNumber = 1, int pageSize = 10)
     {
         return await _service.GetAll(keyword, pageNumber, pageSize);
+    }
+
+    //[Cache(60 *24)]
+    [HttpPost("create-tour")]
+    public async Task<AppActionResult> CreateTour(CreatePlanDetailDto dto)
+    {
+        return await _service.CreateTour(dto);
     }
 }

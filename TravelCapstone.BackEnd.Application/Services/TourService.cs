@@ -1,4 +1,5 @@
 using AutoMapper;
+using Hangfire.Logging.LogProviders;
 using System.ComponentModel.DataAnnotations.Schema;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
@@ -203,17 +204,27 @@ public class TourService : GenericBackendService, ITourService
             dto.Material.TourId = tour.Id;  
             var materialService = Resolve<IMaterialService>();
             await materialService!.AddMaterialtoTour(dto.Material);
-
+            HashSet<Guid> sellPriceIdCheckList = new HashSet<Guid>();
+            HashSet<Guid> referencePriceIdCheckList = new HashSet<Guid>();
+            var portRepository = Resolve<IRepository<Port>>();
+            var facilityRepository = Resolve<IRepository<Facility>>();
+            var referencePriceRepository = Resolve<IRepository<ReferenceTransportPrice>>();
+            var sellPriceHistoyRepository = Resolve<IRepository<SellPriceHistory>>();
 
             //Add plan detail
+
             var planDetailRepository = Resolve<IRepository<PlanServiceCostDetail>>();
+            var dayPlanRepository = Resolve<IRepository<DayPlan>>();
+            var routeRepository = Resolve<IRepository<Route>>();
+            var vehicleRouteRepository = Resolve<IRepository<VehicleRoute>>();
+            List<PlanServiceCostDetail> planServiceCostDetails = new List<PlanServiceCostDetail>();
             foreach(var item in dto.Locations)
             {
                 int numOfDay = (item.EndDate.Date - item.StartDate.Date).Days;
                 if(item is EatingPlanLocation)
                 {
                     var eating = item as EatingPlanLocation;
-                    await planDetailRepository!.Insert(new PlanServiceCostDetail
+                    planServiceCostDetails.Add(new PlanServiceCostDetail
                     {
                         Id = Guid.NewGuid(),
                         Name = $"Dịch vụ ăn uống vào ngày {eating.StartDate.Date} lúc {eating.StartDate.Hour} giờ",
@@ -223,10 +234,10 @@ public class TourService : GenericBackendService, ITourService
                         EndDate = eating.EndDate,
                         TourId = tour.Id,
                         SellPriceHistoryId = eating.SellPriceHistoryId,
-});
+                    });
                 } else
                 {
-                    await planDetailRepository!.Insert(new PlanServiceCostDetail
+                    planServiceCostDetails.Add(new PlanServiceCostDetail
                     {
                         Id = Guid.NewGuid(),
                         Name = $"Dịch vụ ăn uống vào ngày {item.StartDate.Date} lúc {item.StartDate.Hour} giờ",
@@ -238,6 +249,7 @@ public class TourService : GenericBackendService, ITourService
                         SellPriceHistoryId = item.SellPriceHistoryId,
                     });
                 }
+                sellPriceIdCheckList.Add(item.SellPriceHistoryId);
             }
 
             foreach (var item in dto.Vehicles)
@@ -245,7 +257,7 @@ public class TourService : GenericBackendService, ITourService
                 int numOfDay = (item.EndDate - item.StartDate).Value.Days;
                 if (item.VehicleType == Domain.Enum.VehicleType.PLANE || item.VehicleType == Domain.Enum.VehicleType.BOAT)
                 {
-                    await planDetailRepository!.Insert(new PlanServiceCostDetail
+                    planServiceCostDetails.Add(new PlanServiceCostDetail
                     {
                         Id = Guid.NewGuid(),
                         Name = $"Dịch vụ di chuyển vào ngày {item.StartDate.Value.Date} lúc {item.StartDate.Value.Hour} giờ",
@@ -256,10 +268,11 @@ public class TourService : GenericBackendService, ITourService
                         TourId = tour.Id,
                         ReferenceTransportPriceId = item.ReferencePriceId,
                     });
+                    referencePriceIdCheckList.Add((Guid)item.ReferencePriceId);
                 }
                 else
                 {
-                    await planDetailRepository!.Insert(new PlanServiceCostDetail
+                    planServiceCostDetails.Add(new PlanServiceCostDetail
                     {
                         Id = Guid.NewGuid(),
                         Name = $"Dịch vụ di chuyển vào ngày {item.StartDate.Value.Date} lúc {item.StartDate.Value.Hour} giờ",
@@ -270,9 +283,119 @@ public class TourService : GenericBackendService, ITourService
                         TourId = tour.Id,
                         SellPriceHistoryId = item.SellPriceHistoryId,
                     });
+                    sellPriceIdCheckList.Add((Guid)item.SellPriceHistoryId);
                 }
             }
 
+            var sellPriceDb = await sellPriceHistoyRepository!.GetAllDataByExpression(s => sellPriceIdCheckList.Contains(s.Id), 0, 0, null, false, s => s.FacilityService!);
+            var referenceDb = await referencePriceRepository!.GetAllDataByExpression(r => referencePriceIdCheckList.Contains(r.Id), 0, 0, null, false, null);
+            var facilityId = sellPriceDb.Items!.Select(s => s.FacilityService!.FacilityId).ToList();
+            List<Guid> portIds = new List<Guid>();
+            portIds.AddRange(referenceDb.Items!.Select(r => r.ArrivalId));
+            portIds.AddRange(referenceDb.Items!.Select(r => r.DepartureId));
+
+            //How to know which drive it or which reference price it is for route
+            //Add DayPlan
+            List<DayPlan> dayPlans = new List<DayPlan>();
+            List<Route> routes = new List<Route>();
+            List<VehicleRoute> vehicleRoutes = new List<VehicleRoute>();
+            foreach (var item in dto.DetailPlanRoutes)
+            {
+                if(item.Date > dto.EndDate || item.Date < dto.StartDate)
+                {
+                    result = BuildAppActionResultError(result, $"Thời gian cho kế hoạch ngày {item.Date.Date.ToString()} không nằm trong thời gian của kế hoạch");
+                    return result;
+                }
+
+                dayPlans.Add(new DayPlan
+                {
+                    Id = Guid.NewGuid(),
+                    Date = item.Date,
+                    Description = item.Description,
+                    Name = item.Name,
+                    TourId = tour.Id
+                });
+                Guid? parentRouteId = null;
+                Route parentRoute = null;
+                foreach(var detailRoute in item.DetailDayPlanRoutes) 
+                {
+                    if(detailRoute.StartPortId != null && !portIds.Contains((Guid)detailRoute.StartPortId))
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy cảng với id {detailRoute.StartPortId} trong thông tin tour chi tiết");
+                        return result;
+                    }
+
+                    if (detailRoute.EndPortId != null && !portIds.Contains((Guid)detailRoute.EndPortId))
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy cảng với id {detailRoute.EndPortId} trong thông tin tour chi tiết");
+                        return result;
+                    }
+
+                    if (detailRoute.StartFacilityId != null && !facilityId.Contains((Guid)detailRoute.StartFacilityId))
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy cơ sở với id {detailRoute.StartFacilityId} trong thông tin tour chi tiết");
+                        return result;
+                    }
+
+                    if (detailRoute.EndFacilityId != null && !facilityId.Contains((Guid)detailRoute.EndFacilityId))
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy cơ sở với id {detailRoute.EndFacilityId} trong thông tin tour chi tiết");
+                        return result;
+                    }
+
+                    routes.Add(new Route
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = detailRoute.Name,
+                        Note = detailRoute.Note,
+                        StartTime = dto.StartDate,
+                        EndTime = dto.EndDate,
+                        StartPointId = detailRoute.StartFacilityId,
+                        EndPointId = detailRoute.EndFacilityId,
+                        PortStartPointId = detailRoute.StartPortId,
+                        PortEndPointId = detailRoute.EndPortId,
+                        DayPlanId = dayPlans[dayPlans.Count - 1].Id,
+                        ParentRouteId = parentRouteId,
+
+                    });
+                    parentRoute = routes[routes.Count - 1];
+                    parentRouteId = parentRoute.Id;
+                    var vehicle = dto.Vehicles.Where(v => v.StartDate <= parentRoute.StartTime && parentRoute.EndTime <= v.EndDate)
+                                              .OrderByDescending(v => (parentRoute.StartTime - v.StartDate) + (v.EndDate - parentRoute.EndTime))
+                                              .FirstOrDefault();
+                    if (vehicle != null)
+                    {
+                        var portDb = await portRepository!.GetAllDataByExpression(p => (detailRoute.StartPortId != null && detailRoute.StartPortId == p.Id) && (detailRoute.EndPortId != null && detailRoute.StartPortId == p.Id), 0, 0, null, false, null);
+                        if (portDb.Items.Count > 0)
+                        {
+                            vehicleRoutes.Add(new VehicleRoute
+                            {
+                                Id = Guid.NewGuid(),
+                                VehicleType = vehicle.VehicleType,
+                                RouteId = (Guid)parentRouteId,
+                                VehicleId = vehicle.VehicleId,
+                                DriverId = vehicle.DriverId,
+                                ReferenceBrandName = portDb.Items[0].Name
+                            });
+                        } else if ((detailRoute.StartPortId is null) ^ (detailRoute.EndPortId is null))
+                        {
+                            vehicleRoutes.Add(new VehicleRoute
+                            {
+                                Id = Guid.NewGuid(),
+                                VehicleType = vehicle.VehicleType,
+                                RouteId = (Guid)parentRouteId,
+                                VehicleId = vehicle.VehicleId,
+                                DriverId = vehicle.DriverId
+                            });
+                        }
+                    }
+                }
+                await dayPlanRepository!.InsertRange(dayPlans);
+                await routeRepository!.InsertRange(routes);
+                await vehicleRouteRepository!.InsertRange(vehicleRoutes);
+                await _unitOfWork.SaveChangesAsync();
+
+            }
 
         } catch (Exception ex)
         {

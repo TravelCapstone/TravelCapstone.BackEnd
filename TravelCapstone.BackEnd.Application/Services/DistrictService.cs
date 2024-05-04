@@ -61,7 +61,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 foreach(var route in routeDb.Items)
                 {
                     destinationIds.Add((Guid)route.StartPointId!);
-                    destinationIds.Add(route.EndPointId);
+                    destinationIds.Add((Guid)route.EndPointId);
                 }
                 //var destinationRepository = Resolve<IRepository<Destination>>();
                 //var destinationDb = await destinationRepository!.GetAllDataByExpression(r => destinationIds.Contains(r.Id), 0, 0, null, false, r => r.Communce!.District!.Province!);
