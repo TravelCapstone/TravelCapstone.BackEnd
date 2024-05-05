@@ -20,5 +20,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _tourguideAssignmentsService.GetUnassignTourGuideByProvince(provinceId);
         }
+
+        [HttpGet("get-available-tour-guide/{provinceId}")]
+        public async Task<AppActionResult> GetAvailableTourGuide(Guid provinceId, DateTime startDate, DateTime endDate, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _tourguideAssignmentsService.GetAvailableTourGuide(provinceId, startDate, endDate, pageNumber, pageSize);
+        }
     }
 }
