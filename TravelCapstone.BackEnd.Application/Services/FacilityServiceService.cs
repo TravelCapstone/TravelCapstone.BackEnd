@@ -11,6 +11,7 @@ using TravelCapstone.BackEnd.Common.DTO;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
+using static TravelCapstone.BackEnd.Common.DTO.Response.MapInfo;
 
 namespace TravelCapstone.BackEnd.Application.Services
 {
@@ -390,6 +391,36 @@ namespace TravelCapstone.BackEnd.Application.Services
             {
                 result = BuildAppActionResultError(result, ex.Message);
 
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetListServiceForPlan(Guid privateTourRequestId, Guid quotationDetailId, int pageNumber, int pageSize)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var privateTourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
+                var privateTourRequestDb = await privateTourRequestRepository!.GetById(privateTourRequestId);
+                if (privateTourRequestDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy tour yêu cầu với id {privateTourRequestId}");
+                    return result;
+                }
+                var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
+                var quotationDetailDb = await quotationDetailRepository!.GetById(quotationDetailId);
+                if (quotationDetailDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy bản giá yêu cầu với id {quotationDetailId}");
+                    return result;
+                }
+                if (privateTourRequestDb.NumOfAdult > quotationDetailDb.QuantityOfAdult && privateTourRequestDb.NumOfChildren > quotationDetailDb.QuantityOfChild)
+                {
+                    result.Result = await _repository.GetAllDataByExpression(p => p.Facility!.FacilityRatingId == quotationDetailDb.FacilityRatingId && p.ServiceTypeId == quotationDetailDb.ServiceTypeId, pageNumber , pageSize, null, false, p => p.Facility!); 
+                }
+            } catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
             }
             return result;
         }
