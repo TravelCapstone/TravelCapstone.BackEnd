@@ -2552,7 +2552,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -2561,7 +2561,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -2570,7 +2570,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -2579,13 +2579,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -2594,7 +2594,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -2603,19 +2603,19 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.AttendanceRoute", "AttendanceRoute")
                         .WithMany()
                         .HasForeignKey("AttendanceRouteId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.AttendanceType", "AttendanceType")
                         .WithMany()
                         .HasForeignKey("AttendanceTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.TourTraveller", "TourTraveller")
                         .WithMany()
                         .HasForeignKey("TourTravellerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AttendanceRoute");
@@ -2630,13 +2630,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.AttendanceRouteType", "AttendanceRouteType")
                         .WithMany()
                         .HasForeignKey("AttendanceRouteTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Route", "Route")
                         .WithMany()
                         .HasForeignKey("RouteId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AttendanceRouteType");
@@ -2649,7 +2649,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.District", "District")
                         .WithMany()
                         .HasForeignKey("DistrictId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("District");
@@ -2660,7 +2660,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "CreateByAccount")
                         .WithMany()
                         .HasForeignKey("CreateBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "Customer")
@@ -2698,7 +2698,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Tour");
@@ -2709,7 +2709,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.DishType", "DishType")
                         .WithMany()
                         .HasForeignKey("DishTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("DishType");
@@ -2720,7 +2720,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Province", "Province")
                         .WithMany()
                         .HasForeignKey("ProvinceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Province");
@@ -2731,19 +2731,19 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Commune", "Communce")
                         .WithMany()
                         .HasForeignKey("CommunceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.FacilityRating", "FacilityRating")
                         .WithMany()
                         .HasForeignKey("FacilityRatingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.ServiceProvider", "ServiceProvider")
                         .WithMany()
                         .HasForeignKey("ServiceProviderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Communce");
@@ -2758,13 +2758,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.FacilityType", "FacilityType")
                         .WithMany()
                         .HasForeignKey("FacilityTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.Rating", "Rating")
                         .WithMany()
                         .HasForeignKey("RatingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("FacilityType");
@@ -2777,25 +2777,25 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Facility", "Facility")
                         .WithMany()
                         .HasForeignKey("FacilityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.ServiceAvailability", "ServiceAvailability")
                         .WithMany()
                         .HasForeignKey("ServiceAvailabilityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.ServiceType", "ServiceType")
                         .WithMany()
                         .HasForeignKey("ServiceTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.Unit", "Unit")
                         .WithMany()
                         .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Facility");
@@ -2812,7 +2812,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.MaterialType", "MaterialType")
                         .WithMany()
                         .HasForeignKey("MaterialTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("MaterialType");
@@ -2823,13 +2823,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Material", "Material")
                         .WithMany()
                         .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Material");
@@ -2842,25 +2842,25 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "CreateByAccount")
                         .WithMany()
                         .HasForeignKey("CreateBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.DietaryPreference", "DietaryPreference")
                         .WithMany()
                         .HasForeignKey("DietaryPreferenceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.FacilityService", "FacilityService")
                         .WithMany()
                         .HasForeignKey("FacilityServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.MealType", "MealType")
                         .WithMany()
                         .HasForeignKey("MealTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "UpdateByAccount")
@@ -2883,13 +2883,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Dish", "Dish")
                         .WithMany()
                         .HasForeignKey("DishId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Menu", "Menu")
                         .WithMany()
                         .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Dish");
@@ -2902,19 +2902,19 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.OptionClass", "OptionClass")
                         .WithMany()
                         .HasForeignKey("OptionClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.OptionQuotationStatus", "OptionQuotationStatus")
                         .WithMany()
                         .HasForeignKey("OptionQuotationStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.PrivateTourRequest", "PrivateTourRequest")
                         .WithMany()
                         .HasForeignKey("PrivateTourRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("OptionClass");
@@ -2929,13 +2929,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.OrderStatus", "OrderStatus")
                         .WithMany()
                         .HasForeignKey("OrderStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.PrivateTourRequest", "PrivateTourRequest")
@@ -2968,7 +2968,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("ReferenceTransportPrice");
@@ -2983,7 +2983,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Commune", "Commune")
                         .WithMany()
                         .HasForeignKey("CommuneId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Commune");
@@ -2994,25 +2994,25 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "CreateByAccount")
                         .WithMany()
                         .HasForeignKey("CreateBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.JoinTourStatus", "JoinTourStatus")
                         .WithMany()
                         .HasForeignKey("JoinTourStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Customer", "TravelCompanion")
                         .WithMany()
                         .HasForeignKey("TravelCompanionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "UpdateByAccount")
@@ -3035,25 +3035,25 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "CreateByAccount")
                         .WithMany()
                         .HasForeignKey("CreateBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.DietaryPreference", "DietaryPreference")
                         .WithMany()
                         .HasForeignKey("DietaryPreferenceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Province", "Province")
                         .WithMany()
                         .HasForeignKey("MainDestinationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.PrivateTourStatus", "PrivateTourStatus")
                         .WithMany()
                         .HasForeignKey("PrivateTourStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Commune", "Commune")
@@ -3063,7 +3063,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "UpdateByAccount")
@@ -3090,25 +3090,25 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.District", "District")
                         .WithMany()
                         .HasForeignKey("DistrictId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.FacilityRating", "FacilityRating")
                         .WithMany()
                         .HasForeignKey("FacilityRatingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.OptionQuotation", "OptionQuotation")
                         .WithMany()
                         .HasForeignKey("OptionQuotationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.ServiceType", "ServiceType")
                         .WithMany()
                         .HasForeignKey("ServiceTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("District");
@@ -3125,19 +3125,19 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Port", "Arrival")
                         .WithMany()
                         .HasForeignKey("ArrivalId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Port", "Departure")
                         .WithMany()
                         .HasForeignKey("DepartureId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.ReferencePriceRating", "ReferencePriceRating")
                         .WithMany()
                         .HasForeignKey("ReferencePriceRatingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Arrival");
@@ -3152,13 +3152,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.PrivateTourRequest", "PrivateTourRequest")
                         .WithMany()
                         .HasForeignKey("PrivateTourRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Province", "Province")
                         .WithMany()
                         .HasForeignKey("ProvinceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("PrivateTourRequest");
@@ -3171,7 +3171,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.DayPlan", "DayPlan")
                         .WithMany()
                         .HasForeignKey("DayPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Facility", "EndPoint")
@@ -3258,19 +3258,19 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.TourStatus", "TourStatus")
                         .WithMany()
                         .HasForeignKey("TourStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.TourType", "TourType")
                         .WithMany()
                         .HasForeignKey("TourTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.VehicleType", "VehicleType")
                         .WithMany()
                         .HasForeignKey("VehicleTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("BasedTour");
@@ -3287,19 +3287,19 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Account", "Account")
                         .WithMany()
                         .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Province", "Province")
                         .WithMany()
                         .HasForeignKey("ProvinceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Account");
@@ -3318,13 +3318,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Customer", "Presenter")
                         .WithMany()
                         .HasForeignKey("PresenterId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Follower");
@@ -3339,13 +3339,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.TourguideAssignment", "TourguideAssignment")
                         .WithMany()
                         .HasForeignKey("TourguideAssignmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Tour");
@@ -3358,13 +3358,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -3377,13 +3377,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.TransactionType", "TransactionType")
                         .WithMany()
                         .HasForeignKey("TransactionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Customer", "TravelCompanion")
                         .WithMany()
                         .HasForeignKey("TravelCompanionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("TransactionType");
@@ -3396,13 +3396,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.FacilityService", "FacilityService")
                         .WithMany()
                         .HasForeignKey("FacilityServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.VehicleType", "VehicleType")
                         .WithMany()
                         .HasForeignKey("VehicleTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("FacilityService");
@@ -3415,7 +3415,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.VehicleType", "VehicleType")
                         .WithMany()
                         .HasForeignKey("VehicleTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("VehicleType");
@@ -3434,7 +3434,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.OptionQuotation", "OptionQuotation")
                         .WithMany()
                         .HasForeignKey("OptionQuotationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.District", "StartPointDistrict")
@@ -3444,7 +3444,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Province", "StartPoint")
                         .WithMany()
                         .HasForeignKey("StartPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("EndPoint");
@@ -3467,7 +3467,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Route", "Route")
                         .WithMany()
                         .HasForeignKey("RouteId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Vehicle", "Vehicle")
