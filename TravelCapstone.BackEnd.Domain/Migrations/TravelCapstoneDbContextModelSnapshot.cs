@@ -569,6 +569,12 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<DateTime>("DayOfBirth")
                         .HasColumnType("datetime2");
 
+                    b.Property<double>("FixDriverSalary")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2291,6 +2297,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid>("ProvinceId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<double>("TourGuideSalary")
+                        .HasColumnType("float");
+
                     b.Property<Guid>("TourId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2479,6 +2488,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid?>("EndPointDistrictId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("EndPointId");
+                    b.Property<Guid?>("EndPointDistrictId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("EndPointId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2487,6 +2500,12 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.Property<double>("MinPrice")
                         .HasColumnType("float");
+
+                    b.Property<int>("NumOfRentingDay")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumOfVehicle")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("OptionQuotationId")
                         .HasColumnType("uniqueidentifier");
