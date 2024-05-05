@@ -9,6 +9,7 @@ public class DayPlan
 
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
+    public DateTime? Date { get; set; }
     public Guid TourId { get; set; }
 
     [ForeignKey(nameof(TourId))] public Tour? Tour { get; set; }

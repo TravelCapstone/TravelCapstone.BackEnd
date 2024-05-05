@@ -101,4 +101,16 @@ public class AccountController : ControllerBase
     {
         return await _accountService.GoogleCallBack(accessTokenFromGoogle);
     }
+
+    [HttpGet("get-tourguide-template")]
+    public async Task<IActionResult> GetTourGuideTemplate()
+    {
+        return await _accountService.GetTourGuideTemplate();
+    }
+
+    [HttpPost("import-tourguide-from-excel")]
+    public async Task<AppActionResult> ImportTourGuideFromExcel(IFormFile file)
+    {
+        return await _accountService.ImportTourGuideFromExcel(file);
+    }
 }

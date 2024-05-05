@@ -11,7 +11,8 @@ public interface IPrivateTourRequestService
 
     Task<AppActionResult> GetAllPrivateTourRequest(int pageNumber, int pageSize);
 
-    Task<AppActionResult> GetPrivateTourRequestById(Guid id);
+    Task<AppActionResult> GetPrivateTourRequestById(Guid id); 
+    Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(Guid id);
 
     Task<AppActionResult> CreateOptionsPrivateTour(CreateOptionsPrivateTourDto dto);
 

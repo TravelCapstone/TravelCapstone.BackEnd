@@ -3,6 +3,7 @@ using Bogus;
 using EnumsNET;
 using NPOI.SS.Formula;
 using System.ComponentModel.Design;
+using System.Linq;
 using System.Text;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
@@ -261,7 +262,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         List<VehicleQuotationDetail> result = null;
         try
         {
-            if(vehicleQuotationDetails == null || vehicleQuotationDetails.Count == 0)
+            if (vehicleQuotationDetails == null || vehicleQuotationDetails.Count == 0)
             {
                 return result;
             }
@@ -269,48 +270,52 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             var tourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
             var optionRepository = Resolve<IRepository<OptionQuotation>>();
             var optionDb = await optionRepository!.GetByExpression(o => vehicleQuotationDetails[0].OptionQuotationId == o.Id);
-            if(optionDb != null)
+            if (optionDb != null)
             {
                 var tourRequestDb = await tourRequestRepository!.GetByExpression(t => t.Id == optionDb.PrivateTourRequestId, t => t.Commune.District!);
-                if(tourRequestDb != null)
+                if (tourRequestDb != null)
                 {
-                    Guid start = tourRequestDb.Commune.District!.ProvinceId;
+                    Guid? start = tourRequestDb.Commune.District!.ProvinceId;
                     List<VehicleQuotationDetail> current = null;
-                    while(vehicleQuotationDetails.Count > 0)
+                    while (vehicleQuotationDetails.Count > 0)
                     {
                         current = vehicleQuotationDetails.Where(v => v.StartPointId == start).ToList();
-                        if(current.Count == 0) {
+                        if (current.Count == 0)
+                        {
                             break;
-                        } else if(current.Count == 1)
+                        }
+                        else if (current.Count == 1)
                         {
                             result.Add(current[0]);
                             vehicleQuotationDetails.Remove(current[0]);
-                            start = current[0].EndPointId;
-                            current.Remove(current[0]);
-                        } else
+                            if (current[0].EndPointId != null) start = current[0].EndPointId;
+                        }
+                        else
                         {
+
                             var inProvince = current.Where(v => v.EndPointId == null).ToList();
                             while(inProvince.Count > 0)
                             {
                                 result.Add(inProvince[0]);
+                                vehicleQuotationDetails.Remove(inProvince[0]);
                                 inProvince.Remove(inProvince[0]);
-                                current.Remove(inProvince[0]);
                             }
                             inProvince = current.Where(v => v.EndPointId == v.StartPointId).ToList();
                             if (inProvince.Count > 1)
                             {
                                 var listEndDistrictIds = inProvince.Select(i => i.EndPointDistrictId).ToList();
-                                var startDistrict = inProvince.Where(i => !listEndDistrictIds.Contains(i.StartPointDistrictId)).FirstOrDefault()!.StartPointDistrictId;
-                                VehicleQuotationDetail innerCurrent = null; 
-                                while(inProvince.Count > 0)
+                                var startDistrict = inProvince.Where(i => !listEndDistrictIds.Contains(i.StartPointDistrictId)).FirstOrDefault()!.StartPointId;
+                                VehicleQuotationDetail innerCurrent = null;
+                                while (inProvince.Count > 0)
                                 {
-                                    innerCurrent = inProvince.Where(i => i.StartPointDistrictId == startDistrict).FirstOrDefault()!;
+                                    innerCurrent = inProvince.Where(i => i.StartPointId == startDistrict).FirstOrDefault()!;
                                     result.Add(innerCurrent);
                                     inProvince.Remove(innerCurrent);
                                     vehicleQuotationDetails.Remove(innerCurrent);
                                     startDistrict = (Guid)innerCurrent.EndPointDistrictId;
                                 }
-                            } else
+                            }
+                            else
                             {
                                 result.Add(inProvince[0]);
                                 vehicleQuotationDetails.Remove(inProvince[0]);
@@ -320,14 +325,17 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 }
             }
-            
 
-        } catch(Exception e)
+
+        }
+        catch (Exception e)
         {
-            
+
         }
         return result;
     }
+
+
 
     public async Task<AppActionResult> CreateOptionsPrivateTour(CreateOptionsPrivateTourDto dto)
     {
@@ -343,86 +351,94 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         var facilityService = Resolve<IFacilityServiceService>();
         try
         {
-            foreach (var location in dto.Locations)
+            foreach (var location in dto.Hotels)
             {
                 var district = await districtRepository!.GetById(location.DistrictId);
                 if (district == null)
                 {
                     result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {location.DistrictId}");
                 }
-                foreach (var hotel in location.Hotels)
-                {
-                    var listHotel = await facilityRepository!.GetAllDataByExpression(
+                var listHotel = await facilityRepository!.GetAllDataByExpression(
                         a => a.Communce!.DistrictId == location.DistrictId
-                       && hotel.Rating == a.FacilityRating!.RatingId &&
+                       && location.Rating == a.FacilityRating!.RatingId &&
                        a.FacilityRating.FacilityTypeId == FacilityType.HOTEL,
                         0,
                         0, null, false,
                         null);
-                    var sellHotel = await sellPriceRepository!.GetAllDataByExpression(
-                        a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
-                        && a.FacilityService.ServiceTypeId == ServiceType.RESTING
-                        && hotel.Rating == a.FacilityService.Facility.FacilityRating!.RatingId
-                        ,
-                        0, 0, null, false, null
-                        );
-                    if (!listHotel.Items!.Any())
-                    {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy khách sạn với phân loại {hotel.Rating.ToString()} tại huyện {district.Name}");
-                    }
-                    if (!sellHotel.Items!.Any())
-                    {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy gía khách sạn với phân loại {hotel.Rating.ToString()} tại huyện {district.Name}");
-                    }
-                }
-                foreach (var restaurent in location.Restaurants)
+                var sellHotel = await sellPriceRepository!.GetAllDataByExpression(
+                    a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
+                    && a.FacilityService.ServiceTypeId == ServiceType.RESTING
+                    && location.Rating == a.FacilityService.Facility.FacilityRating!.RatingId
+                    ,
+                    0, 0, null, false, null
+                    );
+                if (!listHotel.Items!.Any())
                 {
-                    var listRestaurent = await facilityRepository!.GetAllDataByExpression(
+                    result = BuildAppActionResultError(result, $"Không tìm thấy khách sạn với phân loại {location.Rating.ToString()} tại huyện {district.Name}");
+                }
+                if (!sellHotel.Items!.Any())
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy gía khách sạn với phân loại {location.Rating.ToString()} tại huyện {district.Name}");
+                }
+
+            }
+            foreach (var location in dto.Restaurants)
+            {
+                var district = await districtRepository!.GetById(location.DistrictId);
+                if (district == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {location.DistrictId}");
+                }
+                var listRestaurent = await facilityRepository!.GetAllDataByExpression(
                         a => a.Communce!.DistrictId == location.DistrictId
-                        && restaurent.Rating == a.FacilityRating!.RatingId &&
+                        && location.Rating == a.FacilityRating!.RatingId &&
                        (a.FacilityRating.FacilityTypeId == FacilityType.RESTAURANTS
                        || a.FacilityRating.FacilityTypeId == FacilityType.HOTEL),
                         0,
                         0, null, false,
                         null);
-                    var sellRestaurent = await sellPriceRepository!.GetAllDataByExpression(
-                       a => a.Menu.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
-                         && a.Menu.FacilityService.ServiceTypeId == ServiceType.FOODANDBEVARAGE
-                        && restaurent.Rating == a.Menu.FacilityService.Facility.FacilityRating!.RatingId,
-                       0, 0, null, false, null
-                       );
-                    if (!listRestaurent.Items!.Any())
-                    {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy nhà hàng với phân loại {restaurent.Rating.ToString()} tại huyện {district.Name}");
-                    }
-                    if (!sellRestaurent.Items!.Any())
-                    {
+                var sellRestaurent = await sellPriceRepository!.GetAllDataByExpression(
+                   a => a.Menu.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
+                     && a.Menu.FacilityService.ServiceTypeId == ServiceType.FOODANDBEVARAGE
+                    && location.Rating == a.Menu.FacilityService.Facility.FacilityRating!.RatingId,
+                   0, 0, null, false, null
+                   );
+                if (!listRestaurent.Items!.Any())
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy nhà hàng với phân loại {location.Rating.ToString()} tại huyện {district.Name}");
+                }
+                if (!sellRestaurent.Items!.Any())
+                {
 
-                        result = BuildAppActionResultError(result, $"Không tìm thấy giá nhà hàng với phân loại {restaurent.Rating.ToString()} tại huyện {district.Name}");
-                    }
+                    result = BuildAppActionResultError(result, $"Không tìm thấy giá nhà hàng với phân loại {location.Rating.ToString()} tại huyện {district.Name}");
                 }
 
-                if (location.Entertainment != null)
+            }
+            foreach (var location in dto.Entertainments)
+            {
+                var district = await districtRepository!.GetById(location.DistrictId);
+                if (district == null)
                 {
-                    var entertaiment = await facilityRepository!.GetAllDataByExpression(
-                         a => a.Communce!.DistrictId == location.DistrictId &&
-                       a.FacilityRating!.FacilityTypeId == FacilityType.ENTERTAINMENT,
-                         0,
-                         0, null, false,
-                         null);
-                    var sellEntertaiment = await sellPriceRepository!.GetAllDataByExpression(
-                         a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
-                           && a.FacilityService.ServiceTypeId == ServiceType.ENTERTAIMENT,
-                         0, 0, null, false, null
-                         );
-                    if (!entertaiment.Items!.Any())
-                    {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy dịch vụ vui chơi giải trí tại huyện {district.Name}");
-                    }
-                    if (!sellEntertaiment.Items!.Any())
-                    {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy giá dịch vụ giải trí tại huyện {district.Name}");
-                    }
+                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {location.DistrictId}");
+                }
+                var entertaiment = await facilityRepository!.GetAllDataByExpression(
+                          a => a.Communce!.DistrictId == location.DistrictId &&
+                        a.FacilityRating!.FacilityTypeId == FacilityType.ENTERTAINMENT,
+                          0,
+                          0, null, false,
+                          null);
+                var sellEntertaiment = await sellPriceRepository!.GetAllDataByExpression(
+                     a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
+                       && a.FacilityService.ServiceTypeId == ServiceType.ENTERTAIMENT,
+                     0, 0, null, false, null
+                     );
+                if (!entertaiment.Items!.Any())
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy dịch vụ vui chơi giải trí tại huyện {district.Name}");
+                }
+                if (!sellEntertaiment.Items!.Any())
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy giá dịch vụ giải trí tại huyện {district.Name}");
                 }
             }
             if (!BuildAppActionResultIsError(result))
@@ -447,80 +463,82 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 List<QuotationDetail> quotationDetails = new List<QuotationDetail>();
                 List<VehicleQuotationDetail> vehicleQuotationDetails = new List<VehicleQuotationDetail>();
 
-                foreach (var location in dto.Locations)
+                foreach (var location in dto.Hotels)
                 {
                     var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId, 0, 0);
                     var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
-                    foreach (var hotel in location.Hotels)
-                    {
-                        var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                            a => hotel.Rating == a.RatingId
-                            && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == hotel.ServingQuantity
+                    var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                            a => location.Rating == a.RatingId
+                            && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == location.ServingQuantity
                             ).FirstOrDefault();
-                        if(sellPriceHotel != null)
-                        {
-                            double min = sellPriceHotel!.MinPrice;
-
-                            double max = sellPriceHotel!.MaxPrice;
-                            double minQuotation = hotel.NumOfDay * hotel.NumOfRoom * min;
-                            double maxQuotation = hotel.NumOfDay * hotel.NumOfRoom * max;
-                            var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && hotel.Rating == a.RatingId);
-                            quotationDetails.Add(new QuotationDetail
-                            {
-                                Id = Guid.NewGuid(),
-                                OptionQuotationId = option.Id,
-                                QuantityOfAdult = privateTourRequest.NumOfAdult,
-                                QuantityOfChild = privateTourRequest.NumOfChildren,
-                                ServingQuantity = hotel.ServingQuantity,
-                                Quantity = hotel.NumOfRoom,
-                                MinPrice = minQuotation,
-                                MaxPrice = maxQuotation,
-                                FacilityRatingId = hotelRating!.Id,
-                                StartDate = hotel.StartDate,
-                                EndDate = hotel.EndDate,
-                                DistrictId = location.DistrictId
-                            });
-                        }
-                        else
-                        {
-                            result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng {hotel.ServingQuantity} người với phân loại {hotel.Rating}");
-                        }
-                    }
-                    foreach (var restaurent in location.Restaurants)
+                    if (sellPriceHotel != null)
                     {
-                        var restaurentRating = await facilityRatingRepository!.GetByExpression(a => restaurent.Rating == a.RatingId);
-                        var sellPriceRestaurent = estimate.RestaurantPrice.DetailedPriceReferences.Where(
-                          a => restaurent.Rating == a.RatingId
-                          && a.ServiceAvailability == restaurent.ServiceAvailability && a.ServingQuantity == restaurent.ServingQuantity
-                          ).FirstOrDefault();
-                        if(sellPriceRestaurent != null)
+                        double min = sellPriceHotel!.MinPrice;
+
+                        double max = sellPriceHotel!.MaxPrice;
+                        double minQuotation = location.NumOfDay * location.NumOfRoom * min;
+                        double maxQuotation = location.NumOfDay * location.NumOfRoom * max;
+                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.Rating == a.RatingId);
+                        quotationDetails.Add(new QuotationDetail
                         {
-                            int total = restaurent.ServiceAvailability == ServiceAvailability.BOTH ? privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren :
-                                              restaurent.ServiceAvailability == ServiceAvailability.ADULT ? privateTourRequest.NumOfAdult : privateTourRequest.NumOfChildren;
-                            int quantity = (int)Math.Ceiling((double)(total) / restaurent.ServingQuantity);
-                            quotationDetails.Add(new QuotationDetail
-                            {
-                                Id = Guid.NewGuid(),
-                                OptionQuotationId = option.Id,
-                                QuantityOfAdult = (restaurent.ServiceAvailability == ServiceAvailability.BOTH || restaurent.ServiceAvailability == ServiceAvailability.ADULT)? privateTourRequest.NumOfAdult : 0,
-                                QuantityOfChild = (restaurent.ServiceAvailability == ServiceAvailability.BOTH || restaurent.ServiceAvailability == ServiceAvailability.CHILD) ? privateTourRequest.NumOfChildren : 0,
-                                ServingQuantity = 10,
-                                MealPerDay = restaurent.MealPerDay,
-                                Quantity = quantity,
-                                MinPrice = quantity * sellPriceRestaurent!.MinPrice * restaurent.MealPerDay,
-                                MaxPrice = quantity * sellPriceRestaurent!.MaxPrice * restaurent.MealPerDay,
-                                FacilityRatingId = restaurentRating!.Id,
-                                StartDate = restaurent.StartDate,
-                                EndDate = restaurent.EndDate,
-                                DistrictId = location.DistrictId
-                            });
-                        } else
-                        {
-                            result = BuildAppActionResultError(result, $"Không tìm thấy báo giá ăn uống tại huyện có id {location.DistrictId} tại nhà hàng {restaurent.Rating} cho dịch vụ {restaurent.ServiceAvailability} {restaurent.ServingQuantity} người ");
-                            return result;
-                        }
+                            Id = Guid.NewGuid(),
+                            OptionQuotationId = option.Id,
+                            QuantityOfAdult = privateTourRequest.NumOfAdult,
+                            QuantityOfChild = privateTourRequest.NumOfChildren,
+                            ServingQuantity = location.ServingQuantity,
+                            Quantity = location.NumOfRoom,
+                            MinPrice = minQuotation,
+                            MaxPrice = maxQuotation,
+                            FacilityRatingId = hotelRating!.Id,
+                            StartDate = location.StartDate,
+                            EndDate = location.EndDate,
+                            DistrictId = location.DistrictId
+                        });
                     }
-                   if(estimate.EntertainmentPrice.DetailedPriceReferences.Count > 0)
+                    else
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng {location.ServingQuantity} người với phân loại {location.Rating}");
+                    }
+
+                }
+                foreach (var location in dto.Restaurants)
+                {
+                    var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId, 0, 0);
+                    var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
+                    var restaurentRating = await facilityRatingRepository!.GetByExpression(a => location.Rating == a.RatingId);
+                    var sellPriceRestaurent = estimate.RestaurantPrice.DetailedPriceReferences.Where(
+                      a => location.Rating == a.RatingId
+                      && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 10
+                      ).FirstOrDefault();
+                    if (sellPriceRestaurent != null)
+                    {
+                        quotationDetails.Add(new QuotationDetail
+                        {
+                            Id = Guid.NewGuid(),
+                            OptionQuotationId = option.Id,
+                            QuantityOfAdult = privateTourRequest.NumOfAdult,
+                            QuantityOfChild = privateTourRequest.NumOfChildren,
+                            ServingQuantity = 10,
+                            MealPerDay = location.MealPerDay,
+                            Quantity = (int)Math.Ceiling((double)((privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren) / 10)),
+                            MinPrice = totalPeople * sellPriceRestaurent!.MinPrice * location.MealPerDay,
+                            MaxPrice = totalPeople * sellPriceRestaurent!.MaxPrice * location.MealPerDay,
+                            FacilityRatingId = restaurentRating!.Id,
+                            StartDate = location.StartDate,
+                            EndDate = location.EndDate,
+                            DistrictId = location.DistrictId
+                        });
+                    }
+                    else
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy báo giá nhà hàng cho bàn 10 người với phân loại {location.Rating}");
+                    }
+                }
+                foreach (var location in dto.Entertainments)
+                {
+                    var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId, 0, 0);
+                    var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
+                        if (estimate.EntertainmentPrice.DetailedPriceReferences.Count > 0)
                     {
                         var entertaimentRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.ENTERTAINMENT);
 
@@ -533,11 +551,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                         double minQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MinPrice);
                         minQuotationEntertaiment += privateTourRequest.NumOfChildren * (sellPriceChildrenEntertainment == null ? 0 : sellPriceChildrenEntertainment.MinPrice);
-                        minQuotationEntertaiment *= location.Entertainment.QuantityLocation;
+                        minQuotationEntertaiment *= location.QuantityLocation;
 
                         double maxQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MaxPrice);
                         maxQuotationEntertaiment += privateTourRequest.NumOfChildren * (sellPriceChildrenEntertainment == null ? 0 : sellPriceChildrenEntertainment.MaxPrice);
-                        maxQuotationEntertaiment *= location.Entertainment.QuantityLocation;
+                        maxQuotationEntertaiment *= location.QuantityLocation;
 
 
                         quotationDetails.Add(new QuotationDetail
@@ -576,8 +594,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 OptionQuotationId = option.Id,
                                 MinPrice = totalPeople * price.Items!.Min(a => a.AdultPrice),
                                 MaxPrice = totalPeople * price.Items!.Max(a => a.AdultPrice),
-                                NumOfRentingDay = 1,
-                                NumOfVehicle = 1,
                                 StartPointId = (Guid)vehicle.StartPoint,
                                 EndPointId = (Guid)vehicle.EndPoint,
                                 StartPointDistrictId = vehicle.StartPointDistrict != null? (Guid)vehicle.StartPointDistrict : null,
@@ -594,7 +610,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         if (price.Items!.Any())
                         {
                             int totalVehicle = (int)Math.Ceiling((decimal)((decimal)(privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren) / price.Items[0].TransportServiceDetail.FacilityService.ServingQuantity));
-
                             vehicleQuotationDetails.Add(new VehicleQuotationDetail
                             {
                                 Id = Guid.NewGuid(),
@@ -604,9 +619,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 NumOfRentingDay = vehicle.NumOfRentingDay,
                                 NumOfVehicle = vehicle.NumOfVehicle,
                                 StartPointId = (Guid)vehicle.StartPoint,
-                                EndPointId = (Guid)vehicle.EndPoint,
-                                StartPointDistrictId = vehicle.StartPointDistrict != null ? (Guid)vehicle.StartPointDistrict : null,
-                                EndPointDistrictId = vehicle.EndPointDistrict != null ? (Guid)vehicle.EndPointDistrict : null,
+                                EndPointId = vehicle.EndPoint,
                                 VehicleType = vehicle.VehicleType
                             });
                         }
@@ -756,6 +769,65 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         }
         catch (Exception e) {
             result = BuildAppActionResultError(result, e.Message);
+        }
+        return result;
+    }
+
+    public async Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(Guid id)
+    {
+        var result = new AppActionResult();
+        OptionListResponseForCustomer data = new OptionListResponseForCustomer();
+        var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
+        try
+        {
+            var privateTourRequestDb = await _repository.GetByExpression(a => a.Id == id, a => a.CreateByAccount!, a => a.Province!);
+            if (privateTourRequestDb == null)
+            {
+                result = BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour riêng tư với id {id}");
+                return result;
+            }
+            data.PrivateTourResponse = _mapper.Map<PrivateTourResponseDto>(privateTourRequestDb);
+            var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
+            var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
+            var vehicleQuotationDetailRepository = Resolve<IRepository<VehicleQuotationDetail>>();
+            var optionsDb = await optionQuotationRepository!.GetAllDataByExpression(q => q.PrivateTourRequestId == id, 0, 0, null, false, null);
+            if (optionsDb.Items!.Count != 3)
+            {
+                result.Messages.Add($"Số lượng lựa chọn hiện tại: {optionsDb.Items.Count} không phù hợp");
+            }
+            int fullOption = 0;
+            optionsDb.Items.ForEach(o => fullOption ^= (int)(o.OptionClassId));
+            if (fullOption != 3)
+            {
+                result.Messages.Add("Danh sách lựa chọn không đủ các hạng mục");
+            }
+
+            foreach (var item in optionsDb.Items)
+            {
+                OptionResponseForCustomer option = new OptionResponseForCustomer();
+                option.OptionQuotation = item;
+                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, a => a.District!.Province!, a => a.ServiceType!, a => a.FacilityRating!.FacilityType!, a => a.FacilityRating!.Rating!);
+                var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, a => a.StartPoint!, a => a.EndPoint!);
+                option.QuotationDetails = quotationDetailDb.Items!.ToList();
+                option.VehicleQuotationDetails = vehicleQuotationDetailDb.Items!.Where(v => v.EndPointId != null).ToList();
+                option.InnerProvinceVehicleQuotationDetails = vehicleQuotationDetailDb.Items!.Where(v => v.EndPointId == null).ToList();
+                if (item.OptionClassId == OptionClass.ECONOMY)
+                    data.Option1 = option;
+                else if (item.OptionClassId == OptionClass.MIDDLE)
+                    data.Option2 = option;
+                else data.Option3 = option;
+            }
+            List<Province> provinces = new List<Province>();
+            var list = await requestLocationRepository!.GetAllDataByExpression(a => a.PrivateTourRequestId == id, 0, 0, null, false, a => a.Province!);
+            foreach (var item in list.Items!)
+            {
+                data.PrivateTourResponse.OtherLocation = list.Items;
+            }
+            result.Result = data;
+        }
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
         }
         return result;
     }

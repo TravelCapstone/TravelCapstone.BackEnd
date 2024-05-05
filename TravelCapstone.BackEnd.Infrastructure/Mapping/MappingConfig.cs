@@ -96,6 +96,15 @@ public class MappingConfig
                  .ForMember(desc => desc.IsAdult, act => act.MapFrom(src => src.IsAdult))
                  ;
 
+            config.CreateMap<TourGuideRegistrationRecord, Account>()
+                 .ForMember(desc => desc.LastName, act => act.MapFrom(src => src.LastName))
+                 .ForMember(desc => desc.FirstName, act => act.MapFrom(src => src.FirstName))
+                 .ForMember(desc => desc.Email, act => act.MapFrom(src => src.Email))
+                 .ForMember(desc => desc.PhoneNumber, act => act.MapFrom(src => src.PhoneNumber))
+                 .ForMember(desc => desc.Gender, act => act.MapFrom(src => src.Gender))
+                 .ReverseMap();
+
+
             config.CreateMap<PagedResult<CustomerDto>, PagedResult<Customer>>()
              .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
 
