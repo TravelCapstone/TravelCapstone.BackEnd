@@ -9,4 +9,6 @@ public class Driver
     public string Name { get; set; } = null!;
     public DateTime DayOfBirth { get; set; }
     public string PhoneNumber { get; set; } = null!;
+    public double FixDriverSalary { get; set; }
+    public bool IsActive { get; set; }
 }
