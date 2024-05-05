@@ -32,6 +32,9 @@ public class Restaurant
     public DateTime EndDate { get; set; }
     public Rating Rating { get; set; }
     public int MealPerDay { get; set; } = 1;
+    public int NumOfDay { get; set; } = 1;
+    public int ServingQuantity { get; set; } = 10;
+    public ServiceAvailability ServiceAvailability { get; set; } = ServiceAvailability.BOTH;
 }
 public class Entertainment
 {
@@ -47,4 +50,5 @@ public class Vehicle
     public Guid? EndPoint { get; set; }
     public Guid? EndPointDistrict { get; set; }
     public int NumOfRentingDay { get; set; } = 1;
+    public int NumOfVehicle { get; set; } = 1;
 }
