@@ -759,21 +759,21 @@ namespace TravelCapstone.BackEnd.Application.Services
                 f.ServingQuantity == servingQuantity && f.Facility!.FacilityRating!.Id == ratingId, 0, 0, null, false, f => f.Facility!.FacilityRating!, f => f.Facility!.Communce!.District!.Province!);
                 if (facilityServiceDb.Items != null && facilityServiceDb.Items.Count > 0)
                 {
-                    List<DetailedServicePriceReference> servicePriceReference = new List<DetailedServicePriceReference>();
+                    List<DetailedServiceMealPriceReference> servicePriceReference = new List<DetailedServiceMealPriceReference>();
                     foreach (var kvp in facilityServiceDb.Items)
                     {
                         var serviceRating = kvp.Facility!.FacilityRating;
                         SellPriceHistory currentPrice;
                         double total = 0;
                         double quantityOfService = 0;
-                        DetailedServicePriceReference detailedServicePriceReference = new DetailedServicePriceReference();
+                        DetailedServiceMealPriceReference detailedServicePriceReference = new DetailedServiceMealPriceReference();
 
                         total = kvp.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.BOTH ? privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren :
                           kvp.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.ADULT ? privateTourRequestDb.NumOfAdult : privateTourRequestDb.NumOfChildren;
 
                         quantityOfService = Math.Ceiling((double)total / kvp.ServingQuantity);
 
-                        var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.Menu!.FacilityServiceId == kvp.Id && s.Menu.MealTypeId == mealType && s.MOQ <= quantityOfService, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!);
+                        var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.Menu!.FacilityServiceId == kvp.Id && s.Menu.MealTypeId == mealType && s.MOQ <= quantityOfService, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!, p => p.Menu!);
                         if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
                         {
                             currentPrice = sellPriceHistory.Items.OrderByDescending(s => s.Date)
@@ -782,13 +782,20 @@ namespace TravelCapstone.BackEnd.Application.Services
                             detailedServicePriceReference.SellPriceHistory = currentPrice;
                             detailedServicePriceReference.PriceOfPerson = (currentPrice.Price * quantityOfService) / total;
                             detailedServicePriceReference.FacilityServices = kvp;
+
+                            var menuDishRepository = Resolve<IRepository<MenuDish>>();
+                            var menuDishDb = await menuDishRepository!.GetAllDataByExpression(p => p.MenuId == currentPrice.MenuId, 0, 0, null, false, p => p.Dish!);
+                            if (menuDishDb.Items != null && menuDishDb.Items.Count > 0)
+                            {
+                                detailedServicePriceReference.MenuDishes = menuDishDb.Items.ToList();
+                            }
                         }
 
                         servicePriceReference.Add(detailedServicePriceReference);
                         var invalidPriceReferences = servicePriceReference.Where(d => d.PriceOfPerson == 0).ToList();
                         invalidPriceReferences.ForEach(item => servicePriceReference.Remove(item));
 
-                        result.Result = new PagedResult<DetailedServicePriceReference>
+                        result.Result = new PagedResult<DetailedServiceMealPriceReference>
                         {
                             Items = servicePriceReference,
                         };

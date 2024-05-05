@@ -909,10 +909,27 @@ public class AccountService : GenericBackendService, IAccountService
             List<TourGuideRegistrationRecord> sampleData = new List<TourGuideRegistrationRecord>();
             sampleData.Add(new TourGuideRegistrationRecord
             { No = 1, FirstName = "Anh", LastName = "Nguyễn", Email = "anhnguyen.tourguide@gmail.com", PhoneNumber = "0945787123", Gender = true });
-            //result = _fileService.GenerateExcelContent<TourGuideRegistrationRecord>(sampleData, SD.ExcelHeaders.TOURGUIDE_REGISTRATION, "IMPORT TOURGUIDE");
+            List<string> header = SD.ExcelHeaders.TOURGUIDE_REGISTRATION;
+
+            // Check if sampleData is not null and has at least one item
+            if (sampleData != null && sampleData.Any())
+            {
+                result = _fileService.GenerateExcelSingleContent<TourGuideRegistrationRecord>(sampleData, "IMPORT TOURGUIDE");
+            }
+            else
+            {
+                // Handle case when sampleData is null or empty
+                // For example, return an error response
+                result = new ObjectResult("wrong data");
+                
+            }
         }
         catch (Exception ex)
         {
+            // Handle other exceptions
+            // For example, log the exception
+            // logger.LogError(ex, "Error occurred while generating Excel content.");
+            result = new ObjectResult("wrong data");
         }
         return result;
     }

@@ -6,7 +6,7 @@ public class TourDetail
 {
     public Tour Tour { get; set; }
     public List<DayPlanDto> DayPlanDtos { get; set; }
-    public List<Material> Materials { get; set; }
+    public List<MaterialAssignment> Materials { get; set; }
 }
 
 public class DayPlanDto

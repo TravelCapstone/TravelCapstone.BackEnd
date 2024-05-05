@@ -28,6 +28,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<District> Districts { get; set; }
     public DbSet<Driver> Drivers { get; set; }
     public DbSet<Material> Materials { get; set; }
+    public DbSet<MaterialAssignment> MaterialAssignments { get; set; }
     public DbSet<OptionQuotation> OptionQuotations { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<PlanServiceCostDetail> PlanServiceCostDetails { get; set; }
@@ -234,16 +235,16 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        //IConfiguration config = new ConfigurationBuilder()
-        //               .SetBasePath(Directory.GetCurrentDirectory())
-        //               .AddJsonFile("appsettings.json", true, true)
-        //               .Build();
-        //string cs = config["ConnectionStrings:DB"];
-        //if (!optionsBuilder.IsConfigured)
-        //{
-        //    optionsBuilder.UseSqlServer(cs);
-        //}
-        optionsBuilder.UseSqlServer(
-           "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+        IConfiguration config = new ConfigurationBuilder()
+                       .SetBasePath(Directory.GetCurrentDirectory())
+                       .AddJsonFile("appsettings.json", true, true)
+                       .Build();
+        string cs = config["ConnectionStrings:DB"];
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer(cs);
+        }
+        //optionsBuilder.UseSqlServer(
+        //   "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
     }
 }

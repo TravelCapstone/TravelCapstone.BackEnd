@@ -41,6 +41,12 @@ public class PrivateTourRequestController : Controller
         return await _service.GetPrivateTourRequestById(id);
     }
 
+    [HttpGet("get-private-tour-request-by-id-for-customer/{id}")]
+    public async Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(Guid id)
+    {
+        return await _service.GetPrivateTourRequestByIdForCustomer(id);
+    }
+
     [HttpPost("create-options-private-tour")]
     public async Task<AppActionResult> CreateOptionsPrivateTour([FromBody] CreateOptionsPrivateTourDto request)
     {

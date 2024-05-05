@@ -40,6 +40,7 @@ public class ServiceInstaller : IInstaller
         services.AddScoped<IFacilityService, FacilityService>();
         services.AddScoped<IExcelService, ExcelService>();
         services.AddScoped<IDishService, DishService>();
+        services.AddScoped<IMaterialService, MaterialService>();
         services.AddScoped<IFacilityTypeService, FacilityTypeService>();
         services.AddScoped<IVehicleService, VehicleService>();
     }
