@@ -2488,7 +2488,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid?>("EndPointDistrictId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("EndPointId")
+                    b.Property<Guid>("EndPointId");
                     b.Property<Guid?>("EndPointDistrictId")
                         .HasColumnType("uniqueidentifier");
 

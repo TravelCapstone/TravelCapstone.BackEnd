@@ -287,12 +287,25 @@ public class TourService : GenericBackendService, ITourService
                 }
             }
 
-            var sellPriceDb = await sellPriceHistoyRepository!.GetAllDataByExpression(s => sellPriceIdCheckList.Contains(s.Id), 0, 0, null, false, s => s.FacilityService!);
-            var referenceDb = await referencePriceRepository!.GetAllDataByExpression(r => referencePriceIdCheckList.Contains(r.Id), 0, 0, null, false, null);
-            var facilityId = sellPriceDb.Items!.Select(s => s.FacilityService!.FacilityId).ToList();
+            var sellPriceDb = await sellPriceHistoyRepository!.GetAllDataByExpression(s => sellPriceIdCheckList.Contains(s.Id), 0, 0, null, false, s => s.FacilityService!, s => s.Menu.FacilityService, s => s.TransportServiceDetail.FacilityService);
+            if(sellPriceDb.Items == null || sellPriceDb.Items.Count == 0)
+            {
+                result = BuildAppActionResultError(result, $"Thông tin báo giá không hợp lệ");
+                return result;
+            }
+            List<Guid> facilityId = sellPriceDb.Items!.Where(s => s.FacilityServiceId != null).Select(s => s.FacilityService!.FacilityId).ToList();
+            facilityId.AddRange(sellPriceDb.Items!.Where(s => s.MenuId != null).Select(s => s.Menu!.FacilityService!.FacilityId).ToList());
+            facilityId.AddRange(sellPriceDb.Items!.Where(s => s.TransportServiceDetailId != null).Select(s => s.TransportServiceDetail!.FacilityService!.FacilityId).ToList());
             List<Guid> portIds = new List<Guid>();
-            portIds.AddRange(referenceDb.Items!.Select(r => r.ArrivalId));
-            portIds.AddRange(referenceDb.Items!.Select(r => r.DepartureId));
+            if(referencePriceIdCheckList.Count > 0)
+            {
+                var referenceDb = await referencePriceRepository!.GetAllDataByExpression(r => referencePriceIdCheckList.Contains(r.Id), 0, 0, null, false, null);
+                if (referenceDb.Items != null && referenceDb.Items.Count > 0)
+                {
+                    portIds.AddRange(referenceDb.Items!.Select(r => r.ArrivalId));
+                    portIds.AddRange(referenceDb.Items!.Select(r => r.DepartureId));
+                }
+            }
 
             //How to know which drive it or which reference price it is for route
             //Add DayPlan
@@ -348,8 +361,8 @@ public class TourService : GenericBackendService, ITourService
                         Id = Guid.NewGuid(),
                         Name = detailRoute.Name,
                         Note = detailRoute.Note,
-                        StartTime = dto.StartDate,
-                        EndTime = dto.EndDate,
+                        StartTime = detailRoute.StartTime,
+                        EndTime = detailRoute.EndTime,
                         StartPointId = detailRoute.StartFacilityId,
                         EndPointId = detailRoute.EndFacilityId,
                         PortStartPointId = detailRoute.StartPortId,
@@ -377,7 +390,7 @@ public class TourService : GenericBackendService, ITourService
                                 DriverId = vehicle.DriverId,
                                 ReferenceBrandName = portDb.Items[0].Name
                             });
-                        } else if ((detailRoute.StartPortId is null) ^ (detailRoute.EndPortId is null))
+                        } else if ((detailRoute.StartPortId is null) || (detailRoute.EndPortId is null))
                         {
                             vehicleRoutes.Add(new VehicleRoute
                             {

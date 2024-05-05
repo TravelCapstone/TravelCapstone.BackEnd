@@ -594,8 +594,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 OptionQuotationId = option.Id,
                                 MinPrice = totalPeople * price.Items!.Min(a => a.AdultPrice),
                                 MaxPrice = totalPeople * price.Items!.Max(a => a.AdultPrice),
-                                StartPointDistrictId = vehicle.StartPointDistrict,
-                                EndPointDistrictId = vehicle.EndPointDistrict,
                                 StartPointId = (Guid)vehicle.StartPoint,
                                 EndPointId = (Guid)vehicle.EndPoint,
                                 StartPointDistrictId = vehicle.StartPointDistrict != null? (Guid)vehicle.StartPointDistrict : null,
