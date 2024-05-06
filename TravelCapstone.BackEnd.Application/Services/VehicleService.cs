@@ -471,7 +471,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     result.Result = await referenceTransportPriceRepository!.GetAllDataByExpression(
                         p => p.Departure!.Commune!.District!.ProvinceId == filter.FirstLocation.ProvinceId && p.Arrival!.Commune!.District!.ProvinceId == filter.SecondLocation.ProvinceId
                         || p.Departure!.Commune!.DistrictId == filter.FirstLocation.DistrictId && p.Arrival!.Commune!.DistrictId == filter.SecondLocation.DistrictId,
-                        pageNumber, pageSize, null, false, p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!
+                        pageNumber, pageSize, null, false, p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!, p => p.ReferencePriceRating!
                         );
                 } else 
                 {
@@ -482,7 +482,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     {
                         var facilityServiceIds = facilityServiceDb.Items.Select(p => p.Id);
                         var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
-                        result.Result = await sellPriceRepository!.GetAllDataByExpression(p => facilityServiceIds.Contains(p.TransportServiceDetail!.FacilityServiceId), pageNumber, pageSize, p => p.Date, false, p => p.FacilityService!);
+                        result.Result = await sellPriceRepository!.GetAllDataByExpression(p => facilityServiceIds.Contains(p.TransportServiceDetail!.FacilityServiceId), pageNumber, pageSize, p => p.Date, false, p => p.FacilityService!, p => p.TransportServiceDetail!);
                     }
                 }
             }
