@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,6 @@ namespace TravelCapstone.BackEnd.Application.IServices
     {
         Task<AppActionResult> GetMenuByFacilityId(Guid id, int pageIndex, int pageSize);
         Task<AppActionResult> GetAllMenu(int pageIndex, int pageSize);
+        Task<IActionResult> GetMenuDishUpdateTemplate();
     }
 }

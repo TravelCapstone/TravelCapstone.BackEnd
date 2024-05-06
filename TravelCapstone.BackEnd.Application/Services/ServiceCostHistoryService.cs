@@ -50,7 +50,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 List<ServiceCostHistoryRecord> sampleData = new List<ServiceCostHistoryRecord>();
                 sampleData.Add(new ServiceCostHistoryRecord
                 { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, Price = 4 });
-                result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord, Object>(sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION,"ProviderName");
+                result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord, Object>("BÁO GIÁ",sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION,"ProviderName");
 
             }
             catch (Exception ex)
@@ -78,8 +78,11 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
                 string[] serviceInfos = file.FileName.Split('_');
                 var serviceProviderRepository = Resolve<IRepository<ServiceProvider>>();
-                var serviceRepository = Resolve<IRepository<Facility>>();
-                var serviceProviderDb = await serviceProviderRepository.GetByExpression(s => s.Name == serviceInfos[0]);
+                var facilityRepository = Resolve<IRepository<Facility>>();
+                var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
+                var transportServiceDetailRepository = Resolve<IRepository<TransportServiceDetail>>();
+                var serviceProviderDb = await serviceProviderRepository!.GetByExpression(s => s.Name == serviceInfos[0]);
+                var facilityDb = await facilityRepository!.GetByExpression(s => s.Name == serviceInfos[1]);
                 DateTime.TryParseExact(serviceInfos[1].Substring(0, 8), "ddMMyyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
                 List<ServiceCostHistoryRecord> records = await GetListFromExcel(file);
                 List<ServiceCostHistory> data = new List<ServiceCostHistory>();
@@ -96,7 +99,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         bool containsUnit = SD.EnumType.ServiceCostUnit.TryGetValue(record.Unit, out int index);
                         if (containsUnit)
                         {
-                            var service = await serviceRepository.GetByExpression(m => m.Name.Equals(record.ServiceName) && m.ServiceProviderId == serviceProviderDb.Id);
+                            var service = await facilityServiceRepository!.GetByExpression(m => m.Name.Equals(record.ServiceName) && m.Facility.ServiceProviderId == serviceProviderDb.Id && m.FacilityId == facilityDb.Id);
                             serviceId = service.Id;
                             serviceIds.Add(key, serviceId);
                         }
@@ -105,14 +108,29 @@ namespace TravelCapstone.BackEnd.Application.Services
                             result = BuildAppActionResultError(result, "Gặp lỗi trong quá trình tải. Vui lòng kiểm tra thông tin và thủ lại");
                         }
                     }
-                    data.Add(new ServiceCostHistory
+                    var transportserviceDetail = await transportServiceDetailRepository!.GetByExpression(t => t.FacilityServiceId == serviceId);
+                    if(transportserviceDetail == null)
                     {
-                        Id = Guid.NewGuid(),
-                        Price = record.Price,
-                        MOQ = record.MOQ,
-                        Date = date,
-                        FacilityServiceId = serviceId
-                    });
+                        data.Add(new ServiceCostHistory
+                        {
+                            Id = Guid.NewGuid(),
+                            Price = record.Price,
+                            MOQ = record.MOQ,
+                            Date = date,
+                            FacilityServiceId = serviceId
+                        });
+                    }
+                    else
+                    {
+                        data.Add(new ServiceCostHistory
+                        {
+                            Id = Guid.NewGuid(),
+                            Price = record.Price,
+                            MOQ = record.MOQ,
+                            Date = date,
+                            TransportServiceDetailId = transportserviceDetail.Id
+                        });
+                    }
                 }
                 await _repository.InsertRange(data);
                 if (!BuildAppActionResultIsError(result))
@@ -146,16 +164,17 @@ namespace TravelCapstone.BackEnd.Application.Services
                 if (file.FileName.Contains("(ErrorColor)"))
                     nameDateString = nameDateString.Substring("(ErrorColor)".Length);
                 string[] serviceInfo = nameDateString.Split('_');
-                if (serviceInfo.Length != 2)
+                if (serviceInfo.Length != 3)
                 {
                     data.IsValidated = false;
-                    data.HeaderError = "Tên file không đúng định dạng.\nVui lòng làm theo định dạng: tênNhàCungCấp_ddMMyyyy";
+                    data.HeaderError = "Tên file không đúng định dạng.\nVui lòng làm theo định dạng: tênNhàCungCấp_tênCơSở_ddMMyyyy";
                     result.Result = data;
                     return result;
                 }
 
                 string serviceProviderName = serviceInfo[0];
-                if (serviceInfo[1].Length < 8)
+                string facilityName = serviceInfo[1];
+                if (serviceInfo[2].Length < 8)
                 {
                     data.IsValidated = false;
                     data.HeaderError = "Sai định dạng ngày. Vui lòng làm theo định dạng: ddMMyyyy";
@@ -181,22 +200,23 @@ namespace TravelCapstone.BackEnd.Application.Services
                     return result;
                 }
 
-                //string menuErrorHeader = await _excelService.CheckHeader(file, SD.ExcelHeaders.MENU_DISH, 1);
-                //if (!string.IsNullOrEmpty(errorHeader))
-                //{
-                //    data.IsValidated = false;
-                //    data.HeaderError = errorHeader;
-                //    result.Result = data;
-                //    return result;
-                //}
-
-                var serviceRepository = Resolve<IRepository<Facility>>();
+                var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
                 var serviceProviderRepository = Resolve<IRepository<ServiceProvider>>();
+                var facilityRepository = Resolve<IRepository<Facility>>();
                 var serviceProdviderDb = await serviceProviderRepository!.GetByExpression(s => s.Name.ToLower().Equals(serviceProviderName.ToLower()));
                 if (serviceProdviderDb == null)
                 {
                     data.IsValidated = false;
                     data.HeaderError = $"Nhà cung cấp dịch vụ tên: {serviceProviderName} không tồn tại!";
+                    result.Result = data;
+                    return result;
+                }
+
+                var facilityDb = await facilityRepository!.GetByExpression(s => s.Name.ToLower().Equals(facilityName.ToLower()) && s.ServiceProvider!.Name.Equals(serviceProviderName));
+                if (facilityDb == null)
+                {
+                    data.IsValidated = false;
+                    data.HeaderError = $"Cơ sở tên: {facilityName} thuộc nhà cung cấp: {serviceProviderName} không tồn tại!";
                     result.Result = data;
                     return result;
                 }
@@ -244,7 +264,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         bool containsUnit = SD.EnumType.ServiceCostUnit.TryGetValue(record.Unit, out int index);
                         if (containsUnit)
                         {
-                            var service = await serviceRepository!.GetByExpression(m => m.Name.Equals(record.ServiceName) && m.ServiceProviderId == serviceProdviderDb.Id && m.IsActive);
+                            var service = await facilityServiceRepository!.GetByExpression(m => m.Facility.Name.Equals(facilityName) && m.Name.Equals(record.ServiceName) && m.Facility!.ServiceProviderId == serviceProdviderDb.Id && m.IsActive);
                             if (service == null)
                             {
                                 error.Append($"{errorRecordCount + 1}. Dịch vụ: {record.ServiceName} từ nhà cung cấp {serviceProdviderDb.Name} không tồn tại hoặc không có sẵn.\n");
@@ -363,6 +383,51 @@ namespace TravelCapstone.BackEnd.Application.Services
             }
             return null;
         }
+        private async Task<List<MenuServiceCostHistoryRecord>> GetMenuPriceListFromExcel(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return null;
+            }
+
+            try
+            {
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    stream.Position = 0;
+
+                    using (ExcelPackage package = new ExcelPackage(stream))
+                    {
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is in the first sheet
+
+                        int rowCount = worksheet.Dimension.Rows;
+                        int colCount = worksheet.Dimension.Columns;
+
+                        List<MenuServiceCostHistoryRecord> records = new List<MenuServiceCostHistoryRecord>();
+
+                        for (int row = 2; row <= rowCount; row++) // Assuming header is in the first row
+                        {
+                            MenuServiceCostHistoryRecord record = new MenuServiceCostHistoryRecord()
+                            {
+                                No = (worksheet.Cells[row, 1].Value == null) ? 0 : int.Parse(worksheet.Cells[row, 1].Value.ToString()),
+                                ServiceName = (worksheet.Cells[row, 2].Value == null) ? "" : worksheet.Cells[row, 2].Value.ToString(),
+                                MenuName = (worksheet.Cells[row, 3].Value == null) ? "" : worksheet.Cells[row, 3].Value.ToString(),
+                                Unit = (worksheet.Cells[row, 4].Value == null) ? "" : worksheet.Cells[row, 4].Value.ToString(),
+                                MOQ = (worksheet.Cells[row, 5].Value == null) ? 0 : int.Parse(worksheet.Cells[row, 5].Value.ToString()),
+                                Price = (worksheet.Cells[row, 6].Value == null) ? 0 : double.Parse(worksheet.Cells[row, 6].Value.ToString()),
+                            };
+                            records.Add(record);
+                        }
+                        return records;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return null;
+        }
 
         public async Task<AppActionResult> GetLastCostHistory(List<Guid> servicesId)
         {
@@ -435,7 +500,73 @@ namespace TravelCapstone.BackEnd.Application.Services
 
         public async Task<AppActionResult> UploadMenuQuotation(IFormFile file)
         {
-            throw new NotImplementedException();
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var validation = await ValidateMenuExcelFile(file);
+                ExcelValidatingResponse validationResponse = validation.Result as ExcelValidatingResponse;
+                if (validationResponse == null)
+                {
+                    result = BuildAppActionResultError(result, "Kiểm tra file Excel xảy ra lỗi.\n Vui lòng thử lại.");
+                    return result;
+                }
+                if (!validationResponse.IsValidated)
+                {
+                    result.Result = validationResponse;
+                    return result;
+                }
+                string[] serviceInfos = file.FileName.Split('_');
+                var serviceProviderRepository = Resolve<IRepository<ServiceProvider>>();
+                var facilityRepository = Resolve<IRepository<Facility>>();
+                var menuRepository = Resolve<IRepository<Menu>>();
+                var serviceProviderDb = await serviceProviderRepository!.GetByExpression(s => s.Name == serviceInfos[0]);
+                var facilityDb = await facilityRepository!.GetByExpression(s => s.Name == serviceInfos[1]);
+                DateTime.TryParseExact(serviceInfos[1].Substring(0, 8), "ddMMyyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
+                List<MenuServiceCostHistoryRecord> records = await GetMenuPriceListFromExcel(file);
+                List<ServiceCostHistory> data = new List<ServiceCostHistory>();
+                var menuId = Guid.Empty;
+                Dictionary<string, Guid> menuIds = new Dictionary<string, Guid>();
+                string key;
+
+                foreach (var record in records)
+                {
+                    key = record.ServiceName + '-' + record.Unit;
+                    if (menuIds.ContainsKey(key)) menuId = menuIds[key];
+                    else
+                    {
+                        bool containsUnit = SD.EnumType.ServiceCostUnit.TryGetValue(record.Unit, out int index);
+                        if (containsUnit)
+                        {
+                            var menu = await menuRepository!.GetByExpression(m => m.Name.Equals(record.MenuName) && m.FacilityService.Name.Equals(record.ServiceName) && m.FacilityService.FacilityId == facilityDb.Id && m.FacilityService.Facility!.ServiceProviderId == serviceProviderDb.Id);
+                            menuId = menu.Id;
+                            menuIds.Add(key, menuId);
+                        }
+                        else
+                        {
+                            result = BuildAppActionResultError(result, "Gặp lỗi trong quá trình tải. Vui lòng kiểm tra thông tin và thủ lại");
+                        }
+                    }
+                    data.Add(new ServiceCostHistory
+                    {
+                        Id = Guid.NewGuid(),
+                        Price = record.Price,
+                        MOQ = record.MOQ,
+                        Date = date,
+                        MenuId = menuId
+                    });
+                }
+                await _repository.InsertRange(data);
+                if (!BuildAppActionResultIsError(result))
+                {
+                    result.Result = data;
+                    await _unitOfWork.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
         }
 
         public async Task<AppActionResult> ValidateMenuExcelFile(IFormFile file)
@@ -456,16 +587,17 @@ namespace TravelCapstone.BackEnd.Application.Services
                 if (file.FileName.Contains("(ErrorColor)"))
                     nameDateString = nameDateString.Substring("(ErrorColor)".Length);
                 string[] serviceInfo = nameDateString.Split('_');
-                if (serviceInfo.Length != 2)
+                if (serviceInfo.Length != 3)
                 {
                     data.IsValidated = false;
-                    data.HeaderError = "Tên file không đúng định dạng.\nVui lòng làm theo định dạng: tênNhàCungCấp_ddMMyyyy";
+                    data.HeaderError = "Tên file không đúng định dạng.\nVui lòng làm theo định dạng: tênNhàCungCấp_tênCơSở_ddMMyyyy";
                     result.Result = data;
                     return result;
                 }
 
                 string serviceProviderName = serviceInfo[0];
-                if (serviceInfo[1].Length < 8)
+                string facilityName = serviceInfo[1];
+                if (serviceInfo[2].Length < 8)
                 {
                     data.IsValidated = false;
                     data.HeaderError = "Sai định dạng ngày. Vui lòng làm theo định dạng: ddMMyyyy";
@@ -491,18 +623,11 @@ namespace TravelCapstone.BackEnd.Application.Services
                     return result;
                 }
 
-                errorHeader = await _excelService.CheckHeader(file, SD.ExcelHeaders.MENU_DISH);
-                if (!string.IsNullOrEmpty(errorHeader))
-                {
-                    data.IsValidated = false;
-                    data.HeaderError = errorHeader;
-                    result.Result = data;
-                    return result;
-                }
 
-                var serviceRepository = Resolve<IRepository<Facility>>();
+                var menuRepository = Resolve<IRepository<Domain.Models.Menu>>();
                 var serviceProviderRepository = Resolve<IRepository<ServiceProvider>>();
-                var serviceProdviderDb = await serviceProviderRepository.GetByExpression(s => s.Name.ToLower().Equals(serviceProviderName.ToLower()));
+                var facilityRepository = Resolve<IRepository<Facility>>();
+                var serviceProdviderDb = await serviceProviderRepository!.GetByExpression(s => s.Name.ToLower().Equals(serviceProviderName.ToLower()));
                 if (serviceProdviderDb == null)
                 {
                     data.IsValidated = false;
@@ -511,7 +636,16 @@ namespace TravelCapstone.BackEnd.Application.Services
                     return result;
                 }
 
-                List<ServiceCostHistoryRecord> records = await GetListFromExcel(file);
+                var facilityDb = await facilityRepository!.GetByExpression(s => s.Name.ToLower().Equals(facilityName.ToLower()));
+                if (facilityDb == null)
+                {
+                    data.IsValidated = false;
+                    data.HeaderError = $"Cơ sở tên: {facilityDb} thuộc nhà cung cấp {serviceProviderName} không tồn tại!";
+                    result.Result = data;
+                    return result;
+                }
+
+                List<MenuServiceCostHistoryRecord> records = await GetMenuPriceListFromExcel(file);
                 if (records.Count == 0)
                 {
                     data.IsValidated = false;
@@ -525,13 +659,13 @@ namespace TravelCapstone.BackEnd.Application.Services
                 int invalidRowInput = 0;
                 string key = "";
                 data.Errors = new string[records.Count];
-                Dictionary<string, Guid> serviceIds = new Dictionary<string, Guid>();
+                Dictionary<string, Guid> menuIds = new Dictionary<string, Guid>();
                 Dictionary<string, int> duplicatedQuotation = new Dictionary<string, int>();
-                foreach (ServiceCostHistoryRecord record in records)
+                foreach (MenuServiceCostHistoryRecord record in records)
                 {
                     StringBuilder error = new StringBuilder();
                     errorRecordCount = 0;
-                    Guid serviceId = Guid.Empty;
+                    Guid menuId = Guid.Empty;
                     if (record.No != i - 1)
                     {
                         error.Append($"{errorRecordCount + 1}. Thứ tự đúng {i - 1}.\n");
@@ -545,24 +679,24 @@ namespace TravelCapstone.BackEnd.Application.Services
                     }
 
                     //SD.EnumType.serviceUnit.TryGetValue(record.Unit, out int serviceUnit);
-                    key = record.ServiceName + '-' + record.Unit;
+                    key = record.ServiceName + '-' + record.MenuName + '-' +record.Unit;
 
-                    if (serviceIds.ContainsKey(key)) serviceId = serviceIds[key];
+                    if (menuIds.ContainsKey(key)) menuId = menuIds[key];
                     else
                     {
                         bool containsUnit = SD.EnumType.ServiceCostUnit.TryGetValue(record.Unit, out int index);
                         if (containsUnit)
                         {
-                            var service = await serviceRepository.GetByExpression(m => m.Name.Equals(record.ServiceName) && m.ServiceProviderId == serviceProdviderDb.Id && m.IsActive);
-                            if (service == null)
+                            var menu = await menuRepository!.GetByExpression(m => m.FacilityService.Facility.Name.ToLower().Equals(facilityName.ToLower()) && m.FacilityService!.Name.Equals(record.ServiceName) && m.Name.Equals(record.MenuName) && m.FacilityService.Facility!.ServiceProviderId == serviceProdviderDb.Id && m.FacilityService.IsActive);
+                            if (menu == null)
                             {
-                                error.Append($"{errorRecordCount + 1}. Dịch vụ: {record.ServiceName} từ nhà cung cấp {serviceProdviderDb.Name} không tồn tại hoặc không có sẵn.\n");
+                                error.Append($"{errorRecordCount + 1}. Thực đơn {record.MenuName} từ nhà cung cấp {serviceProdviderDb.Name} không tồn tại hoặc không có sẵn.\n");
                                 errorRecordCount++;
                             }
                             else
                             {
-                                serviceId = service.Id;
-                                serviceIds.Add(key, serviceId);
+                                menuId = menu.Id;
+                                menuIds.Add(key, menuId);
                             }
                         }
                         else
@@ -571,12 +705,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                             errorRecordCount++;
                         }
                     }
-                    //else
-                    //{
-                    //    error.Append($"{errorRecordCount + 1}. Supplier {serviceProviderName} is a {supplier.Type.ToString()} so they don't supply {record.serviceName}.\n");
-                    //    errorRecordCount++;
-                    //}
-
+                    
                     if (record.MOQ <= 0)
                     {
                         error.Append($"{errorRecordCount + 1}. Số lượng tối thiểu phải lớn hơn 0.\n");
@@ -589,7 +718,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         errorRecordCount++;
                     }
 
-                    string duplicatedKey = $"{record.ServiceName}-{record.MOQ}";
+                    string duplicatedKey = $"{record.ServiceName}-{record.MenuName}-{record.MOQ}";
                     if (duplicatedQuotation.ContainsKey(duplicatedKey))
                     {
                         error.Append($"{errorRecordCount + 1}. Đơn dịch vụ và đơn giá tối thiểu trùng tại dòng {duplicatedQuotation[duplicatedKey]}.\n");
@@ -600,10 +729,9 @@ namespace TravelCapstone.BackEnd.Application.Services
                         duplicatedQuotation.Add(duplicatedKey, i - 1);
                     }
 
-                    if ((await _repository.GetByExpression(m => m.MOQ == record.MOQ && m.FacilityServiceId == serviceId && date == m.Date)) != null)
+                    if ((await _repository.GetByExpression(m => m.MOQ == record.MOQ && m.MenuId == menuId && date == m.Date)) != null)
                     {
-                        error.Append($"{errorRecordCount + 1}. Tồn tại một báo giá dịch vụ tương tự trong cùng ngày.\n");
-                        errorRecordCount++;
+                        error.Append($"WARNING: Tồn tại một báo giá dịch vụ tương tự trong cùng ngày.\n");
                     }
 
                     if (errorRecordCount != 0)
@@ -642,27 +770,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 sampleData.Add(new MenuServiceCostHistoryRecord
                 { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, Price = 4, MenuName="Thực đơn ăn sáng mặn" });
                
-                result = _fileService.GenerateExcelContent<MenuServiceCostHistoryRecord, MenuRecord>(sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION, "Báo giá menu");
-
-            }
-            catch (Exception ex)
-            {
-            }
-            return result;
-        }
-
-        public async Task<IActionResult> GetMenuDishUpdateTemplate()
-        {
-            IActionResult result = null;
-            try
-            {
-                List<MenuServiceCostHistoryRecord> sampleData = new List<MenuServiceCostHistoryRecord>();
-                sampleData.Add(new MenuServiceCostHistoryRecord
-                { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, Price = 4, MenuName = "Thực đơn ăn sáng mặn" });
-                List<MenuRecord> menuSampleData = new List<MenuRecord>();
-                menuSampleData.Add(new MenuRecord
-                { No = 1, FacilityServiceName = "Facility Service name", MenuName = "Thực đơn ăn sáng mặn", DishName = "Canh chua cá mập", Description = "Ngon", MenuType = "Soup" });
-                result = _fileService.GenerateExcelContent<MenuServiceCostHistoryRecord, MenuRecord>(sampleData, menuSampleData, SD.ExcelHeaders.SERVICE_QUOTATION, "Báo giá menu", SD.ExcelHeaders.MENU_SERVICE_QUOTATION, "Cập nhật menu");
+                result = _fileService.GenerateExcelContent<MenuServiceCostHistoryRecord, MenuRecord>("BÁO GIÁ THỰC ĐƠN",sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION, "Báo giá menu");
 
             }
             catch (Exception ex)

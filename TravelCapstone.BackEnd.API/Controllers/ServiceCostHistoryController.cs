@@ -28,12 +28,29 @@ namespace TravelCapstone.BackEnd.API.Controllers
             return await _service.ValidateExcelFile(file);
         }
 
+        [HttpPost("upload-menu-service-cost-quotation")]
+        public async Task<AppActionResult> UploadMenuQuotation(IFormFile file)
+        {
+            return await _service.UploadMenuQuotation(file);
+        }
+
+        [HttpPost("validate-menu-service-cost-quotation")]
+        public async Task<AppActionResult> ValidateMenuExcelFile(IFormFile file)
+        {
+            return await _service.ValidateMenuExcelFile(file);
+        }
+
         [HttpGet("get-template")]
         public async Task<IActionResult> GetTemplate()
         {
             return await _service.GetPriceQuotationTemplate();
         }
 
+        [HttpGet("get-menu-price-template")]
+        public async Task<IActionResult> GetMenuPriceQuotationTemplate()
+        {
+            return await _service.GetMenuPriceQuotationTemplate();
+        }
 
         [HttpPost("get-last-cost-history")]
         public async Task<AppActionResult> GetLastCostHistory(List<Guid> guids)
