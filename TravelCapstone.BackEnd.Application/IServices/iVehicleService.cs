@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.Application.IServices
 {
@@ -15,5 +17,6 @@ namespace TravelCapstone.BackEnd.Application.IServices
         //public Task<AppActionResult> ValidateExcelFile(IFormFile file);
         public Task<IActionResult> GetPriceQuotationTemplate();
         public Task<AppActionResult> GetAvailableVehicle(DateTime startTime, DateTime endTime, int pageNumber, int pageSize);
+        public Task<AppActionResult> GetPriceForVehicle(FilterTransportServiceRequest filter, int pageNumber, int pageSize);
     }
 }
