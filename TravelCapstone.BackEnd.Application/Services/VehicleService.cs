@@ -469,8 +469,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 {
                     var referenceTransportPriceRepository = Resolve<IRepository<ReferenceTransportPrice>>();
                     result.Result = await referenceTransportPriceRepository!.GetAllDataByExpression(
-                        p => p.Departure!.Commune!.District!.ProvinceId == filter.FirstLocation.ProvinceId && p.Arrival!.Commune!.District!.ProvinceId == filter.SecondLocation.ProvinceId
-                        || p.Departure!.Commune!.DistrictId == filter.FirstLocation.DistrictId && p.Arrival!.Commune!.DistrictId == filter.SecondLocation.DistrictId,
+                        p => p.Departure!.Commune!.District!.ProvinceId == filter.FirstLocation.ProvinceId && p.Arrival!.Commune!.District!.ProvinceId == filter.SecondLocation.ProvinceId,
                         pageNumber, pageSize, null, false, p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!, p => p.ReferencePriceRating!
                         );
                 } else 
