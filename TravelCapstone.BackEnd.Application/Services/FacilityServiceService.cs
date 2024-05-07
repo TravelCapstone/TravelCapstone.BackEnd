@@ -424,5 +424,20 @@ namespace TravelCapstone.BackEnd.Application.Services
             }
             return result;
         }
+
+        public async Task<AppActionResult> GetAllFacilityRating()
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var facilityRatingRepository = Resolve<IRepository<FacilityRating>>();
+                result.Result = await facilityRatingRepository!.GetAllDataByExpression(null,0 ,0, null, false, p => p.Rating!);
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
     }
 }

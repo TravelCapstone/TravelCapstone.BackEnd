@@ -35,5 +35,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetListServiceForPlan(privateTourRequestId, quotationDetailId, pageNumber, pageSize);
         }
+
+        [HttpGet("get-all-facility-rating")]
+        public async Task<AppActionResult> GetAllFacilityRating()
+        {
+            return await _service.GetAllFacilityRating();
+        }
     }
 }
