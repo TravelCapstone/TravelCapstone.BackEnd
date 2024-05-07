@@ -546,10 +546,27 @@ namespace TravelCapstone.BackEnd.Application.Services
             IActionResult result = null;
             try
             {
-                List<ServiceCostHistoryRecord> sampleData = new List<ServiceCostHistoryRecord>();
-                sampleData.Add(new ServiceCostHistoryRecord
+                List<SellPriceHistoryRecord> sampleData = new List<SellPriceHistoryRecord>();
+                sampleData.Add(new SellPriceHistoryRecord
                 { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, Price = 4 });
-                result = _fileService.GenerateExcelContent<ServiceCostHistoryRecord, Object>(sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION, "ProviderName_ddMMyyyy");
+                result = _fileService.GenerateExcelContent<SellPriceHistoryRecord, Object>("GÍA BÁN",sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION, "ProviderName");
+
+            }
+            catch (Exception ex)
+            {
+            }
+            return result;
+        }
+
+        public async Task<IActionResult> GetMenuTemplate()
+        {
+            IActionResult result = null;
+            try
+            {
+                List<MenuServiceCostHistoryRecord> sampleData = new List<MenuServiceCostHistoryRecord>();
+                sampleData.Add(new MenuServiceCostHistoryRecord
+                { No = 1, ServiceName = "Service name", MenuName = "Menu sáng",Unit = "Bar", MOQ = 1000, Price = 4 });
+                result = _fileService.GenerateExcelContent<MenuServiceCostHistoryRecord, Object>("GÍA BÁN THỰC ĐƠN", sampleData, null, SD.ExcelHeaders.MENU_SERVICE_QUOTATION, "ProviderName");
 
             }
             catch (Exception ex)
@@ -702,8 +719,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                           kvp.ServiceAvailabilityId == Domain.Enum.ServiceAvailability.ADULT ? privateTourRequestDb.NumOfAdult : privateTourRequestDb.NumOfChildren;
 
                         quantityOfService = Math.Ceiling((double)total / kvp.ServingQuantity);
-                        if (kvp.ServiceTypeId == ServiceType.RESTING)
-                        {
+                        
                             var sellPriceHistory = await _repository!.GetAllDataByExpression(s => s.FacilityServiceId == kvp.Id && s.MOQ <= quantityOfService, 0, 0, null, false, p => p.FacilityService!.Facility!.Communce!.District!.Province!);
                             if (sellPriceHistory.Items != null && sellPriceHistory.Items.Count > 0)
                             {
@@ -714,16 +730,15 @@ namespace TravelCapstone.BackEnd.Application.Services
                                 detailedServicePriceReference.PriceOfPerson = (currentPrice.Price * quantityOfService) / total;
                                 detailedServicePriceReference.FacilityServices = kvp;
                             }
-                        }
                         servicePriceReference.Add(detailedServicePriceReference);
+
+                    }
                         var invalidPriceReferences = servicePriceReference.Where(d => d.PriceOfPerson == 0).ToList();
                         invalidPriceReferences.ForEach(item => servicePriceReference.Remove(item));
-
                         result.Result = new PagedResult<DetailedServicePriceReference>
                         {
                             Items = servicePriceReference,
                         };
-                    }
                 }
             }
             catch (Exception ex)

@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Common.Utils;
 using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
 
@@ -14,11 +17,13 @@ namespace TravelCapstone.BackEnd.Application.Services
     public class MenuService : GenericBackendService, IMenuService
     {
         private readonly IRepository<Menu> _menuRepository;
+        private readonly IFileService _fileService;
         private readonly IUnitOfWork _unitOfWork;   
-        public MenuService(IServiceProvider serviceProvider, IRepository<Menu> menuRepository,  
+        public MenuService(IServiceProvider serviceProvider, IRepository<Menu> menuRepository, IFileService fileService,
             IUnitOfWork unitOfWork) : base(serviceProvider)
         {
-            _menuRepository = menuRepository;   
+            _menuRepository = menuRepository; 
+            _fileService = fileService;
             _unitOfWork = unitOfWork;
         }
 
@@ -90,6 +95,25 @@ namespace TravelCapstone.BackEnd.Application.Services
             catch (Exception e)
             {
                 result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+            }
+            return result;
+        }
+        public async Task<IActionResult> GetMenuDishUpdateTemplate()
+        {
+            IActionResult result = null;
+            try
+            {
+                List<MenuServiceCostHistoryRecord> sampleData = new List<MenuServiceCostHistoryRecord>();
+                sampleData.Add(new MenuServiceCostHistoryRecord
+                { No = 1, ServiceName = "Service name", Unit = "Bar", MOQ = 1000, Price = 4, MenuName = "Thực đơn ăn sáng mặn" });
+                List<MenuRecord> menuSampleData = new List<MenuRecord>();
+                menuSampleData.Add(new MenuRecord
+                { No = 1, FacilityServiceName = "Facility Service name", MenuName = "Thực đơn ăn sáng mặn", DishName = "Canh chua cá mập", Description = "Ngon", MenuType = "Soup" });
+                result = _fileService.GenerateExcelContent<MenuRecord, Object>("CẬP NHẬT THỰC ĐƠN", menuSampleData, null,SD.ExcelHeaders.MENU_DISH, "Cập nhật menu");
+
+            }
+            catch (Exception ex)
+            {
             }
             return result;
         }

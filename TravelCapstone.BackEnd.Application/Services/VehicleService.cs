@@ -47,7 +47,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 List<VehicleRecord> sampleData = new List<VehicleRecord>();
                 sampleData.Add(new VehicleRecord
                 { No = 1, VehicleType = "X7", Plate = "PLATE INFO", Capacity = 7, EngineNumber = "ENGINE NUMBER", ChassisNumber = "CHASSIS NUMBER", Brand = "Toyota", Owner = "Nguyen Van Anh", Color = "Vàng" });
-                result = _fileService.GenerateExcelContent<VehicleRecord, Object>(sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION, "ProviderName_ddMMyyyy");
+                result = _fileService.GenerateExcelContent<VehicleRecord, Object>("NHẬP THÔNG TIN XE",sampleData, null, SD.ExcelHeaders.SERVICE_QUOTATION, "ProviderName_ddMMyyyy");
 
             }
             catch (Exception ex)

@@ -21,7 +21,7 @@ namespace TravelCapstone.BackEnd.Application.Services
         {
             _result = new();
         }
-        public IActionResult GenerateExcelContent<T1, T2>(IEnumerable<T1> dataList, IEnumerable<T2>? dataList2, List<string> header, string sheetName, List<string> header2 = null, string sheetName2 = null)
+        public IActionResult GenerateExcelContent<T1, T2>(string fileName,IEnumerable<T1> dataList, IEnumerable<T2>? dataList2, List<string> header, string sheetName, List<string> header2 = null, string sheetName2 = null)
         {
             using (ExcelPackage package = new ExcelPackage())
             {
@@ -78,7 +78,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 // Return the Excel file
                 return new FileContentResult(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 {
-                    FileDownloadName = "GeneratedExcel.xlsx"
+                    FileDownloadName = $"{fileName}.xlsx"
                 };
             }
         }
