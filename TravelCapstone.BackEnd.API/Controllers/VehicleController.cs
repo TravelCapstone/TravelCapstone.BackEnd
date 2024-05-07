@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.API.Controllers
@@ -18,6 +19,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         public async Task<AppActionResult> GetAvailableVehicle(DateTime startTime, DateTime endTime, int pageNumber = 1, int pageSize = 10)
         {
             return await _vehicleService.GetAvailableVehicle(startTime, endTime, pageNumber, pageSize);       
+        }
+        [HttpPost("get-price-for-vehicle/{pageNumber:int}/{pageSize:int}")]
+        public async Task<AppActionResult> GetPriceForVehicle(FilterTransportServiceRequest filter, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _vehicleService.GetPriceForVehicle(filter, pageNumber, pageSize);  
         }
     }
 }

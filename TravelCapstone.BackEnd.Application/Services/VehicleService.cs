@@ -14,6 +14,7 @@ using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Common.Utils;
+using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
 using Vehicle = TravelCapstone.BackEnd.Domain.Models.Vehicle;
 
@@ -418,7 +419,9 @@ namespace TravelCapstone.BackEnd.Application.Services
             try
             {
                 var routeRepository = Resolve<IRepository<Route>>();
-                var routeDb = await routeRepository!.GetAllDataByExpression(p => p.StartTime == startTime && p.EndTime == endTime, 0, 0, null, false, null);
+                var routeDb = await routeRepository!.GetAllDataByExpression(p => p.StartTime.Date >= startTime.Date && p.EndTime.Date <= endTime.Date ||
+                                                                                p.StartTime.Date <= startTime.Date && p.EndTime.Date >= endTime.Date ||
+                                                                                p.StartTime.Date <= startTime.Date && p.EndTime.Date >= endTime.Date, 0, 0, null, false, null);
                 if (routeDb == null)
                 {
                     result = BuildAppActionResultError(result, $"Không tìm thấy lịch trình yêu cầu với thời gian {startTime} và {endTime}");
@@ -426,16 +429,60 @@ namespace TravelCapstone.BackEnd.Application.Services
                 }
                 else if (routeDb.Items != null && routeDb.Items.Count > 0)
                 {
+                    var vehicleRouteRepository = Resolve<IRepository<VehicleRoute>>();
+                    List<Guid> vehicleIds = new List<Guid>();
                     foreach (var item in routeDb.Items)
                     {
-                        var vehicleRouteRepository = Resolve<IRepository<VehicleRoute>>();
-                        var vehicleRouteDb = await vehicleRouteRepository!.GetAllDataByExpression(p => p.RouteId == item.Id, 0, 0, null, false, p => p.Vehicle!);
-                        if (vehicleRouteDb.Items != null && vehicleRouteDb.Items.Count > 0){
-                            foreach (var vehicle in vehicleRouteDb.Items)
-                            {
-                                result.Result = await _repository.GetAllDataByExpression(p => p.Id != vehicle.VehicleId, pageNumber, pageSize, null, false, null);
-                            }
-                        }
+                        var vehicleRouteDb = await vehicleRouteRepository!.GetAllDataByExpression(p => p.RouteId == item.Id, 0, 0, null, false, null);
+                        vehicleIds.AddRange(vehicleRouteDb!.Items!.Where(v => v.VehicleId != null).Select(p => (Guid)p!.VehicleId!));
+                    }
+                    result.Result = await _repository.GetAllDataByExpression(p => !vehicleIds.Contains(p.Id), pageNumber, pageSize, null, false, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetPriceForVehicle(FilterTransportServiceRequest filter, int pageNumber, int pageSize)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var provinceRepository = Resolve<IRepository<Province>>();
+                var districtRepository = Resolve<IRepository<District>>();
+                var firstProvinceDb = await provinceRepository!.GetById(filter.FirstLocation.ProvinceId);
+                var secondProvinceDb = await provinceRepository!.GetById(filter!.SecondLocation!.ProvinceId);
+                if (firstProvinceDb == null || secondProvinceDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Tỉnh với {filter.FirstLocation.ProvinceId} và {filter.SecondLocation.ProvinceId} này không tồn tại");
+                    var firstDistrict = await districtRepository!.GetById(filter.FirstLocation.DistrictId!);
+                    var secondDistrict = await districtRepository!.GetById(filter.SecondLocation.DistrictId!);
+                    if (firstDistrict == null || secondDistrict == null)
+                    {
+                        result = BuildAppActionResultError(result, $"Huyện/xã với {filter.FirstLocation.DistrictId} và {filter.SecondLocation.DistrictId} này không tồn tại");
+                    }
+                }
+                if (filter.VehicleType == Domain.Enum.VehicleType.PLANE || filter.VehicleType == Domain.Enum.VehicleType.BOAT)
+                {
+                    var referenceTransportPriceRepository = Resolve<IRepository<ReferenceTransportPrice>>();
+                    result.Result = await referenceTransportPriceRepository!.GetAllDataByExpression(
+                        p => p.Departure!.Commune!.District!.ProvinceId == filter.FirstLocation.ProvinceId && p.Arrival!.Commune!.District!.ProvinceId == filter.SecondLocation.ProvinceId
+                        || p.Departure!.Commune!.DistrictId == filter.FirstLocation.DistrictId && p.Arrival!.Commune!.DistrictId == filter.SecondLocation.DistrictId,
+                        pageNumber, pageSize, null, false, p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!, p => p.ReferencePriceRating!
+                        );
+                } else 
+                {
+                    var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
+                    var facilityServiceDb = await facilityServiceRepository!.GetAllDataByExpression(p => p.Facility!.Communce!.District!.ProvinceId == filter.FirstLocation.ProvinceId || p.Facility.Communce!.DistrictId == filter.FirstLocation.DistrictId && p.ServiceTypeId == ServiceType.VEHICLE
+                    , 0, 0, null, false, null);
+                    if (facilityServiceDb.Items != null && facilityServiceDb.Items.Count > 0)
+                    {
+                        var facilityServiceIds = facilityServiceDb.Items.Select(p => p.Id);
+                        var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
+                        result.Result = await sellPriceRepository!.GetAllDataByExpression(p => facilityServiceIds.Contains(p.TransportServiceDetail!.FacilityServiceId), pageNumber, pageSize, p => p.Date, false, p => p.FacilityService!, p => p.TransportServiceDetail!);
                     }
                 }
             }
