@@ -6,7 +6,7 @@ using TravelCapstone.BackEnd.Common.DTO.Response;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
-    [Route("api/vehicle")]
+    [Route("vehicle")]
     [ApiController]
     public class VehicleController : ControllerBase
     {
