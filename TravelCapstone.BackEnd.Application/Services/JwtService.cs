@@ -65,7 +65,7 @@ public class JwtService : GenericBackendService, IJwtService
                         new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new("AccountId", user.Id)
                     };
-                    claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.ToUpper())));
+                     claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.ToUpper())));
                     var authenKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.Key!));
                     var token = new JwtSecurityToken(
                         _jwtConfiguration.Issuer,
@@ -74,7 +74,7 @@ public class JwtService : GenericBackendService, IJwtService
                         claims: claims,
                         signingCredentials: new SigningCredentials(authenKey, SecurityAlgorithms.HmacSha512Signature)
                     );
-                    return new JwtSecurityTokenHandler().WriteToken(token);
+                    return new JwtSecurityTokenHandler().WriteT voken(token);
                 }
             }
         }
