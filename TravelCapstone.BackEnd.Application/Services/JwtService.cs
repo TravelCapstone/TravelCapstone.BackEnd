@@ -74,7 +74,7 @@ public class JwtService : GenericBackendService, IJwtService
                         claims: claims,
                         signingCredentials: new SigningCredentials(authenKey, SecurityAlgorithms.HmacSha512Signature)
                     );
-                    return new JwtSecurityTokenHandler().WriteT voken(token);
+                    return new JwtSecurityTokenHandler().WriteToken(token);
                 }
             }
         }
