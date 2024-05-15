@@ -25,6 +25,13 @@ public class PrivateTourRequest: BaseEntity
     public string? RecommendedTourUrl { get; set; }
     public string? Note { get; set; }
     public string? StartLocation { get; set; }
+    public Guid MinimumHotelRatingId { get; set; }
+    [ForeignKey(nameof(MinimumHotelRatingId))]
+    public FacilityRating HotelFacilityRating { get; set; }
+    public string? SuggestedTourguideName { get; set; }
+    public Guid MinimumRestaurantRatingId { get; set; }
+    [ForeignKey(nameof(MinimumRestaurantRatingId))]
+    public FacilityRating RestaurantFacilityRating { get; set; }    
     public double WishPrice {  get; set; }
     public Enum.DietaryPreference DietaryPreferenceId { get; set; }
     [ForeignKey(nameof(DietaryPreferenceId))]

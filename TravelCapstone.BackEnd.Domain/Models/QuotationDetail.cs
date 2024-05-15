@@ -17,15 +17,19 @@ public class QuotationDetail
     public ServiceType? ServiceType { get; set; }
     public int ServingQuantity { get; set; }
     public int Quantity {  get; set; }
-    public int MealPerDay { get; set; } = 0;
     public DateTime? StartDate {  get; set; }    
     public DateTime? EndDate {  get; set; }
     public double MinPrice { get; set; }   
     public double MaxPrice { get; set; }
+    public double MinRedundancyCost { get; set; }
+    public double MaxRedundancyCost { get; set; }
     public Guid OptionQuotationId { get; set; }
     [ForeignKey(nameof(OptionQuotationId))]
     public OptionQuotation? OptionQuotation { get; set; }
     public Guid DistrictId { get; set; }
     [ForeignKey(nameof(DistrictId))]
     public District? District { get; set; }
+    public Guid? MenuId { get; set; }
+    [ForeignKey(nameof(MenuId))]
+    public Menu? Menu { get; set; }
 }

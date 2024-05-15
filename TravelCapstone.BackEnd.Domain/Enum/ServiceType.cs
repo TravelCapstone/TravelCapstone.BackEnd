@@ -11,6 +11,10 @@ namespace TravelCapstone.BackEnd.Domain.Enum
         RESTING,
         FOODANDBEVARAGE,
         ENTERTAIMENT,
-        VEHICLE
+        VEHICLE,
+        ATTRACTION,
+        GUIDING,
+        DRIVING,
+        HOLD
     }
 }

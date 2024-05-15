@@ -221,21 +221,23 @@ public class TourService : GenericBackendService, ITourService
             foreach(var item in dto.Locations)
             {
                 int numOfDay = (item.EndDate.Date - item.StartDate.Date).Days;
-                if(item is EatingPlanLocation)
-                {
-                    var eating = item as EatingPlanLocation;
-                    planServiceCostDetails.Add(new PlanServiceCostDetail
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = $"Dịch vụ ăn uống vào ngày {eating.StartDate.Date} lúc {eating.StartDate.Hour} giờ",
-                        Description = "",
-                        Quantity = eating.NumOfServiceUse * eating.MealPerDay * numOfDay,
-                        StartDate = eating.StartDate,
-                        EndDate = eating.EndDate,
-                        TourId = tour.Id,
-                        SellPriceHistoryId = eating.SellPriceHistoryId,
-                    });
-                } else
+                //if(item is EatingPlanLocation)
+                //{
+                //    var eating = item as EatingPlanLocation;
+                //    planServiceCostDetails.Add(new PlanServiceCostDetail
+                //    {
+                //        Id = Guid.NewGuid(),
+                //        Name = $"Dịch vụ ăn uống vào ngày {eating.StartDate.Date} lúc {eating.StartDate.Hour} giờ",
+                //        Description = "",
+                //        Quantity = eating.NumOfServiceUse * eating.MealPerDay * numOfDay,
+                //        StartDate = eating.StartDate,
+                //        EndDate = eating.EndDate,
+                //        TourId = tour.Id,
+                //        SellPriceHistoryId = eating.SellPriceHistoryId,
+                //    });
+                //} 
+                
+                //else
                 {
                     planServiceCostDetails.Add(new PlanServiceCostDetail
                     {

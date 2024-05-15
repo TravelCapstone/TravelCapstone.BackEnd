@@ -7,6 +7,8 @@ namespace TravelCapstone.BackEnd.Domain.Models;
 public class OptionQuotation
 {
     [Key] public Guid Id { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
     public OptionClass OptionClassId { get; set; }
     [ForeignKey(nameof(OptionClassId))]
     public Models.EnumModels.OptionClass? OptionClass { get; set; }
@@ -19,4 +21,8 @@ public class OptionQuotation
 
     [ForeignKey(nameof(PrivateTourRequestId))]
     public PrivateTourRequest? PrivateTourRequest { get; set; }
+
+    public Guid AssurancePriceHistoryId { get; set; }
+    [ForeignKey(nameof(AssurancePriceHistoryId))]
+    public AssurancePriceHistory? AssurancePriceHistory { get; set;}
 }
