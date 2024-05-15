@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
-    public partial class addEnumReferenceTransport : Migration
+    public partial class AddSalaryHistory : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -54,6 +54,19 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Assurances",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DayMOQ = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Assurances", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -138,11 +151,28 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DayOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FixDriverSalary = table.Column<double>(type: "float", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Drivers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Events",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Total = table.Column<double>(type: "float", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MOQ = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Events", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -524,6 +554,45 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TourGuideSalaryHistories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Salary = table.Column<double>(type: "float", nullable: false),
+                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TourGuideSalaryHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TourGuideSalaryHistories_AspNetUsers_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AssurancePriceHistories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    AssuranceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AssurancePriceHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AssurancePriceHistories_Assurances_AssuranceId",
+                        column: x => x.AssuranceId,
+                        principalTable: "Assurances",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Dishes",
                 columns: table => new
                 {
@@ -544,6 +613,66 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DriverSalaryHistories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Salary = table.Column<double>(type: "float", nullable: false),
+                    DriverId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DriverSalaryHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DriverSalaryHistories_Drivers_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "Drivers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EventDetails",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EventDetails_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Materials",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MaterialTypeId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Materials", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Materials_MaterialTypes_MaterialTypeId",
+                        column: x => x.MaterialTypeId,
+                        principalTable: "MaterialTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Districts",
                 columns: table => new
                 {
@@ -556,31 +685,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     table.PrimaryKey("PK_Districts", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Districts_Provinces_ProvinceId",
-                        column: x => x.ProvinceId,
-                        principalTable: "Provinces",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TourguideAssignments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProvinceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TourguideAssignments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TourguideAssignments_AspNetUsers_AccountId",
-                        column: x => x.AccountId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_TourguideAssignments_Provinces_ProvinceId",
                         column: x => x.ProvinceId,
                         principalTable: "Provinces",
                         principalColumn: "Id",
@@ -666,6 +770,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     VehicleTypeId = table.Column<int>(type: "int", nullable: false),
                     Plate = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
+                    SeatCapacity = table.Column<int>(type: "int", nullable: false),
                     EngineNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ChassisNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -711,6 +816,26 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EventDetailPriceHistories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    EventDetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventDetailPriceHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EventDetailPriceHistories_EventDetails_EventDetailId",
+                        column: x => x.EventDetailId,
+                        principalTable: "EventDetails",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Communes",
                 columns: table => new
                 {
@@ -723,6 +848,31 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     table.PrimaryKey("PK_Communes", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Communes_Districts_DistrictId",
+                        column: x => x.DistrictId,
+                        principalTable: "Districts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TourguideScopes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DistrictId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TourguideScopes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TourguideScopes_AspNetUsers_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_TourguideScopes_Districts_DistrictId",
                         column: x => x.DistrictId,
                         principalTable: "Districts",
                         principalColumn: "Id",
@@ -782,6 +932,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TourId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -789,6 +940,32 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     table.PrimaryKey("PK_DayPlans", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DayPlans_Tours_TourId",
+                        column: x => x.TourId,
+                        principalTable: "Tours",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MaterialAssignments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    TourId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MaterialId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MaterialAssignments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MaterialAssignments_Materials_MaterialId",
+                        column: x => x.MaterialId,
+                        principalTable: "Materials",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_MaterialAssignments_Tours_TourId",
                         column: x => x.TourId,
                         principalTable: "Tours",
                         principalColumn: "Id",
@@ -845,6 +1022,39 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TourguideAssignments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProvinceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TourId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TourGuideSalary = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TourguideAssignments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TourguideAssignments_AspNetUsers_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_TourguideAssignments_Provinces_ProvinceId",
+                        column: x => x.ProvinceId,
+                        principalTable: "Provinces",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_TourguideAssignments_Tours_TourId",
+                        column: x => x.TourId,
+                        principalTable: "Tours",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TourRegistrations",
                 columns: table => new
                 {
@@ -876,31 +1086,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TourTourguides",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TourId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TourguideAssignmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TourTourguides", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TourTourguides_TourguideAssignments_TourguideAssignmentId",
-                        column: x => x.TourguideAssignmentId,
-                        principalTable: "TourguideAssignments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_TourTourguides_Tours_TourId",
-                        column: x => x.TourId,
-                        principalTable: "Tours",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TourTravellers",
                 columns: table => new
                 {
@@ -921,25 +1106,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         name: "FK_TourTravellers_Tours_TourId",
                         column: x => x.TourId,
                         principalTable: "Tours",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Destinations",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CommunceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Destinations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Destinations_Communes_CommunceId",
-                        column: x => x.CommunceId,
-                        principalTable: "Communes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });
@@ -1019,6 +1185,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     RecommendedTourUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StartLocation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MinimumHotelRatingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SuggestedTourguideName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MinimumRestaurantRatingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     WishPrice = table.Column<double>(type: "float", nullable: false),
                     DietaryPreferenceId = table.Column<int>(type: "int", nullable: false),
                     StartLocationCommuneId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -1054,6 +1223,18 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
+                        name: "FK_PrivateTourRequests_FacilityRatings_MinimumHotelRatingId",
+                        column: x => x.MinimumHotelRatingId,
+                        principalTable: "FacilityRatings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_PrivateTourRequests_FacilityRatings_MinimumRestaurantRatingId",
+                        column: x => x.MinimumRestaurantRatingId,
+                        principalTable: "FacilityRatings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
                         name: "FK_PrivateTourRequests_PrivateTourStatuses_PrivateTourStatusId",
                         column: x => x.PrivateTourStatusId,
                         principalTable: "PrivateTourStatuses",
@@ -1071,73 +1252,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         principalTable: "Tours",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Materials",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MaterialTypeId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    DayPlanId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Materials", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Materials_DayPlans_DayPlanId",
-                        column: x => x.DayPlanId,
-                        principalTable: "DayPlans",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Materials_MaterialTypes_MaterialTypeId",
-                        column: x => x.MaterialTypeId,
-                        principalTable: "MaterialTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Routes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DayPlanId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StartPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    EndPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ParentRouteId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Routes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Routes_DayPlans_DayPlanId",
-                        column: x => x.DayPlanId,
-                        principalTable: "DayPlans",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Routes_Destinations_EndPointId",
-                        column: x => x.EndPointId,
-                        principalTable: "Destinations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Routes_Destinations_StartPointId",
-                        column: x => x.StartPointId,
-                        principalTable: "Destinations",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Routes_Routes_ParentRouteId",
-                        column: x => x.ParentRouteId,
-                        principalTable: "Routes",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1195,7 +1309,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     AdultPrice = table.Column<double>(type: "float", nullable: false),
                     ChildPrice = table.Column<double>(type: "float", nullable: false),
                     ReferencePriceRatingId = table.Column<int>(type: "int", nullable: false),
-                    ServiceTypeId = table.Column<int>(type: "int", nullable: false),
                     ProviderName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -1219,12 +1332,58 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         principalTable: "ReferencePriceRating",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Routes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DayPlanId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StartPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EndPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    PortStartPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    PortEndPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ParentRouteId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Routes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ReferenceTransportPrices_ServiceTypes_ServiceTypeId",
-                        column: x => x.ServiceTypeId,
-                        principalTable: "ServiceTypes",
+                        name: "FK_Routes_DayPlans_DayPlanId",
+                        column: x => x.DayPlanId,
+                        principalTable: "DayPlans",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Routes_Facilities_EndPointId",
+                        column: x => x.EndPointId,
+                        principalTable: "Facilities",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Routes_Facilities_StartPointId",
+                        column: x => x.StartPointId,
+                        principalTable: "Facilities",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Routes_Ports_PortEndPointId",
+                        column: x => x.PortEndPointId,
+                        principalTable: "Ports",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Routes_Ports_PortStartPointId",
+                        column: x => x.PortStartPointId,
+                        principalTable: "Ports",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Routes_Routes_ParentRouteId",
+                        column: x => x.ParentRouteId,
+                        principalTable: "Routes",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1232,15 +1391,24 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     OptionClassId = table.Column<int>(type: "int", nullable: false),
                     MinTotal = table.Column<double>(type: "float", nullable: false),
                     MaxTotal = table.Column<double>(type: "float", nullable: false),
                     OptionQuotationStatusId = table.Column<int>(type: "int", nullable: false),
-                    PrivateTourRequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    PrivateTourRequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AssurancePriceHistoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OptionQuotations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OptionQuotations_AssurancePriceHistories_AssurancePriceHistoryId",
+                        column: x => x.AssurancePriceHistoryId,
+                        principalTable: "AssurancePriceHistories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_OptionQuotations_OptionClasses_OptionClassId",
                         column: x => x.OptionClassId,
@@ -1329,31 +1497,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AttendanceRoutes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AttendanceRouteTypeId = table.Column<int>(type: "int", nullable: false),
-                    RouteId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AttendanceRoutes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AttendanceRoutes_AttendanceRouteTypes_AttendanceRouteTypeId",
-                        column: x => x.AttendanceRouteTypeId,
-                        principalTable: "AttendanceRouteTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_AttendanceRoutes_Routes_RouteId",
-                        column: x => x.RouteId,
-                        principalTable: "Routes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Menus",
                 columns: table => new
                 {
@@ -1429,14 +1572,40 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AttendanceRoutes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AttendanceRouteTypeId = table.Column<int>(type: "int", nullable: false),
+                    RouteId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AttendanceRoutes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AttendanceRoutes_AttendanceRouteTypes_AttendanceRouteTypeId",
+                        column: x => x.AttendanceRouteTypeId,
+                        principalTable: "AttendanceRouteTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_AttendanceRoutes_Routes_RouteId",
+                        column: x => x.RouteId,
+                        principalTable: "Routes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "VehicleRoutes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VehicleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VehicleType = table.Column<int>(type: "int", nullable: false),
+                    VehicleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     RouteId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DriverId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ReferenceTransportPriceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    DriverId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ReferenceBrandName = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1445,12 +1614,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         name: "FK_VehicleRoutes_Drivers_DriverId",
                         column: x => x.DriverId,
                         principalTable: "Drivers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_VehicleRoutes_ReferenceTransportPrices_ReferenceTransportPriceId",
-                        column: x => x.ReferenceTransportPriceId,
-                        principalTable: "ReferenceTransportPrices",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_VehicleRoutes_Routes_RouteId",
@@ -1462,6 +1625,78 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         name: "FK_VehicleRoutes_Vehicles_VehicleId",
                         column: x => x.VehicleId,
                         principalTable: "Vehicles",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VehicleQuotationDetails",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VehicleType = table.Column<int>(type: "int", nullable: false),
+                    NumOfRentingDay = table.Column<int>(type: "int", nullable: false),
+                    StartPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StartPointDistrictId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EndPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EndPointDistrictId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    MinPrice = table.Column<double>(type: "float", nullable: false),
+                    MaxPrice = table.Column<double>(type: "float", nullable: false),
+                    NumOfVehicle = table.Column<int>(type: "int", nullable: false),
+                    OptionQuotationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VehicleQuotationDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VehicleQuotationDetails_Districts_EndPointDistrictId",
+                        column: x => x.EndPointDistrictId,
+                        principalTable: "Districts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_VehicleQuotationDetails_Districts_StartPointDistrictId",
+                        column: x => x.StartPointDistrictId,
+                        principalTable: "Districts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_VehicleQuotationDetails_OptionQuotations_OptionQuotationId",
+                        column: x => x.OptionQuotationId,
+                        principalTable: "OptionQuotations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_VehicleQuotationDetails_Provinces_EndPointId",
+                        column: x => x.EndPointId,
+                        principalTable: "Provinces",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_VehicleQuotationDetails_Provinces_StartPointId",
+                        column: x => x.StartPointId,
+                        principalTable: "Provinces",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MenuDishes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DishId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MenuDishes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MenuDishes_Dishes_DishId",
+                        column: x => x.DishId,
+                        principalTable: "Dishes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_MenuDishes_Menus_MenuId",
+                        column: x => x.MenuId,
+                        principalTable: "Menus",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });
@@ -1475,21 +1710,38 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     QuantityOfChild = table.Column<int>(type: "int", nullable: false),
                     FacilityRatingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ServiceTypeId = table.Column<int>(type: "int", nullable: false),
+                    ServingQuantity = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     MinPrice = table.Column<double>(type: "float", nullable: false),
                     MaxPrice = table.Column<double>(type: "float", nullable: false),
-                    OptionQuotationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    MinRedundancyCost = table.Column<double>(type: "float", nullable: false),
+                    MaxRedundancyCost = table.Column<double>(type: "float", nullable: false),
+                    OptionQuotationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DistrictId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_QuotationDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_QuotationDetails_Districts_DistrictId",
+                        column: x => x.DistrictId,
+                        principalTable: "Districts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_QuotationDetails_FacilityRatings_FacilityRatingId",
                         column: x => x.FacilityRatingId,
                         principalTable: "FacilityRatings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_QuotationDetails_Menus_MenuId",
+                        column: x => x.MenuId,
+                        principalTable: "Menus",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_QuotationDetails_OptionQuotations_OptionQuotationId",
                         column: x => x.OptionQuotationId,
@@ -1505,45 +1757,69 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "VehicleQuotationDetails",
+                name: "SellPriceHistorys",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VehicleType = table.Column<int>(type: "int", nullable: false),
-                    StartPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EndPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MinPrice = table.Column<double>(type: "float", nullable: false),
-                    MaxPrice = table.Column<double>(type: "float", nullable: false),
-                    FacilityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OptionQuotationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    MOQ = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    RedundancyCost = table.Column<double>(type: "float", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FacilityServiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TransportServiceDetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VehicleQuotationDetails", x => x.Id);
+                    table.PrimaryKey("PK_SellPriceHistorys", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_VehicleQuotationDetails_Facilities_FacilityId",
-                        column: x => x.FacilityId,
-                        principalTable: "Facilities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        name: "FK_SellPriceHistorys_FacilityServices_FacilityServiceId",
+                        column: x => x.FacilityServiceId,
+                        principalTable: "FacilityServices",
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_VehicleQuotationDetails_OptionQuotations_OptionQuotationId",
-                        column: x => x.OptionQuotationId,
-                        principalTable: "OptionQuotations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        name: "FK_SellPriceHistorys_Menus_MenuId",
+                        column: x => x.MenuId,
+                        principalTable: "Menus",
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_VehicleQuotationDetails_Provinces_EndPointId",
-                        column: x => x.EndPointId,
-                        principalTable: "Provinces",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        name: "FK_SellPriceHistorys_TransportServiceDetails_TransportServiceDetailId",
+                        column: x => x.TransportServiceDetailId,
+                        principalTable: "TransportServiceDetails",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ServiceCostHistorys",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    RedundancyCost = table.Column<double>(type: "float", nullable: false),
+                    MOQ = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FacilityServiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TransportServiceDetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServiceCostHistorys", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_VehicleQuotationDetails_Provinces_StartPointId",
-                        column: x => x.StartPointId,
-                        principalTable: "Provinces",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        name: "FK_ServiceCostHistorys_FacilityServices_FacilityServiceId",
+                        column: x => x.FacilityServiceId,
+                        principalTable: "FacilityServices",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ServiceCostHistorys_Menus_MenuId",
+                        column: x => x.MenuId,
+                        principalTable: "Menus",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ServiceCostHistorys_TransportServiceDetails_TransportServiceDetailId",
+                        column: x => x.TransportServiceDetailId,
+                        principalTable: "TransportServiceDetails",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1579,109 +1855,27 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MenuDishes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DishId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MenuDishes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MenuDishes_Dishes_DishId",
-                        column: x => x.DishId,
-                        principalTable: "Dishes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_MenuDishes_Menus_MenuId",
-                        column: x => x.MenuId,
-                        principalTable: "Menus",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SellPriceHistorys",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MOQ = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FacilityServiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    TransportServiceDetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SellPriceHistorys", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SellPriceHistorys_FacilityServices_FacilityServiceId",
-                        column: x => x.FacilityServiceId,
-                        principalTable: "FacilityServices",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_SellPriceHistorys_Menus_MenuId",
-                        column: x => x.MenuId,
-                        principalTable: "Menus",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_SellPriceHistorys_TransportServiceDetails_TransportServiceDetailId",
-                        column: x => x.TransportServiceDetailId,
-                        principalTable: "TransportServiceDetails",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ServiceCostHistorys",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
-                    MOQ = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FacilityServiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    TransportServiceDetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ServiceCostHistorys", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ServiceCostHistorys_FacilityServices_FacilityServiceId",
-                        column: x => x.FacilityServiceId,
-                        principalTable: "FacilityServices",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ServiceCostHistorys_Menus_MenuId",
-                        column: x => x.MenuId,
-                        principalTable: "Menus",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ServiceCostHistorys_TransportServiceDetails_TransportServiceDetailId",
-                        column: x => x.TransportServiceDetailId,
-                        principalTable: "TransportServiceDetails",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PlanServiceCostDetails",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TourId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    QuantityOfAdult = table.Column<int>(type: "int", nullable: false),
-                    QuantityOfChild = table.Column<int>(type: "int", nullable: false),
-                    SellPriceHistoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    SellPriceHistoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ReferenceTransportPriceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PlanServiceCostDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlanServiceCostDetails_ReferenceTransportPrices_ReferenceTransportPriceId",
+                        column: x => x.ReferenceTransportPriceId,
+                        principalTable: "ReferenceTransportPrices",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PlanServiceCostDetails_SellPriceHistorys_SellPriceHistoryId",
                         column: x => x.SellPriceHistoryId,
@@ -1871,7 +2065,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     { 0, "RESTING" },
                     { 1, "FOODANDBEVARAGE" },
                     { 2, "ENTERTAIMENT" },
-                    { 3, "VEHICLE" }
+                    { 3, "VEHICLE" },
+                    { 4, "ATTRACTION" },
+                    { 5, "GUIDING" },
+                    { 6, "DRIVING" },
+                    { 7, "HOLD" }
                 });
 
             migrationBuilder.InsertData(
@@ -1923,40 +2121,39 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 values: new object[,]
                 {
                     { 0, "BUS" },
-                    { 1, "COACH" },
-                    { 2, "LIMOUSINE" },
-                    { 3, "CAR" },
-                    { 4, "PLANE" },
-                    { 5, "BOAT" }
+                    { 1, "COACH" }
                 });
 
             migrationBuilder.InsertData(
                 table: "VehicleTypes",
                 columns: new[] { "Id", "Name" },
-                values: new object[] { 6, "BICYCLE" });
-
-            migrationBuilder.InsertData(
-                table: "VehicleTypes",
-                columns: new[] { "Id", "Name" },
-                values: new object[] { 7, "HELICOPTER" });
+                values: new object[,]
+                {
+                    { 2, "LIMOUSINE" },
+                    { 3, "CAR" },
+                    { 4, "PLANE" },
+                    { 5, "BOAT" },
+                    { 6, "BICYCLE" },
+                    { 7, "HELICOPTER" }
+                });
 
             migrationBuilder.InsertData(
                 table: "FacilityRatings",
                 columns: new[] { "Id", "FacilityTypeId", "RatingId" },
                 values: new object[,]
                 {
-                    { new Guid("0f47b8b8-dfa4-403c-9969-5dec814c1938"), 0, 1 },
-                    { new Guid("225758e0-f657-446e-98fd-c974e55d40b8"), 1, 8 },
-                    { new Guid("4652f741-3085-45a2-90a8-f3709b96fb68"), 2, 11 },
-                    { new Guid("55f6c585-d1fc-4ba0-b6aa-954c081b43fe"), 0, 0 },
-                    { new Guid("94fdaf0b-f062-42f9-a816-c0b149a39599"), 1, 5 },
-                    { new Guid("a2251a62-5a35-4730-9c28-efd31f256641"), 1, 7 },
-                    { new Guid("a537acb2-db0a-41a8-bf1e-3f3b9d4cf063"), 1, 9 },
-                    { new Guid("af92daf2-bf7f-4986-8261-e48dfc92a59d"), 0, 3 },
-                    { new Guid("b266b810-c9c9-4ba6-b650-6f46bc62f511"), 0, 0 },
-                    { new Guid("b64f6c06-4e46-49b1-ad5c-580dada8e999"), 1, 6 },
-                    { new Guid("d366d607-c5a2-47e0-bbcd-1048bf41894b"), 0, 4 },
-                    { new Guid("d6590997-ee47-4fb2-a6d2-a0664c515fee"), 0, 2 }
+                    { new Guid("1ba853db-84e4-4e9c-b750-dbe432d1a2b0"), 0, 2 },
+                    { new Guid("1e955290-e063-439f-8e17-d2edcb2ad69b"), 0, 1 },
+                    { new Guid("23c8e757-ac2d-4232-a569-d5461deb9b05"), 1, 6 },
+                    { new Guid("34115f50-25d5-4750-8500-5cb917f27da5"), 0, 0 },
+                    { new Guid("4b3961ff-aa19-41fd-9a3e-1a6b37f99d09"), 1, 9 },
+                    { new Guid("994cb1a9-6d4e-4d34-b904-91b229a12d5c"), 2, 11 },
+                    { new Guid("a59bbb50-4fcc-473f-bbf4-b311f06b2ed8"), 1, 7 },
+                    { new Guid("d39d6346-6831-4155-b27a-a2a779271ba2"), 0, 10 },
+                    { new Guid("ef3fc5d9-7c7a-44c3-8fc1-8da12ca7e93b"), 0, 3 },
+                    { new Guid("f2603607-d947-4aca-888e-9fd3bc3c0339"), 0, 4 },
+                    { new Guid("f48d19ee-36ae-49bd-88ed-a3d326b1b1d8"), 1, 5 },
+                    { new Guid("fa63bf87-51a3-46b7-a6df-aa29fb9b9057"), 1, 8 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -1997,6 +2194,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssurancePriceHistories_AssuranceId",
+                table: "AssurancePriceHistories",
+                column: "AssuranceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AttendanceDetails_AttendanceRouteId",
@@ -2059,11 +2261,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "TourId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Destinations_CommunceId",
-                table: "Destinations",
-                column: "CommunceId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Dishes_DishTypeId",
                 table: "Dishes",
                 column: "DishTypeId");
@@ -2072,6 +2269,21 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 name: "IX_Districts_ProvinceId",
                 table: "Districts",
                 column: "ProvinceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DriverSalaryHistories_DriverId",
+                table: "DriverSalaryHistories",
+                column: "DriverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventDetailPriceHistories_EventDetailId",
+                table: "EventDetailPriceHistories",
+                column: "EventDetailId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventDetails_EventId",
+                table: "EventDetails",
+                column: "EventId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Facilities_CommunceId",
@@ -2119,9 +2331,14 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "UnitId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Materials_DayPlanId",
-                table: "Materials",
-                column: "DayPlanId");
+                name: "IX_MaterialAssignments_MaterialId",
+                table: "MaterialAssignments",
+                column: "MaterialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MaterialAssignments_TourId",
+                table: "MaterialAssignments",
+                column: "TourId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Materials_MaterialTypeId",
@@ -2164,6 +2381,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "UpdateBy");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OptionQuotations_AssurancePriceHistoryId",
+                table: "OptionQuotations",
+                column: "AssurancePriceHistoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OptionQuotations_OptionClassId",
                 table: "OptionQuotations",
                 column: "OptionClassId");
@@ -2197,6 +2419,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 name: "IX_Orders_TourId",
                 table: "Orders",
                 column: "TourId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlanServiceCostDetails_ReferenceTransportPriceId",
+                table: "PlanServiceCostDetails",
+                column: "ReferenceTransportPriceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlanServiceCostDetails_SellPriceHistoryId",
@@ -2254,6 +2481,16 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "MainDestinationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PrivateTourRequests_MinimumHotelRatingId",
+                table: "PrivateTourRequests",
+                column: "MinimumHotelRatingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PrivateTourRequests_MinimumRestaurantRatingId",
+                table: "PrivateTourRequests",
+                column: "MinimumRestaurantRatingId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PrivateTourRequests_PrivateTourStatusId",
                 table: "PrivateTourRequests",
                 column: "PrivateTourStatusId");
@@ -2274,9 +2511,19 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "UpdateBy");
 
             migrationBuilder.CreateIndex(
+                name: "IX_QuotationDetails_DistrictId",
+                table: "QuotationDetails",
+                column: "DistrictId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_QuotationDetails_FacilityRatingId",
                 table: "QuotationDetails",
                 column: "FacilityRatingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuotationDetails_MenuId",
+                table: "QuotationDetails",
+                column: "MenuId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuotationDetails_OptionQuotationId",
@@ -2304,11 +2551,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "ReferencePriceRatingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReferenceTransportPrices_ServiceTypeId",
-                table: "ReferenceTransportPrices",
-                column: "ServiceTypeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RequestedLocations_PrivateTourRequestId",
                 table: "RequestedLocations",
                 column: "PrivateTourRequestId");
@@ -2332,6 +2574,16 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 name: "IX_Routes_ParentRouteId",
                 table: "Routes",
                 column: "ParentRouteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Routes_PortEndPointId",
+                table: "Routes",
+                column: "PortEndPointId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Routes_PortStartPointId",
+                table: "Routes",
+                column: "PortStartPointId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Routes_StartPointId",
@@ -2379,6 +2631,26 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "ProvinceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TourguideAssignments_TourId",
+                table: "TourguideAssignments",
+                column: "TourId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourGuideSalaryHistories_AccountId",
+                table: "TourGuideSalaryHistories",
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourguideScopes_AccountId",
+                table: "TourguideScopes",
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourguideScopes_DistrictId",
+                table: "TourguideScopes",
+                column: "DistrictId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TourRegistrations_FollowerId",
                 table: "TourRegistrations",
                 column: "FollowerId");
@@ -2414,16 +2686,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "VehicleTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TourTourguides_TourguideAssignmentId",
-                table: "TourTourguides",
-                column: "TourguideAssignmentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TourTourguides_TourId",
-                table: "TourTourguides",
-                column: "TourId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TourTravellers_CustomerId",
                 table: "TourTravellers",
                 column: "CustomerId");
@@ -2454,19 +2716,24 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 column: "VehicleTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_VehicleQuotationDetails_EndPointDistrictId",
+                table: "VehicleQuotationDetails",
+                column: "EndPointDistrictId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_VehicleQuotationDetails_EndPointId",
                 table: "VehicleQuotationDetails",
                 column: "EndPointId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_VehicleQuotationDetails_FacilityId",
-                table: "VehicleQuotationDetails",
-                column: "FacilityId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_VehicleQuotationDetails_OptionQuotationId",
                 table: "VehicleQuotationDetails",
                 column: "OptionQuotationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VehicleQuotationDetails_StartPointDistrictId",
+                table: "VehicleQuotationDetails",
+                column: "StartPointDistrictId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VehicleQuotationDetails_StartPointId",
@@ -2477,11 +2744,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 name: "IX_VehicleRoutes_DriverId",
                 table: "VehicleRoutes",
                 column: "DriverId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_VehicleRoutes_ReferenceTransportPriceId",
-                table: "VehicleRoutes",
-                column: "ReferenceTransportPriceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VehicleRoutes_RouteId",
@@ -2529,7 +2791,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 name: "ContractStatuses");
 
             migrationBuilder.DropTable(
-                name: "Materials");
+                name: "DriverSalaryHistories");
+
+            migrationBuilder.DropTable(
+                name: "EventDetailPriceHistories");
+
+            migrationBuilder.DropTable(
+                name: "MaterialAssignments");
 
             migrationBuilder.DropTable(
                 name: "MenuDishes");
@@ -2556,10 +2824,16 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 name: "ServiceCostHistorys");
 
             migrationBuilder.DropTable(
-                name: "TourRegistrations");
+                name: "TourguideAssignments");
 
             migrationBuilder.DropTable(
-                name: "TourTourguides");
+                name: "TourGuideSalaryHistories");
+
+            migrationBuilder.DropTable(
+                name: "TourguideScopes");
+
+            migrationBuilder.DropTable(
+                name: "TourRegistrations");
 
             migrationBuilder.DropTable(
                 name: "Transactions");
@@ -2583,7 +2857,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 name: "TourTravellers");
 
             migrationBuilder.DropTable(
-                name: "MaterialTypes");
+                name: "EventDetails");
+
+            migrationBuilder.DropTable(
+                name: "Materials");
 
             migrationBuilder.DropTable(
                 name: "Dishes");
@@ -2592,13 +2869,13 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 name: "OrderStatuses");
 
             migrationBuilder.DropTable(
+                name: "ReferenceTransportPrices");
+
+            migrationBuilder.DropTable(
                 name: "SellPriceHistorys");
 
             migrationBuilder.DropTable(
                 name: "JoinTourStatuses");
-
-            migrationBuilder.DropTable(
-                name: "TourguideAssignments");
 
             migrationBuilder.DropTable(
                 name: "TransactionTypes");
@@ -2608,9 +2885,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
             migrationBuilder.DropTable(
                 name: "Drivers");
-
-            migrationBuilder.DropTable(
-                name: "ReferenceTransportPrices");
 
             migrationBuilder.DropTable(
                 name: "Vehicles");
@@ -2625,13 +2899,25 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 name: "Customers");
 
             migrationBuilder.DropTable(
+                name: "Events");
+
+            migrationBuilder.DropTable(
+                name: "MaterialTypes");
+
+            migrationBuilder.DropTable(
                 name: "DishTypes");
+
+            migrationBuilder.DropTable(
+                name: "ReferencePriceRating");
 
             migrationBuilder.DropTable(
                 name: "Menus");
 
             migrationBuilder.DropTable(
                 name: "TransportServiceDetails");
+
+            migrationBuilder.DropTable(
+                name: "AssurancePriceHistories");
 
             migrationBuilder.DropTable(
                 name: "OptionClasses");
@@ -2643,22 +2929,19 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 name: "PrivateTourRequests");
 
             migrationBuilder.DropTable(
-                name: "Ports");
-
-            migrationBuilder.DropTable(
-                name: "ReferencePriceRating");
-
-            migrationBuilder.DropTable(
                 name: "DayPlans");
 
             migrationBuilder.DropTable(
-                name: "Destinations");
+                name: "Ports");
 
             migrationBuilder.DropTable(
                 name: "MealTypes");
 
             migrationBuilder.DropTable(
                 name: "FacilityServices");
+
+            migrationBuilder.DropTable(
+                name: "Assurances");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

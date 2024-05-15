@@ -248,6 +248,8 @@ namespace TravelCapstone.BackEnd.Application.Services
 
         public async Task<AppActionResult> GetPriceOfVehicle(Guid provinceId, Guid privatetourRequestId, int numOfDay, VehicleType vehicleType, int pageNumber, int pageSize)
         {
+            // (range Sức chứa bus * số lướng bus + range sc hơi * sl hơi) / Tổng người
+            // (12-15 *2 + 5-6*1) / tổng = 
             AppActionResult result = new AppActionResult();
             try
             {
