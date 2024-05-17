@@ -12,6 +12,11 @@ public class OptionQuotation
     public OptionClass OptionClassId { get; set; }
     [ForeignKey(nameof(OptionClassId))]
     public Models.EnumModels.OptionClass? OptionClass { get; set; }
+    public double OrganizationCost { get; set; }
+    public double ContigencyFeePerPerson { get; set; }
+    public double EscortFee { get; set; }
+    public double OperatingFee { get; set; }
+    public double DriverCost { get; set; }
     public double MinTotal { get; set; }
     public double MaxTotal { get; set; }
     public OptionQuotationStatus OptionQuotationStatusId { get; set; }

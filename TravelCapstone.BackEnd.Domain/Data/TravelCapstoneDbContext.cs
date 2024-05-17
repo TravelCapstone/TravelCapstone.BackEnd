@@ -57,6 +57,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Menu> Menus { get; set; }
     public DbSet<MenuDish> MenuDishes { get; set; }
     public DbSet<Dish> Dishes { get; set; }
+    public DbSet<TourguideQuotationDetail> TourguideQuotationDetails { get; set; }
     public DbSet<TourguideAssignment> TourguideAssignments { get; set; }
     public DbSet<TransportServiceDetail> TransportServiceDetails { get; set; }
     public DbSet<ReferenceTransportPrice> ReferenceTransportPrices { get; set; }
@@ -68,6 +69,8 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<EventDetailPriceHistory> EventDetailPriceHistories { get; set; }
     public DbSet<Assurance> Assurances { get; set; }
     public DbSet<AssurancePriceHistory> AssurancePriceHistories { get; set; }
+    public DbSet<MaterialPriceHistory> MaterialPriceHistories { get; set; }
+    public DbSet<OptionEvent> OptionEvents { get; set; }
     #endregion
 
     #region Enum

@@ -50,17 +50,17 @@ namespace TravelCapstone.BackEnd.Application.Services
                         }
                     }
                     var closestProvinceIds = closestProvinces.Select(p => p.Id).ToList();
-                    //var tourtourGuideAssignmentRepository = Resolve<IRepository<TourTourguide>>();
-                    //foreach (var id in closestProvinceIds)
-                    //{
-                    //    var tourtouGuideAssignmentList = await tourtourGuideAssignmentRepository!.GetAllDataByExpression(p => p.TourguideAssignment!.ProvinceId == provinceId && p.Tour!.StartDate == startDate && p.Tour.EndDate == endDate
-                    //    , 0, 0, null, true, p => p.TourguideAssignment!);
-                    //    if (tourtouGuideAssignmentList.Items != null && tourtouGuideAssignmentList.Items.Count > 0)
-                    //    {
-                    //        var assignedTourguide = tourtouGuideAssignmentList!.Items!.Select(p => p.TourguideAssignmentId);
-                    //        result.Result = await _tourguideAssignmentRepository.GetAllDataByExpression(p => !assignedTourguide.Contains(p.Id), pageNumber, pageSize, null, true, p => p.Account!, p => p.Province!);
-                    //    }
-                    //}
+                    var tourtourGuideAssignmentRepository = Resolve<IRepository<TourguideAssignment>>();
+                    foreach (var id in closestProvinceIds)
+                    {
+                        var tourtouGuideAssignmentList = await tourtourGuideAssignmentRepository!.GetAllDataByExpression(p => p.ProvinceId == provinceId && p.Tour!.EndDate >= startDate || p.Tour.StartDate <= endDate
+                        , 0, 0, null, true, p => p.Account!);
+                        if (tourtouGuideAssignmentList.Items != null && tourtouGuideAssignmentList.Items.Count > 0)
+                        {
+                            var assignedTourguide = tourtouGuideAssignmentList!.Items!.Select(p => p.AccountId);
+                            result.Result = await _tourguideAssignmentRepository.GetAllDataByExpression(p => !assignedTourguide.Contains(p.AccountId), pageNumber, pageSize, null, true, p => p.Account!, p => p.Province!);
+                        }
+                    }
                 }
             } catch (Exception ex)
             {
@@ -103,14 +103,14 @@ namespace TravelCapstone.BackEnd.Application.Services
             var result = new AppActionResult();
             try
             {
-                //var tourtourGuidesRepository = Resolve<IRepository<TourTourguide>>();
-                //var tourtouGuideList = await tourtourGuidesRepository!.GetAllDataByExpression(p => p.TourguideAssignment!.ProvinceId == provinceId, 0, 0, null, true, p => p.TourguideAssignment!);
-                //if (tourtouGuideList == null)
-                //{
-                //    return result;  
-                //}
-                //var assignedTourguide = tourtouGuideList!.Items!.Select(p => p.TourguideAssignmentId);
-                //result.Result = await _tourguideAssignmentRepository.GetAllDataByExpression(p => !assignedTourguide.Contains(p.Id), 0 , 0 , null, true, p => p.Account!, p => p.Province!);
+                var tourtourGuidesRepository = Resolve<IRepository<TourguideAssignment>>();
+                var tourtouGuideList = await tourtourGuidesRepository!.GetAllDataByExpression(p => p.ProvinceId == provinceId, 0, 0, null, true, p => p.Account!);
+                if (tourtouGuideList == null)
+                {
+                    return result;
+                }
+                var assignedTourguide = tourtouGuideList!.Items!.Select(p => p.AccountId);
+                result.Result = await _tourguideAssignmentRepository.GetAllDataByExpression(p => !assignedTourguide.Contains(p.AccountId), 0, 0, null, true, p => p.Account!, p => p.Province!);
             } catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);

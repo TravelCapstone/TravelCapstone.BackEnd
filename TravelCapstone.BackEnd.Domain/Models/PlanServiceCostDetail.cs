@@ -23,4 +23,8 @@ public class PlanServiceCostDetail
 
     [ForeignKey(nameof(ReferenceTransportPriceId))]
     public ReferenceTransportPrice? ReferenceTransportPrice { get; set; }
+    public Guid? MaterialPriceHistoryId { get; set; }
+
+    [ForeignKey(nameof(MaterialPriceHistoryId))]
+    public MaterialPriceHistory? MaterialPriceHistory { get; set; }
 }

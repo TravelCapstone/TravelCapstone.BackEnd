@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240517003926_AddMaterialPrice")]
+    partial class AddMaterialPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1462,7 +1464,15 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("OptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Total")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OptionId");
 
                     b.ToTable("Events");
                 });
@@ -1837,27 +1847,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.ToTable("MenuDishes");
                 });
 
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.OptionEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("OptionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("OptionId");
-
-                    b.ToTable("OptionEvents");
-                });
-
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.OptionQuotation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1868,9 +1857,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("ContigencyFeePerPerson")
-                        .HasColumnType("float");
-
-                    b.Property<double>("DriverCost")
                         .HasColumnType("float");
 
                     b.Property<DateTime>("EndDate")
@@ -3086,6 +3072,15 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("Driver");
                 });
 
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Event", b =>
+                {
+                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.OptionQuotation", "OptionQuotation")
+                        .WithMany()
+                        .HasForeignKey("OptionId");
+
+                    b.Navigation("OptionQuotation");
+                });
+
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EventDetail", b =>
                 {
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Event", "Event")
@@ -3288,25 +3283,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("Dish");
 
                     b.Navigation("Menu");
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.OptionEvent", b =>
-                {
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.OptionQuotation", "OptionQuotation")
-                        .WithMany()
-                        .HasForeignKey("OptionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("OptionQuotation");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.OptionQuotation", b =>
