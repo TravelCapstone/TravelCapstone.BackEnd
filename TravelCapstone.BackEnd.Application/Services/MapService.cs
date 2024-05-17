@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using RestSharp;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
@@ -327,9 +328,9 @@ public class MapService : GenericBackendService, IMapService
 
                     int estimateTimeOfTrip = obj.Rows[0].Elements[0].Duration.NumberOfTime;
 
-                    double estimateTimeOfTripInHours = estimateTimeOfTrip / 60.0;
+                    double estimateTimeOfTripInHours = estimateTimeOfTrip / 3600;
                         
-                    DateTime dateTravel = startDate.AddHours(estimateTimeOfTrip);
+                    DateTime dateTravel = startDate.AddHours(estimateTimeOfTripInHours);
 
                     (int numberOfDayToTravel, int numberOfNightToTravel) = CalculateTimesToCheckOut(startDate, dateTravel);
 
@@ -343,6 +344,10 @@ public class MapService : GenericBackendService, IMapService
 
                     result.Result = distanceTripResponseDto;        
                 }
+            }
+            else
+            {
+                result = BuildAppActionResultError(result ,"Kết nối tới API Goong không được");
             }
         } 
         catch (Exception e)
@@ -360,7 +365,7 @@ public class MapService : GenericBackendService, IMapService
         if (endDate.Hour >= 14)
         {
             // Trường hợp này chỉ được tính là một đêm
-            numberOfDays = 1;
+            numberOfDays = 0;
             numberOfNights = 1;
         }
         else
