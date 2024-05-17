@@ -13,5 +13,7 @@ namespace TravelCapstone.BackEnd.Application.IServices
     {
         public Task<AppActionResult> AddMaterialtoTour(AddMaterialRequest request);
         public Task<AppActionResult> GetMaterialByMaterialType(MaterialType type);
+        public Task<AppActionResult> GetLatestMaterialListPrice();
+
     }
 }

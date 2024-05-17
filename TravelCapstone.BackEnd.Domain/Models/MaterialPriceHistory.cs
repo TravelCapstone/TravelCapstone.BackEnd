@@ -8,16 +8,14 @@ using System.Threading.Tasks;
 
 namespace TravelCapstone.BackEnd.Domain.Models
 {
-    public class EventDetail
+    public class MaterialPriceHistory
     {
         [Key]
         public Guid Id { get; set; }
-        public string Name { get; set; } = null!;
-        public int Quantity { get; set; }
-        public bool PerPerson { get; set; }
-        public Guid EventId { get; set; }
-        [ForeignKey(nameof(EventId))]
-        public Event? Event { get; set; }
-        
+        public DateTime Date { get; set; }
+        public double Price { get; set; }
+        public Guid MaterialId { get; set; }
+        [ForeignKey(nameof(MaterialId))]
+        public Material? Material { get; set; }
     }
 }

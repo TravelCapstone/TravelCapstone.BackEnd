@@ -825,5 +825,111 @@ namespace TravelCapstone.BackEnd.Application.Services
             }
             return result;
         }
+
+        public async Task<AppActionResult> GetVehiclePriceRange(Guid startPoint, Guid endPoint, VehicleType vehicleType, int Quantity, DateTime StartDate, DateTime EndDate, int pageNumber, int pageSize)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var provinceRepository = Resolve<IRepository<Province>>();
+                var startPointDb = await provinceRepository!.GetByExpression(p => p!.Id == startPoint);
+                var endpointDb = await provinceRepository!.GetByExpression(p => p!.Id == endPoint);
+                if (startPointDb == null || endpointDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy nơi bắt đầu {startPoint} hoặc nơi kết thúc {endpointDb}");
+                    return result;
+                }
+                SuggestedVehicleResponse data = new SuggestedVehicleResponse();
+                if (vehicleType == VehicleType.PLANE || vehicleType == VehicleType.BOAT)
+                {
+                    var referenceTransportRepository = Resolve<IRepository<ReferenceTransportPrice>>();
+                    var priceList = await referenceTransportRepository!.GetAllDataByExpression(a => a.Departure!.Commune!.District!.ProvinceId == startPoint && a.Arrival!.Commune!.District!.ProvinceId == endPoint
+                  || a.Departure.Commune.District.ProvinceId == endPoint && a.Arrival!.Commune!.District!.ProvinceId == startPoint
+                  , 0, 0, null, false, null
+                  );
+                    data.suggestedVehicleItems.Add(new SuggestedVehicleItem
+                    {
+                        VehicleType = vehicleType,
+                        Quantity = 1
+                    });
+                    data.MinCostperPerson = priceList.Items!.OrderBy(p => p.AdultPrice).FirstOrDefault()!.AdultPrice;
+                    data.MaxCostperPerson = priceList.Items!.OrderByDescending(p => p.AdultPrice).FirstOrDefault()!.AdultPrice;
+                }
+                else
+                {
+                    var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
+                    Dictionary<VehicleType, int> suggestedVehicleList = await GetOptimalVehicleSuggestion(Quantity);
+                    int totalDays = (EndDate - StartDate).Days;
+                    foreach(var kvp in suggestedVehicleList)
+                    {
+                        var sellPrice = await sellPriceRepository!.GetAllDataByExpression(s => s.TransportServiceDetail!.VehicleTypeId == kvp.Key && s.TransportServiceDetail.FacilityService.Facility.Communce.District!.ProvinceId == startPoint && s.MOQ <= kvp.Value, 0, 0, null, false, s => s.TransportServiceDetail);
+                        var latestPrices = sellPrice.Items.GroupBy(p => p.TransportServiceDetail.FacilityServiceId)
+                        .Select(g => g.OrderByDescending(p => p.Date).FirstOrDefault())
+                        .ToList();
+                        data.suggestedVehicleItems.Add( new SuggestedVehicleItem {
+                            VehicleType = kvp.Key,
+                            Quantity = kvp.Value
+                        } );
+                        data.MinCostperPerson += latestPrices.MinBy(p => p.Price).Price * Quantity * totalDays;
+                        data.MaxCostperPerson += latestPrices.MaxBy(p => p.Price).Price* Quantity * totalDays;
+                    }
+
+                    data.MinCostperPerson = (data.MinCostperPerson / (1000 * Quantity)) * 1000;
+                    data.MaxCostperPerson = (data.MaxCostperPerson / (1000 * Quantity)) * 1000;
+                }
+
+                result.Result = data;
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        private async Task<Dictionary<VehicleType, int>> GetOptimalVehicleSuggestion(int quantity)
+        {
+            Dictionary<VehicleType, int> data = new Dictionary<VehicleType, int>();
+            try
+            {
+                //6 -- 15 -- 29
+                if(quantity > 44) {
+                    int numOfBus = quantity / 44;
+                    quantity -= numOfBus * 44;
+                    data.Add(VehicleType.BUS, numOfBus);
+                }
+
+                if (quantity > 29)
+                {
+                    data[VehicleType.BUS]++;
+                    quantity = 0;
+                }
+
+                if (quantity > 15)
+                {
+                    int numOfBus = quantity / 29;
+                    quantity -= numOfBus * 29;
+                    data.Add(VehicleType.COACH, numOfBus);
+                }
+
+                if(quantity > 6)
+                {
+                    int numOfBus = quantity / 15;
+                    quantity -= numOfBus * 15;
+                    data.Add(VehicleType.LIMOUSINE, numOfBus);
+                }
+
+                if(quantity > 0)
+                {
+                    data.Add(VehicleType.CAR, 1);
+                }
+
+
+            } catch(Exception ex)
+            {
+                data = null;
+            }
+            return data;
+        }
     }
 }

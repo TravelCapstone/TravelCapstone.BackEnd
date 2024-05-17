@@ -79,5 +79,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetAveragePriceOfMealService(districId, privatetourRequestId, ratingId, mealType, servingQuantity, pageNumber, pageSize);
         }
+
+        [HttpGet("get-vehicle-price-range")]
+        public async Task<AppActionResult> GetVehiclePriceRange(Guid startPoint, Guid endPoint, VehicleType vehicleType, int Quantity, DateTime StartDate, DateTime EndDate, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _service.GetVehiclePriceRange(startPoint, endPoint, vehicleType, Quantity, StartDate, EndDate, pageNumber, pageSize);
+        }
     }
 }

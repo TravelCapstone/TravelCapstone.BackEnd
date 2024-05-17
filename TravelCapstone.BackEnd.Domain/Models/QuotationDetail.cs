@@ -32,4 +32,7 @@ public class QuotationDetail
     public Guid? MenuId { get; set; }
     [ForeignKey(nameof(MenuId))]
     public Menu? Menu { get; set; }
+    public Guid? MaterialPriceHistoryId { get; set; }
+    [ForeignKey(nameof(MaterialPriceHistoryId))]
+    public MaterialPriceHistory? MaterialPriceHistory { get; set; }
 }
