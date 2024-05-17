@@ -11,5 +11,6 @@ namespace TravelCapstone.BackEnd.Application.IServices
     {
         Task<AppActionResult> GetUnassignTourGuideByProvince(Guid provinceId);
         Task<AppActionResult> GetAvailableTourGuide(Guid provinceId, DateTime startDate, DateTime endDate, int pageNumber, int pageSize);
+        Task<AppActionResult> GetMaxTourGuideNumber(int numOfVehicle, Guid preValueId);
     }
 }

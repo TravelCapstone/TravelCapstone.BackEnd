@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
@@ -116,6 +117,34 @@ namespace TravelCapstone.BackEnd.Application.Services
                 result = BuildAppActionResultError(result, ex.Message);
             }
             return result;  
+        }
+
+        public async Task<AppActionResult> GetMaxTourGuideNumber(int numOfVehicle, Guid preValueId)
+        {
+            var result = new AppActionResult();
+            try
+            {
+                var preValueRepository = Resolve<IRepository<Configuration>>();
+                var preValueDb = await preValueRepository!.GetByExpression(p => p.Id == preValueId);
+                if (preValueDb == null)
+                {
+                    result = BuildAppActionResultError(result, "Config này không tồn tại");
+                }
+                var numberMatch = Regex.Match(preValueDb!.PreValue, @"\d+");
+                if (!numberMatch.Success)
+                {
+                    result = BuildAppActionResultError(result, "No number found in preValue");
+                    return result;
+                }
+                int extractedNumber = int.Parse(numberMatch.Value);
+
+                result.Result = numOfVehicle + extractedNumber; 
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
         }
     }
 }

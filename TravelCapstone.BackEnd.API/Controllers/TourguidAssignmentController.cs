@@ -26,5 +26,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _tourguideAssignmentsService.GetAvailableTourGuide(provinceId, startDate, endDate, pageNumber, pageSize);
         }
+
+        [HttpGet("get-max-tour-guide-number")]
+        public async Task<AppActionResult> GetMaxTourGuideNumber(int numOfVehicle, Guid preValueId)
+        {
+            return await _tourguideAssignmentsService.GetMaxTourGuideNumber(numOfVehicle, preValueId);
+        }
     }
 }
