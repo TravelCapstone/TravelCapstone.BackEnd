@@ -26,7 +26,7 @@ namespace TravelCapstone.BackEnd.Domain.Models
         public Province? EndPoint { get; set; }
         public Guid? EndPointDistrictId { get; set; }
         [ForeignKey(nameof(EndPointDistrictId))]
-        public District? EndPointDistrict { get; set; }
+        public District? District { get; set; }
         public double MinPrice { get; set; }
         public double MaxPrice { get; set; }
         public int NumOfVehicle { get; set; }
