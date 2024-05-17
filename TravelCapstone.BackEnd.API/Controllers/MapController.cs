@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.API.Controllers;
 
@@ -38,5 +39,10 @@ public class MapController : ControllerBase
     public async Task<AppActionResult> ImportPosition(Guid StartDestinationId, List<Guid> DestinationIds, bool IsPilgrimageTrip)
     {
         return await _service.FindOptimalPath(StartDestinationId, DestinationIds, IsPilgrimageTrip);
+    }
+    [HttpPost("get-estimate-trip-date")]
+    public async Task<AppActionResult> DistanceMatrix(Guid StartDestinationId, List<Guid> DestinationIds, VehicleType vehicleType, DateTime startDate, DateTime endDate )
+    {
+        return await _service.GetEstimateTripDate(StartDestinationId, DestinationIds, vehicleType,  startDate,  endDate);           
     }
 }
