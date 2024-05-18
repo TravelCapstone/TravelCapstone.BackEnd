@@ -9,6 +9,7 @@ public class ServiceCostHistory
     [Key] public Guid Id { get; set; }
 
     public double Price { get; set; }
+    public double RedundancyCost { get; set; }
     public int MOQ { get; set; }
     public DateTime Date { get; set; }
     public Guid? FacilityServiceId { get; set; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
@@ -50,15 +51,15 @@ namespace TravelCapstone.BackEnd.Application.Services
                         }
                     }
                     var closestProvinceIds = closestProvinces.Select(p => p.Id).ToList();
-                    var tourtourGuideAssignmentRepository = Resolve<IRepository<TourTourguide>>();
+                    var tourtourGuideAssignmentRepository = Resolve<IRepository<TourguideAssignment>>();
                     foreach (var id in closestProvinceIds)
                     {
-                        var tourtouGuideAssignmentList = await tourtourGuideAssignmentRepository!.GetAllDataByExpression(p => p.TourguideAssignment!.ProvinceId == provinceId && p.Tour!.StartDate == startDate && p.Tour.EndDate == endDate
-                        , 0, 0, null, true, p => p.TourguideAssignment!);
+                        var tourtouGuideAssignmentList = await tourtourGuideAssignmentRepository!.GetAllDataByExpression(p => p.ProvinceId == provinceId && p.Tour!.EndDate >= startDate || p.Tour.StartDate <= endDate
+                        , 0, 0, null, true, p => p.Account!);
                         if (tourtouGuideAssignmentList.Items != null && tourtouGuideAssignmentList.Items.Count > 0)
                         {
-                            var assignedTourguide = tourtouGuideAssignmentList!.Items!.Select(p => p.TourguideAssignmentId);
-                            result.Result = await _tourguideAssignmentRepository.GetAllDataByExpression(p => !assignedTourguide.Contains(p.Id), pageNumber, pageSize, null, true, p => p.Account!, p => p.Province!);
+                            var assignedTourguide = tourtouGuideAssignmentList!.Items!.Select(p => p.AccountId);
+                            result.Result = await _tourguideAssignmentRepository.GetAllDataByExpression(p => !assignedTourguide.Contains(p.AccountId), pageNumber, pageSize, null, true, p => p.Account!, p => p.Province!);
                         }
                     }
                 }
@@ -103,19 +104,47 @@ namespace TravelCapstone.BackEnd.Application.Services
             var result = new AppActionResult();
             try
             {
-                var tourtourGuidesRepository = Resolve<IRepository<TourTourguide>>();
-                var tourtouGuideList = await tourtourGuidesRepository!.GetAllDataByExpression(p => p.TourguideAssignment!.ProvinceId == provinceId, 0, 0, null, true, p => p.TourguideAssignment!);
+                var tourtourGuidesRepository = Resolve<IRepository<TourguideAssignment>>();
+                var tourtouGuideList = await tourtourGuidesRepository!.GetAllDataByExpression(p => p.ProvinceId == provinceId, 0, 0, null, true, p => p.Account!);
                 if (tourtouGuideList == null)
                 {
-                    return result;  
+                    return result;
                 }
-                var assignedTourguide = tourtouGuideList!.Items!.Select(p => p.TourguideAssignmentId);
-                result.Result = await _tourguideAssignmentRepository.GetAllDataByExpression(p => !assignedTourguide.Contains(p.Id), 0 , 0 , null, true, p => p.Account!, p => p.Province!);
+                var assignedTourguide = tourtouGuideList!.Items!.Select(p => p.AccountId);
+                result.Result = await _tourguideAssignmentRepository.GetAllDataByExpression(p => !assignedTourguide.Contains(p.AccountId), 0, 0, null, true, p => p.Account!, p => p.Province!);
             } catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
             }
             return result;  
+        }
+
+        public async Task<AppActionResult> GetMaxTourGuideNumber(int numOfVehicle, Guid preValueId)
+        {
+            var result = new AppActionResult();
+            try
+            {
+                var preValueRepository = Resolve<IRepository<Configuration>>();
+                var preValueDb = await preValueRepository!.GetByExpression(p => p.Id == preValueId);
+                if (preValueDb == null)
+                {
+                    result = BuildAppActionResultError(result, "Config này không tồn tại");
+                }
+                var numberMatch = Regex.Match(preValueDb!.PreValue, @"\d+");
+                if (!numberMatch.Success)
+                {
+                    result = BuildAppActionResultError(result, "No number found in preValue");
+                    return result;
+                }
+                int extractedNumber = int.Parse(numberMatch.Value);
+
+                result.Result = numOfVehicle + extractedNumber; 
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
         }
     }
 }

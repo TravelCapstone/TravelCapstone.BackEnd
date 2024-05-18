@@ -1,11 +1,13 @@
 using Newtonsoft.Json;
 using RestSharp;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
+using static System.Net.WebRequestMethods;
 using Prediction = TravelCapstone.BackEnd.Common.DTO.ProcessDTO.Prediction;
 
 namespace TravelCapstone.BackEnd.Application.Services;
@@ -273,5 +275,137 @@ public class MapService : GenericBackendService, IMapService
             result = BuildAppActionResultError(result, e.Message);
         }
         return result;
+    }
+
+    public async Task<AppActionResult> GetEstimateTripDate(Guid StartDestinationId, List<Guid> DestinationIds, VehicleType vehicleType, DateTime startDate, DateTime endDate)
+    {
+        AppActionResult result = new AppActionResult();
+        try 
+        {
+            var provinceRepository = Resolve<IRepository<Province>>();
+            var startProvince = await provinceRepository!.GetByExpression(p => p.Id == StartDestinationId, null);
+            if (startProvince == null)
+            {
+                result = BuildAppActionResultError(result, $"Không tìm thấy thông tin địa điểm bắt đầu với id {StartDestinationId}");
+                return result;
+            }
+            var onWayProvinces = await provinceRepository!.GetAllDataByExpression(p => DestinationIds.Contains(p.Id), 0, 0, null, false, null);
+            if (onWayProvinces.Items!.Count != DestinationIds.Count)
+            {
+                foreach (var item in onWayProvinces.Items)
+                {
+                    if (!DestinationIds.Contains(item.Id))
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy thông tin địa điểm với id {item.Id}");
+                        return result;
+                    }
+                }
+            }
+
+            string start = $"{startProvince.lat.ToString()}, {startProvince.lng.ToString()}";
+            StringBuilder waypoints = new StringBuilder();
+            foreach (var item in onWayProvinces.Items)
+            {
+                waypoints.Append($"{item.lat.ToString()},{item.lng.ToString()};");
+            }
+            waypoints.Remove(waypoints.Length - 1, 1);
+            string vehicle = vehicleType.ToString().ToLower();
+            string endpoint = $"https://rsapi.goong.io/DistanceMatrix?origins={start}&destinations={waypoints.ToString()}&vehicle={vehicle}&api_key={APIKEY}";
+            var client = new RestClient();
+            var request = new RestRequest(endpoint);
+
+            var response = await client.ExecuteAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var data = response.Content;
+                var obj = JsonConvert.DeserializeObject<DistanceTripInfo.Root>(data!);
+                if (obj != null && obj.Rows != null && obj.Rows.Count > 0 && obj.Rows[0].Elements != null && obj.Rows[0].Elements.Count > 0)
+                {
+                    DistanceTripResponseDto distanceTripResponseDto = new DistanceTripResponseDto();
+                    distanceTripResponseDto.DistanceInText = obj.Rows[0].Elements[0].Distance.Distances;
+                    distanceTripResponseDto.DurationInText = obj.Rows[0].Elements[0].Duration.Durations;
+                    distanceTripResponseDto.VehicleType = vehicleType;
+
+                    int estimateTimeOfTrip = obj.Rows[0].Elements[0].Duration.NumberOfTime;
+
+                    double estimateTimeOfTripInHours = estimateTimeOfTrip / 3600;
+                        
+                    DateTime dateTravel = startDate.AddHours(estimateTimeOfTripInHours);
+
+                    (int numberOfDayToTravel, int numberOfNightToTravel) = CalculateTimesToCheckOut(startDate, dateTravel);
+
+                    (int numberOfDaysOfTrip, int NumberOfNightOfTrip) = CalculateDaysAndNights(startDate, endDate);
+
+                    int numOfDayRemain = numberOfDaysOfTrip - numberOfDayToTravel;
+                    int numOfNightRemain = NumberOfNightOfTrip - numberOfNightToTravel;
+
+                    distanceTripResponseDto.NumOfDay = numOfDayRemain;
+                    distanceTripResponseDto.NumOfNight = numOfNightRemain;  
+
+                    result.Result = distanceTripResponseDto;        
+                }
+            }
+            else
+            {
+                result = BuildAppActionResultError(result ,"Kết nối tới API Goong không được");
+            }
+        } 
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, e.Message);
+        }
+        return result;
+    }
+
+    private static (int numberOfDays, int numberOfNights) CalculateTimesToCheckOut(DateTime startDate, DateTime endDate)
+    {
+        int numberOfDays, numberOfNights;
+
+        // Kiểm tra nếu end_date lớn hơn hoặc bằng 14:00
+        if (endDate.Hour >= 14)
+        {
+            // Trường hợp này chỉ được tính là một đêm
+            numberOfDays = 0;
+            numberOfNights = 1;
+        }
+        else
+        {
+            // Trường hợp này chỉ được tính là một ngày
+            numberOfDays = 1;
+            numberOfNights = 0;
+        }
+
+        return (numberOfDays, numberOfNights);
+    }
+
+
+    private (int numberOfDays, int numberOfNights) CalculateDaysAndNights(DateTime startDate, DateTime endDate)
+    {
+        // Check if endDate is after startDate
+        if (endDate <= startDate)
+        {
+            // If endDate is not after startDate, return 0 days and 0 nights
+            return (0, 0);
+        }
+
+        // Calculate the total number of days
+        int numberOfDays = (int)(endDate.Date - startDate.Date).TotalDays;
+
+        // Calculate the number of nights
+        int numberOfNights = numberOfDays;
+
+        // Check if endDate's time is after the startDate's time
+        if (endDate.TimeOfDay > startDate.TimeOfDay)
+        {
+            // Add an extra night if endDate's time is past startDate's time
+            numberOfNights++;
+        }
+        else if (endDate.TimeOfDay < startDate.TimeOfDay)
+        {
+            // Subtract a night if endDate's time is before startDate's time
+            numberOfNights--;
+        }
+
+        return (numberOfDays, numberOfNights);
     }
 }

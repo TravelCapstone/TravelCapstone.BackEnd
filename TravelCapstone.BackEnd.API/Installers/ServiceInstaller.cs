@@ -44,5 +44,9 @@ public class ServiceInstaller : IInstaller
         services.AddScoped<IFacilityTypeService, FacilityTypeService>();
         services.AddScoped<IVehicleService, VehicleService>();
         services.AddScoped<IDriverService, DriverService>();
+        services.AddScoped<IEventService, EventService>();
+        services.AddScoped<IHumanResourceFeeService, HumanResourceFeeService>();
+        services.AddScoped<IDriverService, DriverService>(); 
+        services.AddScoped<IAssuranceService, AssuranceService>();
     }
 }

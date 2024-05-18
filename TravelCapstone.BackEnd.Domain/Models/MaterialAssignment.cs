@@ -11,7 +11,7 @@ public class MaterialAssignment
     public int Quantity { get; set; }
     public Guid TourId { get; set; }
     [ForeignKey(nameof(TourId))] public Tour? Tour { get; set; }
-    public Guid MaterialId { get; set; }
-    [ForeignKey(nameof(MaterialId))]
-    public Material? Material { get; set; }
+    public Guid MaterialPriceHistoryId { get; set; }
+    [ForeignKey(nameof(MaterialPriceHistoryId))]
+    public MaterialPriceHistory? MaterialPriceHistory { get; set; }
 }

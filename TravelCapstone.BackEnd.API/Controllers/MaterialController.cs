@@ -18,5 +18,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _materialService.AddMaterialtoTour(request);
         }
+
+        [HttpPost("get-material-list-price")]
+        public async Task<AppActionResult> GetLatestMaterialListPrice()
+        {
+            return await _materialService.GetLatestMaterialListPrice();
+        }
     }
 }

@@ -57,11 +57,6 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public int NumOfServiceUse { get; set; }
     }
 
-    public class EatingPlanLocation : PlanLocation
-    {
-        public int MealPerDay { get; set; }
-    }
-
     public class PlanVehicle
     {
         public VehicleType VehicleType { get; set; }

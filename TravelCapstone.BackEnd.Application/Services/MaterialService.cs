@@ -44,16 +44,43 @@ namespace TravelCapstone.BackEnd.Application.Services
                 List<MaterialAssignment> materialAssignments = new List<MaterialAssignment>();
                 foreach(var item in request.MaterialRequests)
                 {
-                    materialAssignments.Add(new MaterialAssignment()
-                    {
-                        Id = Guid.NewGuid(),
-                        MaterialId = item.MaterialId,
-                        Quantity = item.Quantity,
-                        TourId = tourDb.Id
-                    });
+                    //materialAssignments.Add(new MaterialAssignment()
+                    //{
+                    //    Id = Guid.NewGuid(),
+                    //    MaterialId = item.MaterialId,
+                    //    Quantity = item.Quantity,
+                    //    TourId = tourDb.Id
+                    //});
                 }
                 await _assignmentRepository.InsertRange(materialAssignments);
                 await _unitOfWork.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetLatestMaterialListPrice()
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var materialListDB = await _repository.GetAllDataByExpression(null, 0, 0, null, false, null);
+
+                if (materialListDB.Items != null && materialListDB.Items.Count > 0)
+                {
+
+                    var materialIds = materialListDB.Items.Select(e => e.Id).ToList();
+                    var materialDetailPriceHistoryRepository = Resolve<IRepository<MaterialPriceHistory>>();
+                    var materialPriceDb = await materialDetailPriceHistoryRepository!.GetAllDataByExpression(e => materialIds.Contains(e.MaterialId), 0, 0, null, false, e => e.Material);
+                    var latestMaterialPrice = materialPriceDb.Items
+                        .GroupBy(e => e.MaterialId)
+                        .Select(s => s.OrderByDescending(d => d.Date).FirstOrDefault()).ToList();
+                   
+                    result.Result = latestMaterialPrice;
+                }
             }
             catch (Exception ex)
             {

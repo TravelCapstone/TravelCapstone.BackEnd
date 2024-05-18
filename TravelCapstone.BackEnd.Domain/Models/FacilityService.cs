@@ -28,6 +28,7 @@ namespace TravelCapstone.BackEnd.Domain.Models
         public Enum.Unit UnitId { get; set; }
         [ForeignKey(nameof(UnitId))]
         public Models.EnumModels.Unit? Unit { get; set; }
+       
         public bool IsActive { get; set; } = true;
     }
 }
