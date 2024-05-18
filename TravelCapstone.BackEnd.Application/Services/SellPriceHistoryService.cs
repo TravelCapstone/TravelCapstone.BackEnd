@@ -847,13 +847,23 @@ namespace TravelCapstone.BackEnd.Application.Services
                   || a.Departure.Commune.District.ProvinceId == endPoint && a.Arrival!.Commune!.District!.ProvinceId == startPoint
                   , 0, 0, null, false, null
                   );
-                    data.suggestedVehicleItems.Add(new SuggestedVehicleItem
+                   
+                    if (priceList.Items.Count > 0)
                     {
-                        VehicleType = vehicleType,
-                        Quantity = 1
-                    });
-                    data.MinCostperPerson = priceList.Items!.OrderBy(p => p.AdultPrice).FirstOrDefault()!.AdultPrice;
-                    data.MaxCostperPerson = priceList.Items!.OrderByDescending(p => p.AdultPrice).FirstOrDefault()!.AdultPrice;
+                        data.suggestedVehicleItems.Add(new SuggestedVehicleItem
+                        {
+                            VehicleType = vehicleType,
+                            Quantity = 1
+                        });
+                        data.MinCostperPerson = priceList.Items!.OrderBy(p => p.AdultPrice).FirstOrDefault()!.AdultPrice;
+                        data.MaxCostperPerson = priceList.Items!.OrderByDescending(p => p.AdultPrice).FirstOrDefault()!.AdultPrice;
+                    }
+                    else
+                    {
+                        data.suggestedVehicleItems = new List<SuggestedVehicleItem>();
+                        data.MinCostperPerson = 0;
+                        data.MaxCostperPerson = 0;
+                    }
                 }
                 else
                 {
