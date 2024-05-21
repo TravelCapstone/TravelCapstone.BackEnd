@@ -416,10 +416,24 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             }
 
             var assuranceHistoryRepository = Resolve<IRepository<AssurancePriceHistory>>();
-            var assuranceHistoryDb = await assuranceHistoryRepository!.GetById(dto.AssurancePriceHistoryId);
-            if(assuranceHistoryDb == null )
+            var assuranceHistoryDbOption1 = await assuranceHistoryRepository!.GetById(dto.AssurancePriceHistoryOption1Id);
+            if(assuranceHistoryDbOption1 == null )
             {
-                result = BuildAppActionResultError(result, $"Không tìm thấy giá bảo hiểm với id {dto.AssurancePriceHistoryId}");
+                result = BuildAppActionResultError(result, $"Không tìm thấy giá bảo hiểm với id {dto.AssurancePriceHistoryOption1Id}");
+                return result;
+            }
+
+            var assuranceHistoryDbOption2 = await assuranceHistoryRepository!.GetById(dto.AssurancePriceHistoryOption2Id);
+            if (assuranceHistoryDbOption2 == null)
+            {
+                result = BuildAppActionResultError(result, $"Không tìm thấy giá bảo hiểm với id {dto.AssurancePriceHistoryOption2Id}");
+                return result;
+            }
+
+            var assuranceHistoryDbOption3 = await assuranceHistoryRepository!.GetById(dto.AssurancePriceHistoryOption3Id);
+            if (assuranceHistoryDbOption3 == null)
+            {
+                result = BuildAppActionResultError(result, $"Không tìm thấy giá bảo hiểm với id {dto.AssurancePriceHistoryOption3Id}");
                 return result;
             }
 
@@ -850,7 +864,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     OrganizationCost = dto.OrganizationCost,
                     OperatingFee = dto.OperatingFee,
                     ContigencyFeePerPerson = dto.ContigencyFeePerPerson,
-                    AssurancePriceHistoryId = dto.AssurancePriceHistoryId,
+                    AssurancePriceHistoryId = dto.AssurancePriceHistoryOption1Id,
                     OptionClassId = OptionClass.ECONOMY,
                     OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId
@@ -867,7 +881,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     OrganizationCost = dto.OrganizationCost,
                     OperatingFee = dto.OperatingFee,
                     ContigencyFeePerPerson = dto.ContigencyFeePerPerson,
-                    AssurancePriceHistoryId = dto.AssurancePriceHistoryId,
+                    AssurancePriceHistoryId = dto.AssurancePriceHistoryOption2Id,
                     OptionClassId = OptionClass.MIDDLE,
                     OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId
@@ -884,7 +898,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     OrganizationCost = dto.OrganizationCost,
                     OperatingFee = dto.OperatingFee,
                     ContigencyFeePerPerson = dto.ContigencyFeePerPerson,
-                    AssurancePriceHistoryId = dto.AssurancePriceHistoryId,
+                    AssurancePriceHistoryId = dto.AssurancePriceHistoryOption3Id,
                     OptionClassId = OptionClass.PREMIUM,
                     OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId
@@ -1677,14 +1691,14 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 option3.MinTotal = option3.EscortFee + option3.ContigencyFeePerPerson * totalPeople + option3.OperatingFee + option3.OrganizationCost;
                 option3.MaxTotal = option3.EscortFee + option3.ContigencyFeePerPerson * totalPeople + option3.OperatingFee + option3.OrganizationCost;
 
-                option1.MinTotal = assuranceHistoryDb.Price * totalPeople;
-                option1.MaxTotal = assuranceHistoryDb.Price * totalPeople;
+                option1.MinTotal = assuranceHistoryDbOption1.Price * totalPeople;
+                option1.MaxTotal = assuranceHistoryDbOption1.Price * totalPeople;
 
-                option2.MinTotal = assuranceHistoryDb.Price * totalPeople;
-                option2.MaxTotal = assuranceHistoryDb.Price * totalPeople; 
+                option2.MinTotal = assuranceHistoryDbOption2.Price * totalPeople;
+                option2.MaxTotal = assuranceHistoryDbOption2.Price * totalPeople; 
                 
-                option3.MinTotal = assuranceHistoryDb.Price * totalPeople;
-                option3.MaxTotal = assuranceHistoryDb.Price * totalPeople;
+                option3.MinTotal = assuranceHistoryDbOption3.Price * totalPeople;
+                option3.MaxTotal = assuranceHistoryDbOption3.Price * totalPeople;
 
                 option1.MinTotal = Math.Ceiling(option1.MinTotal / (totalPeople * 1000)) * 1000;
                 option1.MaxTotal = Math.Ceiling(option1.MaxTotal / (totalPeople * 1000)) * 1000;
