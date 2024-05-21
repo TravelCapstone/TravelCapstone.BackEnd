@@ -137,6 +137,12 @@ public class SD
 
     }
 
+    public class ConfigName
+    { 
+        public static string CONFIG_NAME = "Chênh lệch Tour guide";
+    }
+
+
     public class ExcelHeaders
     {
         public static List<string> SERVICE_QUOTATION = new List<string> { "No", "Tên dịch vụ", "Đơn vị", "MOQ", "Giá người lớn", "Giá trẻ em" };
