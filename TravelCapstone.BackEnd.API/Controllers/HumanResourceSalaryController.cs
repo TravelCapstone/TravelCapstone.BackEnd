@@ -16,7 +16,7 @@ namespace TravelCapstone.BackEnd.API.Controllers
             _service = service;
         }
 
-        [HttpGet("get-salary")]
+        [HttpPost("get-salary")]
         public async Task<AppActionResult> GetSalary([FromBody]List<HumanResourceCost> dtos, bool isForTourguide)
         {
             return await _service.GetSalary(dtos, isForTourguide);
