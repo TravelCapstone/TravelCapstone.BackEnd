@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Common.Utils;
 using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Application.Services
@@ -119,13 +120,13 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;  
         }
 
-        public async Task<AppActionResult> GetMaxTourGuideNumber(int numOfVehicle, Guid preValueId)
+        public async Task<AppActionResult> GetMaxTourGuideNumber(int numOfVehicle)
         {
             var result = new AppActionResult();
             try
             {
                 var preValueRepository = Resolve<IRepository<Configuration>>();
-                var preValueDb = await preValueRepository!.GetByExpression(p => p.Id == preValueId);
+                var preValueDb = await preValueRepository!.GetByExpression(p =>  p.Name == SD.ConfigName.CONFIG_NAME);
                 if (preValueDb == null)
                 {
                     result = BuildAppActionResultError(result, "Config này không tồn tại");
