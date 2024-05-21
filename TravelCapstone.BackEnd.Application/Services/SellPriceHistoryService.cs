@@ -834,9 +834,23 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var provinceRepository = Resolve<IRepository<Province>>();
                 var startPointDb = await provinceRepository!.GetByExpression(p => p!.Id == startPoint);
                 var endpointDb = await provinceRepository!.GetByExpression(p => p!.Id == endPoint);
-                if (startPointDb == null || endpointDb == null)
+                if (startPointDb == null || (endpointDb == null && (vehicleType == VehicleType.PLANE || vehicleType == VehicleType.BOAT)))
                 {
                     result = BuildAppActionResultError(result, $"Không tìm thấy nơi bắt đầu {startPoint} hoặc nơi kết thúc {endpointDb}");
+                    return result;
+                }
+
+                var utility = Resolve<Utility>();
+
+                if(StartDate >= EndDate || StartDate <= utility!.GetCurrentDateTimeInTimeZone())
+                {
+                    result = BuildAppActionResultError(result, $"Thời gian bắt đầu và thời gian kết thúc không hợp lệ");
+                    return result;
+                }
+
+                if(Quantity == 0)
+                {
+                    result = BuildAppActionResultError(result, $"Số lượng hành khách ít nhất là 1 người");
                     return result;
                 }
                 SuggestedVehicleResponse data = new SuggestedVehicleResponse();
@@ -870,6 +884,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
                     Dictionary<VehicleType, int> suggestedVehicleList = await GetOptimalVehicleSuggestion(Quantity);
                     int totalDays = (EndDate - StartDate).Days;
+                    if (totalDays == 0) totalDays = 1;
                     foreach(var kvp in suggestedVehicleList)
                     {
                         var sellPrice = await sellPriceRepository!.GetAllDataByExpression(s => s.TransportServiceDetail!.VehicleTypeId == kvp.Key && s.TransportServiceDetail.FacilityService.Facility.Communce.District!.ProvinceId == startPoint && s.MOQ <= kvp.Value, 0, 0, null, false, s => s.TransportServiceDetail);
@@ -880,12 +895,12 @@ namespace TravelCapstone.BackEnd.Application.Services
                             VehicleType = kvp.Key,
                             Quantity = kvp.Value
                         } );
-                        data.MinCostperPerson += latestPrices.MinBy(p => p.Price).Price * Quantity * totalDays;
-                        data.MaxCostperPerson += latestPrices.MaxBy(p => p.Price).Price* Quantity * totalDays;
+                        data.MinCostperPerson += latestPrices.MinBy(p => p.Price).Price * kvp.Value * totalDays;
+                        data.MaxCostperPerson += latestPrices.MaxBy(p => p.Price).Price* kvp.Value * totalDays;
                     }
 
-                    data.MinCostperPerson = (data.MinCostperPerson / (1000 * Quantity)) * 1000;
-                    data.MaxCostperPerson = (data.MaxCostperPerson / (1000 * Quantity)) * 1000;
+                    data.MinCostperPerson = Math.Ceiling((data.MinCostperPerson / (1000 * Quantity))) * 1000;
+                    data.MaxCostperPerson = Math.Ceiling((data.MaxCostperPerson / (1000 * Quantity))) * 1000;
                 }
 
                 result.Result = data;
@@ -911,13 +926,16 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                 if (quantity > 29)
                 {
-                    data[VehicleType.BUS]++;
+                    if (data.Count == 0)
+                        data.Add(VehicleType.BUS, 1);
+                    else data[VehicleType.BUS]++;
                     quantity = 0;
                 }
 
                 if (quantity > 15)
                 {
                     int numOfBus = quantity / 29;
+                    numOfBus = numOfBus == 0 ? 1 : numOfBus;
                     quantity -= numOfBus * 29;
                     data.Add(VehicleType.COACH, numOfBus);
                 }
@@ -925,6 +943,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 if(quantity > 6)
                 {
                     int numOfBus = quantity / 15;
+                    numOfBus = numOfBus == 0 ? 1 : numOfBus;
                     quantity -= numOfBus * 15;
                     data.Add(VehicleType.LIMOUSINE, numOfBus);
                 }
