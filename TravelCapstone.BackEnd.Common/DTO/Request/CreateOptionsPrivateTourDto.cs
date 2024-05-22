@@ -10,9 +10,10 @@ public class CreateOptionsPrivateTourDto
     public DateTime EndDate { get; set; }
     public List<HumanResourceCost> TourGuideCosts { get; set; } = new List<HumanResourceCost>();
     public List<MaterialCost> MaterialCosts { get; set; } = new List<MaterialCost>();
-    public Guid AssurancePriceHistoryId { get; set; }
+    public Guid AssurancePriceHistoryOptionId { get; set; }
+    public double AssurancePricePerPerson { get; set; }
     public double OrganizationCost { get; set; }
-    public double ContigencyFeePerPerson { get; set; }
+    public double ContingencyFee { get; set; }
     public double EscortFee { get; set; }
     public double OperatingFee { get; set; }
     public Guid PrivateTourRequestId { get; set; }

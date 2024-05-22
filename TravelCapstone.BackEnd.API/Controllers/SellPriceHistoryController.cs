@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Domain.Enum;
 
@@ -80,10 +81,10 @@ namespace TravelCapstone.BackEnd.API.Controllers
             return await _service.GetAveragePriceOfMealService(districId, privatetourRequestId, ratingId, mealType, servingQuantity, pageNumber, pageSize);
         }
 
-        [HttpGet("get-vehicle-price-range")]
-        public async Task<AppActionResult> GetVehiclePriceRange(Guid startPoint, Guid endPoint, VehicleType vehicleType, int Quantity, DateTime StartDate, DateTime EndDate, int pageNumber = 1, int pageSize = 10)
+        [HttpPost("get-vehicle-price-range")]
+        public async Task<AppActionResult> GetVehiclePriceRange([FromBody]VehiclePriceRangeRequest dto)
         {
-            return await _service.GetVehiclePriceRange(startPoint, endPoint, vehicleType, Quantity, StartDate, EndDate, pageNumber, pageSize);
+            return await _service.GetVehiclePriceRange(dto);
         }
     }
 }

@@ -22,6 +22,7 @@ public class PrivateTourRequestDTO
     public double WishPrice { get; set; }
     public DietaryPreference DietaryPreference { get; set; }    
     public List<RequestedLocationDTO>? OtherLocation { get; set; } = new List<RequestedLocationDTO>();
+    public List<RoomQuantityDetailRequest>? RoomQuantityDetailRequest { get; set; } = new List<RoomQuantityDetailRequest>();
     public string? AccountId { get; set; }
 }
 
@@ -29,4 +30,10 @@ public class RequestedLocationDTO
 {
     public string Address { get; set; }
     public Guid ProvinceId { get; set; }
+}
+
+public class RoomQuantityDetailRequest
+{
+    public int QuantityPerRoom { get; set; }
+    public int TotalRoom { get; set; }
 }

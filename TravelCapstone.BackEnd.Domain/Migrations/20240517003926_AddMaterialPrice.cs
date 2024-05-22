@@ -24,7 +24,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 newName: "IX_MaterialAssignments_MaterialPriceHistoryId");
 
             migrationBuilder.AddColumn<double>(
-                name: "ContigencyFeePerPerson",
+                name: "ContingencyFee",
                 table: "Tours",
                 type: "float",
                 nullable: false,
@@ -64,7 +64,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<double>(
-                name: "ContigencyFeePerPerson",
+                name: "ContingencyFee",
                 table: "OptionQuotations",
                 type: "float",
                 nullable: false,
@@ -253,7 +253,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 table: "Events");
 
             migrationBuilder.DropColumn(
-                name: "ContigencyFeePerPerson",
+                name: "ContingencyFee",
                 table: "Tours");
 
             migrationBuilder.DropColumn(
@@ -277,7 +277,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                 table: "PlanServiceCostDetails");
 
             migrationBuilder.DropColumn(
-                name: "ContigencyFeePerPerson",
+                name: "ContingencyFee",
                 table: "OptionQuotations");
 
             migrationBuilder.DropColumn(

@@ -71,6 +71,8 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<AssurancePriceHistory> AssurancePriceHistories { get; set; }
     public DbSet<MaterialPriceHistory> MaterialPriceHistories { get; set; }
     public DbSet<OptionEvent> OptionEvents { get; set; }
+    public DbSet<ManagementFeeReference> ManagementFeeReferences { get; set; }
+    public DbSet<RoomQuantityDetail> RoomQuantityDetails { get; set; }
     #endregion
 
     #region Enum
@@ -96,6 +98,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<Models.EnumModels.ServiceAvailability> ServiceAvailabilities { get; set; }
     public DbSet<Models.EnumModels.DishType> DishTypes { get; set; }
     public DbSet<Models.EnumModels.DietaryPreference> DietaryPreferences { get; set; }
+    public DbSet<Models.EnumModels.ManagementFeeType> ManagementFeeTypes { get; set; }
     #endregion
     #endregion
 
@@ -218,6 +221,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
         SeedEnumTable<Models.EnumModels.MealType, Domain.Enum.MealType>(builder);
         SeedEnumTable<Models.EnumModels.DietaryPreference, Domain.Enum.DietaryPreference>(builder);
         SeedEnumTable<Models.EnumModels.ReferencePriceRating, Domain.Enum.ReferencePriceRating>(builder);
+        SeedEnumTable<Models.EnumModels.ManagementFeeType, Domain.Enum.ManagementFeeType>(builder);
     }
 
     private static void SeedEnumTable<TEntity, TEnum>(ModelBuilder modelBuilder)

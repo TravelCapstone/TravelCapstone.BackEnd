@@ -826,25 +826,39 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
-        public async Task<AppActionResult> GetVehiclePriceRange(Guid startPoint, Guid endPoint, VehicleType vehicleType, int Quantity, DateTime StartDate, DateTime EndDate, int pageNumber, int pageSize)
+        public async Task<AppActionResult> GetVehiclePriceRange(VehiclePriceRangeRequest dto)
         {
             AppActionResult result = new AppActionResult();
             try
             {
                 var provinceRepository = Resolve<IRepository<Province>>();
-                var startPointDb = await provinceRepository!.GetByExpression(p => p!.Id == startPoint);
-                var endpointDb = await provinceRepository!.GetByExpression(p => p!.Id == endPoint);
-                if (startPointDb == null || endpointDb == null)
+                var startPointDb = await provinceRepository!.GetByExpression(p => p!.Id == dto.startPoint);
+                var endpointDb = await provinceRepository!.GetByExpression(p => p!.Id == dto.endPoint);
+                if (startPointDb == null || (endpointDb == null && (dto.vehicleType == VehicleType.PLANE || dto.vehicleType == VehicleType.BOAT)))
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy nơi bắt đầu {startPoint} hoặc nơi kết thúc {endpointDb}");
+                    result = BuildAppActionResultError(result, $"Không tìm thấy nơi bắt đầu {dto.startPoint} hoặc nơi kết thúc {endpointDb}");
+                    return result;
+                }
+
+                var utility = Resolve<Utility>();
+
+                if(dto.StartDate >= dto.EndDate || dto.StartDate <= utility!.GetCurrentDateTimeInTimeZone())
+                {
+                    result = BuildAppActionResultError(result, $"Thời gian bắt đầu và thời gian kết thúc không hợp lệ");
+                    return result;
+                }
+
+                if(dto.Quantity == 0)
+                {
+                    result = BuildAppActionResultError(result, $"Số lượng hành khách ít nhất là 1 người");
                     return result;
                 }
                 SuggestedVehicleResponse data = new SuggestedVehicleResponse();
-                if (vehicleType == VehicleType.PLANE || vehicleType == VehicleType.BOAT)
+                if (dto.vehicleType == VehicleType.PLANE || dto.vehicleType == VehicleType.BOAT)
                 {
                     var referenceTransportRepository = Resolve<IRepository<ReferenceTransportPrice>>();
-                    var priceList = await referenceTransportRepository!.GetAllDataByExpression(a => a.Departure!.Commune!.District!.ProvinceId == startPoint && a.Arrival!.Commune!.District!.ProvinceId == endPoint
-                  || a.Departure.Commune.District.ProvinceId == endPoint && a.Arrival!.Commune!.District!.ProvinceId == startPoint
+                    var priceList = await referenceTransportRepository!.GetAllDataByExpression(a => a.Departure!.Commune!.District!.ProvinceId == dto.startPoint && a.Arrival!.Commune!.District!.ProvinceId == dto.endPoint
+                  || a.Departure.Commune.District.ProvinceId == dto.endPoint && a.Arrival!.Commune!.District!.ProvinceId == dto.startPoint
                   , 0, 0, null, false, null
                   );
                    
@@ -852,7 +866,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                     {
                         data.suggestedVehicleItems.Add(new SuggestedVehicleItem
                         {
-                            VehicleType = vehicleType,
+                            VehicleType = dto.vehicleType,
                             Quantity = 1
                         });
                         data.MinCostperPerson = priceList.Items!.OrderBy(p => p.AdultPrice).FirstOrDefault()!.AdultPrice;
@@ -868,11 +882,12 @@ namespace TravelCapstone.BackEnd.Application.Services
                 else
                 {
                     var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
-                    Dictionary<VehicleType, int> suggestedVehicleList = await GetOptimalVehicleSuggestion(Quantity);
-                    int totalDays = (EndDate - StartDate).Days;
+                    Dictionary<VehicleType, int> suggestedVehicleList = await GetOptimalVehicleSuggestion(dto.Quantity);
+                    int totalDays = (dto.EndDate - dto.StartDate).Days;
+                    if (totalDays == 0) totalDays = 1;
                     foreach(var kvp in suggestedVehicleList)
                     {
-                        var sellPrice = await sellPriceRepository!.GetAllDataByExpression(s => s.TransportServiceDetail!.VehicleTypeId == kvp.Key && s.TransportServiceDetail.FacilityService.Facility.Communce.District!.ProvinceId == startPoint && s.MOQ <= kvp.Value, 0, 0, null, false, s => s.TransportServiceDetail);
+                        var sellPrice = await sellPriceRepository!.GetAllDataByExpression(s => s.TransportServiceDetail!.VehicleTypeId == kvp.Key && s.TransportServiceDetail.FacilityService.Facility.Communce.District!.ProvinceId == dto.startPoint && s.MOQ <= kvp.Value, 0, 0, null, false, s => s.TransportServiceDetail);
                         var latestPrices = sellPrice.Items.GroupBy(p => p.TransportServiceDetail.FacilityServiceId)
                         .Select(g => g.OrderByDescending(p => p.Date).FirstOrDefault())
                         .ToList();
@@ -880,12 +895,12 @@ namespace TravelCapstone.BackEnd.Application.Services
                             VehicleType = kvp.Key,
                             Quantity = kvp.Value
                         } );
-                        data.MinCostperPerson += latestPrices.MinBy(p => p.Price).Price * Quantity * totalDays;
-                        data.MaxCostperPerson += latestPrices.MaxBy(p => p.Price).Price* Quantity * totalDays;
+                        data.MinCostperPerson += latestPrices.MinBy(p => p.Price).Price * kvp.Value * totalDays;
+                        data.MaxCostperPerson += latestPrices.MaxBy(p => p.Price).Price* kvp.Value * totalDays;
                     }
 
-                    data.MinCostperPerson = (data.MinCostperPerson / (1000 * Quantity)) * 1000;
-                    data.MaxCostperPerson = (data.MaxCostperPerson / (1000 * Quantity)) * 1000;
+                    data.MinCostperPerson = Math.Ceiling((data.MinCostperPerson / (1000 * dto.Quantity))) * 1000;
+                    data.MaxCostperPerson = Math.Ceiling((data.MaxCostperPerson / (1000 * dto.Quantity))) * 1000;
                 }
 
                 result.Result = data;
@@ -911,13 +926,16 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                 if (quantity > 29)
                 {
-                    data[VehicleType.BUS]++;
+                    if (data.Count == 0)
+                        data.Add(VehicleType.BUS, 1);
+                    else data[VehicleType.BUS]++;
                     quantity = 0;
                 }
 
                 if (quantity > 15)
                 {
                     int numOfBus = quantity / 29;
+                    numOfBus = numOfBus == 0 ? 1 : numOfBus;
                     quantity -= numOfBus * 29;
                     data.Add(VehicleType.COACH, numOfBus);
                 }
@@ -925,6 +943,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 if(quantity > 6)
                 {
                     int numOfBus = quantity / 15;
+                    numOfBus = numOfBus == 0 ? 1 : numOfBus;
                     quantity -= numOfBus * 15;
                     data.Add(VehicleType.LIMOUSINE, numOfBus);
                 }

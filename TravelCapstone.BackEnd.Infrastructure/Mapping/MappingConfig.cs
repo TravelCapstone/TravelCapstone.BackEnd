@@ -58,6 +58,8 @@ public class MappingConfig
                 .ForMember(desc => desc.Status, act => act.MapFrom(src => src.PrivateTourStatusId))
                 .ForMember(desc => desc.StartLocation, act => act.MapFrom(src => src.StartLocation))
                 .ForMember(desc => desc.AccountId, act => act.MapFrom(src => src.CreateBy))
+                .ForMember(desc => desc.StartLocationCommuneId, act => act.MapFrom(src => src.StartLocationCommuneId))
+                .ForMember(desc => desc.StartLocationCommune, act => act.MapFrom(src => src.Commune))
                 .ForMember(desc => desc.Account, act => act.MapFrom(src => src.CreateByAccount))
                 .ForMember(desc => desc.DietaryPreference, act => act.MapFrom(src => src.DietaryPreferenceId))
                 .ForMember(desc => desc.WishPrice, act => act.MapFrom(src => src.WishPrice))
