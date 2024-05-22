@@ -5,14 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TravelCapstone.BackEnd.Domain.Models
+namespace TravelCapstone.BackEnd.Domain.Models.EnumModels
 {
-    public class Assurance
+    public class ManagementFeeType
     {
         [Key]
-        public Guid Id { get; set; }
+        public TravelCapstone.BackEnd.Domain.Enum.ManagementFeeType Id { get; set; }
         public string Name { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public int DayMOQ { get; set; }
     }
 }

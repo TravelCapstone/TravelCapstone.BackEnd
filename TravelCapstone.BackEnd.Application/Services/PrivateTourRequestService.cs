@@ -119,6 +119,21 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 }
             }
 
+            if (privateTourequestDTO.RoomQuantityDetailRequest != null && privateTourequestDTO.RoomQuantityDetailRequest.Count > 0)
+            {
+                var roomQuantityDetailRepository = Resolve<IRepository<RoomQuantityDetail>>();
+                foreach (var detail in privateTourequestDTO.RoomQuantityDetailRequest)
+                {
+                    await roomQuantityDetailRepository!.Insert(new RoomQuantityDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        PrivateTourRequestId = request.Id,
+                        QuantityPerRoom = detail.QuantityPerRoom,
+                        TotalRoom = detail.TotalRoom,
+                    });
+                }
+            }
+
             if (!BuildAppActionResultIsError(result))
             {
                 await _unitOfWork.SaveChangesAsync();
@@ -207,6 +222,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             }
             data.PrivateTourResponse = _mapper.Map<PrivateTourResponseDto>(privateTourRequestDb);
             var requestedLocationRepository = Resolve<IRepository<RequestedLocation>>();
+            var roomQuantityDetailRepository = Resolve<IRepository<RoomQuantityDetail>>();
             var requestedLocationDb = await requestedLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == privateTourRequestDb.Id, 0, 0, null, false, r => r.Province!);
             data.PrivateTourResponse.OtherLocation = requestedLocationDb.Items;
             var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
@@ -241,14 +257,14 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
             }
 
-            
+            var locationList = await requestLocationRepository!.GetAllDataByExpression(a => a.PrivateTourRequestId == id, 0, 0, null, false, a => a.Province!);
+            if(locationList.Items != null && locationList.Items.Count > 0)
+                data.PrivateTourResponse.OtherLocation = locationList.Items;
 
-            List<Province> provinces = new List<Province>();
-            var list = await requestLocationRepository!.GetAllDataByExpression(a => a.PrivateTourRequestId == id, 0, 0, null, false, a => a.Province!);
-            foreach (var item in list.Items!)
-            {
-                data.PrivateTourResponse.OtherLocation = list.Items;
-            }
+            var roomDetails = await roomQuantityDetailRepository!.GetAllDataByExpression(a => a.PrivateTourRequestId == id, 0, 0, null, false, null);
+            if (roomDetails.Items != null && roomDetails.Items.Count > 0)
+                data.PrivateTourResponse.RoomDetails = roomDetails.Items;
+
             result.Result = data;
         }
         catch (Exception e)
@@ -365,7 +381,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 return result;
             }
             var totalPeople = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren;
-            if (dto.ContigencyFeePerPerson <= 0)
+            if (dto.ContingencyFee <= 0)
             {
                 result = BuildAppActionResultError(result, $"Phí dự phòng/người phải lớn hơn 0");
                 return result;
@@ -414,29 +430,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 materialPriceHistories.Add(materialPrice );
                 materialTotal += material.Quantity * materialPrice.Price;
             }
-
-            var assuranceHistoryRepository = Resolve<IRepository<AssurancePriceHistory>>();
-            var assuranceHistoryDbOption1 = await assuranceHistoryRepository!.GetById(dto.AssurancePriceHistoryOption1Id);
-            if(assuranceHistoryDbOption1 == null )
-            {
-                result = BuildAppActionResultError(result, $"Không tìm thấy giá bảo hiểm với id {dto.AssurancePriceHistoryOption1Id}");
-                return result;
-            }
-
-            var assuranceHistoryDbOption2 = await assuranceHistoryRepository!.GetById(dto.AssurancePriceHistoryOption2Id);
-            if (assuranceHistoryDbOption2 == null)
-            {
-                result = BuildAppActionResultError(result, $"Không tìm thấy giá bảo hiểm với id {dto.AssurancePriceHistoryOption2Id}");
-                return result;
-            }
-
-            var assuranceHistoryDbOption3 = await assuranceHistoryRepository!.GetById(dto.AssurancePriceHistoryOption3Id);
-            if (assuranceHistoryDbOption3 == null)
-            {
-                result = BuildAppActionResultError(result, $"Không tìm thấy giá bảo hiểm với id {dto.AssurancePriceHistoryOption3Id}");
-                return result;
-            }
-
             int errorCount = 0;
             var menuRepository = Resolve<IRepository<Menu>>();
             foreach (var item in dto.provinceServices)
@@ -863,8 +856,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     EscortFee = dto.EscortFee,
                     OrganizationCost = dto.OrganizationCost,
                     OperatingFee = dto.OperatingFee,
-                    ContigencyFeePerPerson = dto.ContigencyFeePerPerson,
-                    AssurancePriceHistoryId = dto.AssurancePriceHistoryOption1Id,
+                    ContingencyFee = dto.ContingencyFee,
+                    AssurancePriceHistoryId = dto.AssurancePriceHistoryOptionId,
                     OptionClassId = OptionClass.ECONOMY,
                     OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId
@@ -880,8 +873,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     EscortFee = dto.EscortFee,
                     OrganizationCost = dto.OrganizationCost,
                     OperatingFee = dto.OperatingFee,
-                    ContigencyFeePerPerson = dto.ContigencyFeePerPerson,
-                    AssurancePriceHistoryId = dto.AssurancePriceHistoryOption2Id,
+                    ContingencyFee = dto.ContingencyFee,
+                    AssurancePriceHistoryId = dto.AssurancePriceHistoryOptionId,
                     OptionClassId = OptionClass.MIDDLE,
                     OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId
@@ -897,8 +890,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     EscortFee = dto.EscortFee,
                     OrganizationCost = dto.OrganizationCost,
                     OperatingFee = dto.OperatingFee,
-                    ContigencyFeePerPerson = dto.ContigencyFeePerPerson,
-                    AssurancePriceHistoryId = dto.AssurancePriceHistoryOption3Id,
+                    ContingencyFee = dto.ContingencyFee,
+                    AssurancePriceHistoryId = dto.AssurancePriceHistoryOptionId,
                     OptionClassId = OptionClass.PREMIUM,
                     OptionQuotationStatusId = OptionQuotationStatus.NEW,
                     PrivateTourRequestId = dto.PrivateTourRequestId
@@ -1682,23 +1675,23 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     option3.MaxTotal += q.MaxPrice;
                 });
 
-                option1.MinTotal = option1.EscortFee + option1.ContigencyFeePerPerson * totalPeople + option1.OperatingFee + option1.OrganizationCost;
-                option1.MaxTotal = option1.EscortFee + option1.ContigencyFeePerPerson * totalPeople + option1.OperatingFee + option1.OrganizationCost;
+                option1.MinTotal = option1.EscortFee + option1.ContingencyFee * totalPeople + option1.OperatingFee + option1.OrganizationCost;
+                option1.MaxTotal = option1.EscortFee + option1.ContingencyFee * totalPeople + option1.OperatingFee + option1.OrganizationCost;
 
-                option2.MinTotal = option2.EscortFee + option2.ContigencyFeePerPerson * totalPeople + option2.OperatingFee + option2.OrganizationCost;
-                option2.MaxTotal = option2.EscortFee + option2.ContigencyFeePerPerson * totalPeople + option2.OperatingFee + option2.OrganizationCost;
+                option2.MinTotal = option2.EscortFee + option2.ContingencyFee * totalPeople + option2.OperatingFee + option2.OrganizationCost;
+                option2.MaxTotal = option2.EscortFee + option2.ContingencyFee * totalPeople + option2.OperatingFee + option2.OrganizationCost;
 
-                option3.MinTotal = option3.EscortFee + option3.ContigencyFeePerPerson * totalPeople + option3.OperatingFee + option3.OrganizationCost;
-                option3.MaxTotal = option3.EscortFee + option3.ContigencyFeePerPerson * totalPeople + option3.OperatingFee + option3.OrganizationCost;
+                option3.MinTotal = option3.EscortFee + option3.ContingencyFee * totalPeople + option3.OperatingFee + option3.OrganizationCost;
+                option3.MaxTotal = option3.EscortFee + option3.ContingencyFee * totalPeople + option3.OperatingFee + option3.OrganizationCost;
 
-                option1.MinTotal = assuranceHistoryDbOption1.Price * totalPeople;
-                option1.MaxTotal = assuranceHistoryDbOption1.Price * totalPeople;
+                option1.MinTotal = dto.AssurancePricePerPerson * totalPeople;
+                option1.MaxTotal = dto.AssurancePricePerPerson * totalPeople;
 
-                option2.MinTotal = assuranceHistoryDbOption2.Price * totalPeople;
-                option2.MaxTotal = assuranceHistoryDbOption2.Price * totalPeople; 
+                option2.MinTotal = dto.AssurancePricePerPerson * totalPeople;
+                option2.MaxTotal = dto.AssurancePricePerPerson * totalPeople; 
                 
-                option3.MinTotal = assuranceHistoryDbOption3.Price * totalPeople;
-                option3.MaxTotal = assuranceHistoryDbOption3.Price * totalPeople;
+                option3.MinTotal = dto.AssurancePricePerPerson * totalPeople;
+                option3.MaxTotal = dto.AssurancePricePerPerson * totalPeople;
 
                 option1.MinTotal = Math.Ceiling(option1.MinTotal / (totalPeople * 1000)) * 1000;
                 option1.MaxTotal = Math.Ceiling(option1.MaxTotal / (totalPeople * 1000)) * 1000;
@@ -1960,7 +1953,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
     //            return result;
     //        }
     //        var totalPeople = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren;
-    //        if (dto.ContigencyFeePerPerson <= 0)
+    //        if (dto.ContingencyFee <= 0)
     //        {
     //            result = BuildAppActionResultError(result, $"Phí dự phòng/người phải lớn hơn 0");
     //            return result;
@@ -2185,7 +2178,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
     //                EscortFee = dto.EscortFee,
     //                OrganizationCost = dto.OrganizationCost,
     //                OperatingFee = dto.OperatingFee,
-    //                ContigencyFeePerPerson = dto.ContigencyFeePerPerson,
+    //                ContingencyFee = dto.ContingencyFee,
     //                AssurancePriceHistoryId = dto.AssurancePriceHistoryId,
     //                OptionClassId = OptionClass.ECONOMY,
     //                OptionQuotationStatusId = OptionQuotationStatus.NEW,
@@ -2465,8 +2458,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
     //                option1.MinTotal += q.MinPrice;
     //                option1.MaxTotal += q.MaxPrice;
     //            });           
-    //            option1.MinTotal = option1.EscortFee + option1.ContigencyFeePerPerson * totalPeople + option1.OperatingFee + option1.OrganizationCost;
-    //            option1.MaxTotal = option1.EscortFee + option1.ContigencyFeePerPerson * totalPeople + option1.OperatingFee + option1.OrganizationCost; 
+    //            option1.MinTotal = option1.EscortFee + option1.ContingencyFee * totalPeople + option1.OperatingFee + option1.OrganizationCost;
+    //            option1.MaxTotal = option1.EscortFee + option1.ContingencyFee * totalPeople + option1.OperatingFee + option1.OrganizationCost; 
     //            option1.MinTotal = Math.Ceiling(option1.MinTotal / (totalPeople * 1000)) * 1000;
     //            option1.MaxTotal = Math.Ceiling(option1.MaxTotal / (totalPeople * 1000)) * 1000;  
     //            option1.MinTotal += materialTotal;
