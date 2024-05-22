@@ -18,7 +18,7 @@ namespace TravelCapstone.BackEnd.API.Controllers
         [HttpGet("get-available-assurances-with-num-of-day")]
         public async Task<AppActionResult> GetAvailableAssuranceList(int NumOfDay)
         {
-            return await _service.GetAvailableAssuranceList(NumOfDay);
+            return await _service.GetAvailableAssurance(NumOfDay);
         }
     }
 }

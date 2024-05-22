@@ -9,6 +9,6 @@ namespace TravelCapstone.BackEnd.Application.IServices
 {
     public interface IAssuranceService
     {
-        public Task<AppActionResult> GetAvailableAssuranceList(int NumOfDay);
+        public Task<AppActionResult> GetAvailableAssurance(int NumOfDay);
     }
 }
