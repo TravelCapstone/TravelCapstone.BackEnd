@@ -283,6 +283,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<int>("DayMOQ")
                         .HasColumnType("int");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -855,6 +859,42 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         {
                             Id = 2,
                             Name = "REJECTED"
+                        });
+                });
+
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.EnumModels.ManagementFeeType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ManagementFeeTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "ORGANIZATION_COST"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "CONTINGENCY_FEE"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "ESCORT_FEE"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "OPERATING_FEE"
                         });
                 });
 
@@ -1695,6 +1735,31 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.ToTable("FacilityServices");
                 });
 
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.ManagementFeeReference", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ManagementFeeTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("MaxFee")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MinFee")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Moq")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ManagementFeeTypeId");
+
+                    b.ToTable("ManagementFeeReferences");
+                });
+
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Material", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1843,6 +1908,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CustomEvent")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1867,7 +1936,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid>("AssurancePriceHistoryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("ContigencyFeePerPerson")
+                    b.Property<double>("ContingencyFee")
                         .HasColumnType("float");
 
                     b.Property<double>("DriverCost")
@@ -2344,6 +2413,28 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.ToTable("RequestedLocations");
                 });
 
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.RoomQuantityDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PrivateTourRequestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("QuantityPerRoom")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalRoom")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrivateTourRequestId");
+
+                    b.ToTable("RoomQuantityDetails");
+                });
+
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Route", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2497,7 +2588,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid?>("BasedOnTourId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("ContigencyFeePerPerson")
+                    b.Property<double>("ContingencyFee")
                         .HasColumnType("float");
 
                     b.Property<string>("Description")
@@ -3189,6 +3280,17 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("Unit");
                 });
 
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.ManagementFeeReference", b =>
+                {
+                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.ManagementFeeType", "ManagementFeeType")
+                        .WithMany()
+                        .HasForeignKey("ManagementFeeTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ManagementFeeType");
+                });
+
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Material", b =>
                 {
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.MaterialType", "MaterialType")
@@ -3618,6 +3720,17 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("PrivateTourRequest");
 
                     b.Navigation("Province");
+                });
+
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.RoomQuantityDetail", b =>
+                {
+                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.PrivateTourRequest", "PrivateTourRequest")
+                        .WithMany()
+                        .HasForeignKey("PrivateTourRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PrivateTourRequest");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Route", b =>

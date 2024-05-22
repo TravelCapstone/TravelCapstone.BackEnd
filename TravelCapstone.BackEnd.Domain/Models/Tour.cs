@@ -14,7 +14,7 @@ public class Tour
     [ForeignKey(nameof(VehicleTypeId))]
     public EnumModels.VehicleType? VehicleType { get; set; }
     public double OrganizationCost { get; set; }
-    public double ContigencyFeePerPerson { get; set; }
+    public double ContingencyFee { get; set; }
     public double EscortFee { get; set; }
     public double OperatingFee { get; set; }
     public double TotalPrice { get; set; }

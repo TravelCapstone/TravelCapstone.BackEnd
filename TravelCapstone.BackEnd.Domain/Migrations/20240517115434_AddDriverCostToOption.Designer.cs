@@ -1869,7 +1869,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid>("AssurancePriceHistoryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("ContigencyFeePerPerson")
+                    b.Property<double>("ContingencyFee")
                         .HasColumnType("float");
 
                     b.Property<double>("DriverCost")
@@ -2499,7 +2499,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid?>("BasedOnTourId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("ContigencyFeePerPerson")
+                    b.Property<double>("ContingencyFee")
                         .HasColumnType("float");
 
                     b.Property<string>("Description")
