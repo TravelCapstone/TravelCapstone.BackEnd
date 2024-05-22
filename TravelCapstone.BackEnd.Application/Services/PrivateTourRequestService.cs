@@ -212,6 +212,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         var result = new AppActionResult();
         OptionListResponseDto data = new OptionListResponseDto();
         var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
+        var communeRepository = Resolve<IRepository<Commune>>();
         try
         {
             var privateTourRequestDb = await _repository.GetByExpression(a => a.Id == id, a => a.CreateByAccount!, a => a.Province!);
@@ -221,6 +222,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 return result;
             }
             data.PrivateTourResponse = _mapper.Map<PrivateTourResponseDto>(privateTourRequestDb);
+            data.PrivateTourResponse.StartLocationCommune = await communeRepository!.GetByExpression(c => c.Id == privateTourRequestDb.StartLocationCommuneId, c => c.District.Province);
             var requestedLocationRepository = Resolve<IRepository<RequestedLocation>>();
             var roomQuantityDetailRepository = Resolve<IRepository<RoomQuantityDetail>>();
             var requestedLocationDb = await requestedLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == privateTourRequestDb.Id, 0, 0, null, false, r => r.Province!);

@@ -21,6 +21,7 @@ public class PrivateTourResponseDto
     public string? Note { get; set; }
     public string? StartLocation { get; set; }
     public Guid StartLocationCommuneId { get; set; }
+    public Commune StartLocationCommune { get; set; }
     public Province? MainDestination { get; set; } 
     public double WishPrice {  get; set; }
     public DietaryPreference DietaryPreference { get; set; }
