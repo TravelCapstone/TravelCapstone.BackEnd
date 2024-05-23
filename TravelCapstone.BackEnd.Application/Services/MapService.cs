@@ -224,13 +224,24 @@ public class MapService : GenericBackendService, IMapService
                     string placeEndPoint = null;
                     TripInfo.Leg currentTrip = null;
                     TripInfo.Waypoint currentWaypoint = null;
+                    List<RestResponse> provinceResponse = new List<RestResponse>();
+
+                    obj.Waypoints = obj.Waypoints.OrderBy(o => o.WaypointIndex).ToList();
+
+                    for(int i = 0; i < obj.Trips[0].Legs.Count; i++)
+                    {
+                        placeEndPoint = $"https://rsapi.goong.io/Place/Detail?place_id={obj.Waypoints[i].PlaceId}&api_key={APIKEY}";
+                        response = await client.ExecuteAsync(new RestRequest(placeEndPoint));
+                        provinceResponse.Add(response);
+                        await Task.Delay(200);
+                    }
                     string currentProvinceName = null;
+
                     for(int i = 0; i < obj.Trips[0].Legs.Count; i++)
                     {
                         currentTrip = obj.Trips[0].Legs[i];
                         currentWaypoint = obj.Waypoints[i];
-                        placeEndPoint = $"https://rsapi.goong.io/Place/Detail?place_id={currentWaypoint.PlaceId}&api_key={APIKEY}";
-                        response = await client.ExecuteAsync(new RestRequest(placeEndPoint));
+                        response = provinceResponse[i];
                         LocationResultDTO.GeocodeResponse location;
                         if(response.IsSuccessStatusCode)
                         {
