@@ -14,7 +14,7 @@ namespace TravelCapstone.BackEnd.Application.Services;
 
 public class MapService : GenericBackendService, IMapService
 {
-    public const string APIKEY = "59ShUUOfSsJVDcwkynlpIKDuUSs0djQJpZo7Oixy";
+    public const string APIKEY = "wtgwU8jhhz9v6Zn2QzdwSiKOffgE8Uj3fUpLqn9W";
     private IUnitOfWork _unitOfWork;
 
     public MapService(IUnitOfWork unitOfWork ,IServiceProvider serviceProvider) : base(serviceProvider)
@@ -199,7 +199,7 @@ public class MapService : GenericBackendService, IMapService
                 }
             }
 
-            if (IsPilgrimageTrip)
+            if (true)
             {
                 string start = $"{startProvince.lat.ToString()},{startProvince.lng.ToString()}";
                 StringBuilder waypoints = new StringBuilder();
