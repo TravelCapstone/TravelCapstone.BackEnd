@@ -224,6 +224,7 @@ public class MapService : GenericBackendService, IMapService
                     string placeEndPoint = null;
                     TripInfo.Leg currentTrip = null;
                     TripInfo.Waypoint currentWaypoint = null;
+                    string currentProvinceName = null;
                     for(int i = 0; i < obj.Trips[0].Legs.Count; i++)
                     {
                         currentTrip = obj.Trips[0].Legs[i];
@@ -234,7 +235,8 @@ public class MapService : GenericBackendService, IMapService
                         if(response.IsSuccessStatusCode)
                         {
                             location = JsonConvert.DeserializeObject<LocationResultDTO.GeocodeResponse>(response.Content!)!;
-                            if (location.Result.FormattedAddress.Contains(startProvince.Name))
+                            currentProvinceName = location.Result.FormattedAddress.Split(", ")[location.Result.FormattedAddress.Split(", ").Length - 1];
+                            if (currentProvinceName.Contains(startProvince.Name) || startProvince.Name.Contains(currentProvinceName))
                             {
                                 optimalTripResponseDTO.OptimalTrip!.Add(new RouteNode
                                 {
@@ -247,7 +249,7 @@ public class MapService : GenericBackendService, IMapService
                                 });
                                 continue;
                             }
-                            var province = onWayProvinces.Items.FirstOrDefault(p => location.Result.FormattedAddress.Contains(p.Name));
+                            var province = onWayProvinces.Items.FirstOrDefault(p => currentProvinceName.Contains(p.Name) || p.Name.Contains(currentProvinceName));
                             if (province != null)
                             {
                                 optimalTripResponseDTO.OptimalTrip!.Add(new RouteNode
@@ -263,7 +265,7 @@ public class MapService : GenericBackendService, IMapService
                         }
                     }
                  
-                    result.Result = optimalTripResponseDTO;
+                    result.Result = optimalTripResponseDTO.OptimalTrip.OrderBy(o => o.Index);
                 }
             }
 
