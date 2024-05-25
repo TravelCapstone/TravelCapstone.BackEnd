@@ -98,7 +98,9 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 StartLocationCommuneId = privateTourequestDTO.StartCommuneId,
                 WishPrice = privateTourequestDTO.WishPrice,
                 MainDestinationId = privateTourequestDTO.MainDestinationId,
-                CreateBy = privateTourequestDTO.AccountId!
+                CreateBy = privateTourequestDTO.AccountId!,
+                MinimumHotelRatingId = privateTourequestDTO.MinimumHotelRatingId,
+                MinimumRestaurantRatingId = privateTourequestDTO.MinimumRestaurantRatingId, 
             };
             var utility = Resolve<Utility>();
             request.CreateDate = utility!.GetCurrentDateTimeInTimeZone();

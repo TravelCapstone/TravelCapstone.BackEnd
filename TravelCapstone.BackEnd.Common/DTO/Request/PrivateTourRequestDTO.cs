@@ -19,6 +19,8 @@ public class PrivateTourRequestDTO
     public string? Note { get; set; }
     public bool IsEnterprise { get; set; }
     public Guid MainDestinationId { get; set; }
+    public Guid MinimumHotelRatingId { get; set; }  
+    public Guid MinimumRestaurantRatingId { get; set; }
     public double WishPrice { get; set; }
     public DietaryPreference DietaryPreference { get; set; }    
     public List<RequestedLocationDTO>? OtherLocation { get; set; } = new List<RequestedLocationDTO>();
