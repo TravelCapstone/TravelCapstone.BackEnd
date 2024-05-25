@@ -257,7 +257,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var provinceDb = await provinceRepository!.GetById(provinceId);
                 if (provinceDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {provinceId}");
+                    result = BuildAppActionResultError(result, $"Không tìm thấy tỉnh với id {provinceId}");
                     return result;
                 }
                 var privateTourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();

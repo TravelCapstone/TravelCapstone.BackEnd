@@ -85,7 +85,6 @@ namespace TravelCapstone.BackEnd.Application.Services
                 if(filter.DistrictId != null && filter.CommuneId == null)
                 {
                     result.Result = await _repository.GetAllDataByExpression(a => a.Communce!.DistrictId == filter.DistrictId, pageNumber, pageSize, null, false, a => a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
-
                 }
                 else if(filter.DistrictId !=null && filter.CommuneId != null) 
                 {
