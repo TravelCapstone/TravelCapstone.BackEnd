@@ -269,7 +269,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 var eventOptionDb = await optionEventRepository!.GetAllDataByExpression(o => o.OptionId == item.Id, 0, 0, null, false, o => o.Event);
                 option.OptionEvent = eventOptionDb.Items;
                 option.TourguideQuotationDetails = tourGuideQuotationDetailDb.Items;
-                option.QuotationDetails = quotationDetailDb.Items!.ToList();
+                option.QuotationDetails = quotationDetailDb.Items!.OrderBy(o => o.StartDate).ToList();
                 option.VehicleQuotationDetails = await GetOrderedList(vehicleQuotationDetailDb.Items!.ToList());
                 if (item.OptionClassId == OptionClass.ECONOMY)
                     data.Option1 = option;
