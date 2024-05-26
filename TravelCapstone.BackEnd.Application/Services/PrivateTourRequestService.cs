@@ -263,7 +263,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             {
                 OptionResponseDto option = new OptionResponseDto();
                 option.OptionQuotation = item;
-                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false,a => a.District!.Province!, a => a.ServiceType!, a=> a.FacilityRating!.FacilityType!, a => a.FacilityRating!.Rating!);
+                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false,a => a.District!.Province!, a => a.ServiceType!, a=> a.FacilityRating!.FacilityType!, a => a.FacilityRating!.Rating!, a => a.Menu);
                 var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, a=> a.StartPoint!, a => a.EndPoint!);
                 var tourGuideQuotationDetailDb = await tourguideQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionId == item.Id, 0, 0, null, false, q => q.Province!);
                 var eventOptionDb = await optionEventRepository!.GetAllDataByExpression(o => o.OptionId == item.Id, 0, 0, null, false, o => o.Event);
@@ -780,14 +780,14 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 foreach(var item in dto.MaterialCosts)
                 {
-                    var materialCostHostoryDb = await materialPriceHistoryRepository!.GetById(item.MaterialPriceHistoryId);
+                    var materialCostHistoryDb = await materialPriceHistoryRepository!.GetById(item.MaterialPriceHistoryId);
                     quotationDetails.Add(new QuotationDetail
                     {
                         Id = Guid.NewGuid(),
-                        MaterialPriceHistoryId = materialCostHostoryDb.Id,
+                        MaterialPriceHistoryId = materialCostHistoryDb.Id,
                         OptionQuotationId = option1.Id,
-                        MinPrice = materialCostHostoryDb.Price * item.Quantity,
-                        MaxPrice = materialCostHostoryDb.Price * item.Quantity,
+                        MinPrice = materialCostHistoryDb.Price * item.Quantity,
+                        MaxPrice = materialCostHistoryDb.Price * item.Quantity,
                         Quantity = item.Quantity
                     });
                 }            
@@ -825,7 +825,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                     FacilityRatingId = hotelRating!.Id,
                                     StartDate = location.StartDate,
                                     EndDate = location.EndDate,
-                                    DistrictId = location.DistrictId
+                                    DistrictId = location.DistrictId,
+                                    ServiceTypeId = ServiceType.RESTING
                                 });
                             }
                             else
@@ -863,7 +864,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                     FacilityRatingId = hotelRating!.Id,
                                     StartDate = location.StartDate,
                                     EndDate = location.EndDate,
-                                    DistrictId = location.DistrictId
+                                    DistrictId = location.DistrictId,
+                                    ServiceTypeId = ServiceType.RESTING
                                 });
                             }
                             else
@@ -899,7 +901,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                     FacilityRatingId = hotelRating!.Id,
                                     StartDate = location.StartDate,
                                     EndDate = location.EndDate,
-                                    DistrictId = location.DistrictId
+                                    DistrictId = location.DistrictId,
+                                    ServiceTypeId = ServiceType.RESTING
                                 });
                             }
                             else
@@ -942,7 +945,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                     StartDate = dayMenu.Date,
                                     EndDate = dayMenu.Date,
                                     DistrictId = location.DistrictId,
-                                    MenuId = menu.Id
+                                    MenuId = menu.Id,
+                                    ServiceTypeId = ServiceType.FOODANDBEVARAGE
                                 });
                             }
                         }
@@ -984,7 +988,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                     FacilityRatingId = entertaimentRating!.Id,
                                     StartDate = null,
                                     EndDate = null,
-                                    DistrictId = location.DistrictId
+                                    DistrictId = location.DistrictId,
+                                    ServiceTypeId = ServiceType.ATTRACTION
                                 });
                             }
 
@@ -1003,7 +1008,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                     FacilityRatingId = entertaimentRating!.Id,
                                     StartDate = null,
                                     EndDate = null,
-                                    DistrictId = location.DistrictId
+                                    DistrictId = location.DistrictId,
+                                    ServiceTypeId = ServiceType.ATTRACTION
                                 });
                             }
 
@@ -1022,7 +1028,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                     FacilityRatingId = entertaimentRating!.Id,
                                     StartDate = null,
                                     EndDate = null,
-                                    DistrictId = location.DistrictId
+                                    DistrictId = location.DistrictId,
+                                    ServiceTypeId = ServiceType.ATTRACTION
                                 });
                             }
 
@@ -1105,7 +1112,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                     EndPointId = (Guid)vehicle.EndPoint!,
                                     StartPointDistrictId = vehicle.StartPointDistrict != null ? (Guid)vehicle.StartPointDistrict : null,
                                     EndPointDistrictId = vehicle.EndPointDistrict != null ? (Guid)vehicle.EndPointDistrict : null,
-                                    VehicleType = vehicle.VehicleType,
+                                    VehicleType = vehicle.VehicleType
                                 });
                               
                             }
