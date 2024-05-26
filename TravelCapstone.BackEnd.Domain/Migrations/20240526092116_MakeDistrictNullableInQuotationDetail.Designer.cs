@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240526092116_MakeDistrictNullableInQuotationDetail")]
+    partial class MakeDistrictNullableInQuotationDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2290,7 +2292,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("FacilityRatingId")
+                    b.Property<Guid>("FacilityRatingId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("MaterialPriceHistoryId")
@@ -3640,7 +3642,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.FacilityRating", "FacilityRating")
                         .WithMany()
-                        .HasForeignKey("FacilityRatingId");
+                        .HasForeignKey("FacilityRatingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.MaterialPriceHistory", "MaterialPriceHistory")
                         .WithMany()
