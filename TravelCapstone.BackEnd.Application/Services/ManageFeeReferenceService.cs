@@ -61,7 +61,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 {
                     var suitableOperatingFee = operatingFee.Items.OrderByDescending(m => m.Moq).FirstOrDefault();
                     data.MinOperatingFee = suitableOperatingFee.MinFee * Quantity;
-                    data.MinOperatingFee = suitableOperatingFee.MaxFee * Quantity;
+                    data.MaxOperatingFee = suitableOperatingFee.MaxFee * Quantity;
                 }
                 else
                 {

@@ -26,20 +26,26 @@ namespace TravelCapstone.BackEnd.Application.Services
             _historyRepository = historyRepository;
             _unitOfWork = unitOfWork;
         }
-        public async Task<AppActionResult> GetAvailableAssuranceList(int NumOfDay)
+        public async Task<AppActionResult> GetAvailableAssurance(int NumOfDay)
         {
             AppActionResult result = new AppActionResult();
             try
             {
                 var assurancePriceDb = await _historyRepository.GetAllDataByExpression(h => h.Assurance!.DayMOQ >= NumOfDay, 0, 0, null, false, h => h.Assurance!);
-                var lastestPrice = assurancePriceDb.Items!.GroupBy(a => a.Id).Select(a => a.OrderByDescending(b => b.Date)).ToList();
-                if(lastestPrice.Count > 0)
+                if(assurancePriceDb.Items != null && assurancePriceDb.Items.Count > 0)
                 {
-                    result.Result = lastestPrice;
-                }
-                else
+                    var lastestPrice = assurancePriceDb.Items!.GroupBy(a => a.Id).Select(a => a.OrderByDescending(b => b.Date).FirstOrDefault()).ToList();
+                    if (lastestPrice.Count > 0)
+                    {
+                        result.Result = lastestPrice.OrderBy(a => a.Assurance.DayMOQ).FirstOrDefault();
+                    }
+                    else
+                    {
+                        result.Result = null;
+                    }
+                } else
                 {
-                    result.Result = null;
+                    result.Messages.Add($"Không tìm thấy bảo hiểm cho tour du lịch {NumOfDay} ngày");
                 }
             } catch (Exception ex)
             {
