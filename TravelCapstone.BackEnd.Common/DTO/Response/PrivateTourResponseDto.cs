@@ -24,6 +24,8 @@ public class PrivateTourResponseDto
     public Commune StartLocationCommune { get; set; }
     public Province? MainDestination { get; set; } 
     public double WishPrice {  get; set; }
+    public FacilityRating MinHotelRating { get; set; }
+    public FacilityRating MinRestaurantRating { get; set; }
     public DietaryPreference DietaryPreference { get; set; }
     public List<RequestedLocation>? OtherLocation { get; set; }
     public List<RoomQuantityDetail>? RoomDetails { get; set; }

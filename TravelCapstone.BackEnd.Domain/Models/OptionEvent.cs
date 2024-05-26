@@ -14,6 +14,7 @@ namespace TravelCapstone.BackEnd.Domain.Models
         [Key]
         public Guid Id { get; set; }
         public string CustomEvent { get; set; }
+        public DateTime Date { get; set; }
         public Guid EventId { get; set; }
         [ForeignKey(nameof(EventId))]
         public Event? Event { get; set; }
