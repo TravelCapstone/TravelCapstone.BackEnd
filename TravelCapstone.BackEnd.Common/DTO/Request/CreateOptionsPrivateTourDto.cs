@@ -74,7 +74,7 @@ public class MenuQuotation
 {
     public DateTime Date { get; set; }
     public OptionClass option {  get; set; }
-    public Guid MenuId { get; set; }
+    public List<Guid> MenuIds { get; set; } = new List<Guid>();
 }
 
 public class Entertainment

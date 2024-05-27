@@ -3,7 +3,9 @@ using Bogus;
 using EnumsNET;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NPOI.HPSF;
 using NPOI.SS.Formula;
+using OfficeOpenXml;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -571,24 +573,28 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     }
                    foreach(var menuOption in location.MenuQuotations)
                     {
-                        var menu = await menuRepository!.GetByExpression(m => m.Id == menuOption.MenuId, null);
-                        if (menu == null)
+                        foreach(var MenuId in menuOption.MenuIds)
                         {
-                            result = BuildAppActionResultError(result, $"Không tìm thấy menu với id {menuOption.MenuId}");
-                            errorCount++;
-                            break;
-                        }
-                        var sellRestaurent = await sellPriceRepository!.GetAllDataByExpression(
-                           s => s.MenuId == menuOption.MenuId,
-                           0, 0, null, false, null
-                           );
+                            var menu = await menuRepository!.GetByExpression(m => m.Id == MenuId, null);
+                            if (menu == null)
+                            {
+                                result = BuildAppActionResultError(result, $"Không tìm thấy menu với id {MenuId}");
+                                errorCount++;
+                                break;
+                            }
+                            var sellRestaurent = await sellPriceRepository!.GetAllDataByExpression(
+                               s => s.MenuId == MenuId,
+                               0, 0, null, false, null
+                               );
 
-                        if (!sellRestaurent.Items!.Any())
-                        {
-                            result = BuildAppActionResultError(result, $"Không tìm thấy menu {menu.Name}");
-                            errorCount++;
-                            break;
+                            if (!sellRestaurent.Items!.Any())
+                            {
+                                result = BuildAppActionResultError(result, $"Không tìm thấy menu {menu.Name}");
+                                errorCount++;
+                                break;
+                            }
                         }
+                        
                     }
                     if(errorCount > 0)
                     {
@@ -924,31 +930,34 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             menu = null;
                             int quantity = 0;
                             int totalService = 0;
-                            menu = await menuRepository!.GetByExpression(m => m.Id == dayMenu.MenuId, m => m.FacilityService);
-                            quantity = menu.FacilityService.ServiceAvailabilityId == ServiceAvailability.BOTH ? privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren :
-                                           menu.FacilityService.ServiceAvailabilityId == ServiceAvailability.ADULT ? privateTourRequest.NumOfAdult : privateTourRequest.NumOfChildren;
-                            totalService = (int)Math.Ceiling((double)(quantity / menu.FacilityService.ServingQuantity));
-                            menuPriceList = await sellPriceRepository!.GetAllDataByExpression(s => s.MenuId == dayMenu.MenuId && totalService >= s.MOQ, 0, 0, null, false, m => m.Menu.FacilityService!.Facility!);
-                            if (menuPriceList.Items != null && menuPriceList.Items.Count > 0)
+                            foreach(var MenuId in dayMenu.MenuIds)
                             {
-                                menuPrice = menuPriceList.Items.OrderByDescending(s => s.Date).ThenByDescending(s => s.MOQ).FirstOrDefault();
-                                quotationDetails.Add(new QuotationDetail
+                                menu = await menuRepository!.GetByExpression(m => m.Id == MenuId, m => m.FacilityService);
+                                quantity = menu.FacilityService.ServiceAvailabilityId == ServiceAvailability.BOTH ? privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren :
+                                               menu.FacilityService.ServiceAvailabilityId == ServiceAvailability.ADULT ? privateTourRequest.NumOfAdult : privateTourRequest.NumOfChildren;
+                                totalService = (int)Math.Ceiling((double)(quantity / menu.FacilityService.ServingQuantity));
+                                menuPriceList = await sellPriceRepository!.GetAllDataByExpression(s => s.MenuId == MenuId && totalService >= s.MOQ, 0, 0, null, false, m => m.Menu.FacilityService!.Facility!);
+                                if (menuPriceList.Items != null && menuPriceList.Items.Count > 0)
                                 {
-                                    Id = Guid.NewGuid(),
-                                    OptionQuotationId = dayMenu.option == OptionClass.ECONOMY? option1.Id : dayMenu.option == OptionClass.MIDDLE ? option2.Id : option3.Id,
-                                    QuantityOfAdult = privateTourRequest.NumOfAdult,
-                                    QuantityOfChild = privateTourRequest.NumOfChildren,
-                                    ServingQuantity = menu.FacilityService.ServingQuantity,
-                                    Quantity = totalService,
-                                    MinPrice = menuPrice.Price,
-                                    MaxPrice = menuPrice.Price,
-                                    FacilityRatingId = menuPrice.Menu.FacilityService.Facility.FacilityRatingId,
-                                    StartDate = dayMenu.Date,
-                                    EndDate = dayMenu.Date,
-                                    DistrictId = location.DistrictId,
-                                    MenuId = menu.Id,
-                                    ServiceTypeId = ServiceType.FOODANDBEVARAGE
-                                });
+                                    menuPrice = menuPriceList.Items.OrderByDescending(s => s.Date).ThenByDescending(s => s.MOQ).FirstOrDefault();
+                                    quotationDetails.Add(new QuotationDetail
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        OptionQuotationId = dayMenu.option == OptionClass.ECONOMY ? option1.Id : dayMenu.option == OptionClass.MIDDLE ? option2.Id : option3.Id,
+                                        QuantityOfAdult = privateTourRequest.NumOfAdult,
+                                        QuantityOfChild = privateTourRequest.NumOfChildren,
+                                        ServingQuantity = menu.FacilityService.ServingQuantity,
+                                        Quantity = totalService,
+                                        MinPrice = menuPrice.Price,
+                                        MaxPrice = menuPrice.Price,
+                                        FacilityRatingId = menuPrice.Menu.FacilityService.Facility.FacilityRatingId,
+                                        StartDate = dayMenu.Date,
+                                        EndDate = dayMenu.Date,
+                                        DistrictId = location.DistrictId,
+                                        MenuId = menu.Id,
+                                        ServiceTypeId = ServiceType.FOODANDBEVARAGE
+                                    });
+                                }
                             }
                         }
                     }
@@ -1101,7 +1110,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     );
                         if (price.Items!.Any())
                         {
-                           if(vehicle.OptionClass1 != null)
+                           if(vehicle.OptionClass1 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
                             {
                                 vehicleQuotationDetails.Add(new VehicleQuotationDetail
                                 {
@@ -1118,7 +1127,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                               
                             }
 
-                            if (vehicle.OptionClass2 != null)
+                            if (vehicle.OptionClass2 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
                             {
                                 vehicleQuotationDetails.Add(new VehicleQuotationDetail
                                 {
@@ -1134,7 +1143,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 });
                             }
 
-                            if (vehicle.OptionClass3 != null)
+                            if (vehicle.OptionClass3 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
                             {
                                 vehicleQuotationDetails.Add(new VehicleQuotationDetail
                                 {
@@ -1523,26 +1532,89 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
     public async Task<IActionResult> GetExcelQuotation(Guid privateTourRequestId)
     {
-        IActionResult result = null;
+        IActionResult result = new ObjectResult(null) { StatusCode = 200 };
         try
         {
-            //Sheet 1: Quotation
-              //TourInformation
-              //header for quotation
-              //Quotation of each category
-              //total, average, tax, final average price
-              // kế toán, Điều hành tour lập biểu
+            OptionListResponseDto data = null;
+            var privateTourRequest = await GetPrivateTourRequestById(privateTourRequestId);
+            if(privateTourRequest.Result != null)
+            {
+                data = (OptionListResponseDto)privateTourRequest.Result;
+                if(data.Option1 == null || data.Option2 == null || data.Option3 == null)
+                {
+                    result = new ObjectResult($"Số lượng lựa chọn không hợp lệ");
+                    return result;
+                }
+            } else
+            {
+                result = new ObjectResult($"Không tìm thấy yêu cầu tạo tour với id {privateTourRequestId}");
+                return result;
+            }
+            
 
-            //Sheet 2: Menu
-              //Menu  Sáng   Trưa   Chiều
-              //Day1  Tự túc Menu1  Menu2
-              //Day2    ..    ..      ..
+            using (var package = new ExcelPackage())
+            {
+                //Sheet 1: Quotation
+                //TourInformation
+                //header for quotation
+                //Quotation of each category
+                //total, average, tax, final average price
+                // kế toán, Điều hành tour lập biểu
+                var worksheetQuotation = package.Workbook.Worksheets.Add("Báo giá");
+
+                // Starting line for the first section
+                int currentLine = 1;
+
+                // Insert sections
+                currentLine = AddTourInformation(worksheetQuotation, data.PrivateTourResponse, currentLine);
+                //currentLine = AddTourInfo(worksheetQuotation, currentLine);
+
+
+                //Sheet 2: Menu
+                //Menu  Sáng   Trưa   Chiều
+                //Day1  Tự túc Menu1  Menu2
+                //Day2    ..    ..      ..
+                var worksheetMenu = package.Workbook.Worksheets.Add("Menu");
+
+
+                // Save the new workbook
+                var excelBytes = package.GetAsByteArray();
+
+                // Return the Excel file
+                return new FileContentResult(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                {
+                    FileDownloadName = $".xlsx"
+                };
+            }
 
         } catch(Exception ex)
         {
             result = null;
         }
         return result;
+    }
+
+    private int AddTourInformation(ExcelWorksheet worksheetQuotation, PrivateTourResponseDto? privateTourResponse, int currentLine)
+    {
+        try
+        {
+            worksheetQuotation.Cells[currentLine, 1].Value = "CHIẾT TÍNH TOUR";
+            worksheetQuotation.Cells[currentLine, 1, 1, 4].Merge = true;
+            worksheetQuotation.Cells[currentLine, 1, 1, 4].Style.Font.Bold = true;
+
+            worksheetQuotation.Cells[currentLine + 1, 1].Value = "I.THÔNG TIN KHÁCH";
+            worksheetQuotation.Cells[currentLine + 1, 1].Style.Font.UnderLine = true;
+
+            worksheetQuotation.Cells[currentLine + 2, 1].Value = "- Tên đoàn khách: ";
+            worksheetQuotation.Cells[currentLine + 2, 3].Value = "Quốc tịch: ";
+            worksheetQuotation.Cells[currentLine + 2, 4].Value = "VIỆT NAM";
+
+
+        } catch(Exception ex )
+        {
+            return -1;
+        }
+        return currentLine + 9;
     }
 
 
