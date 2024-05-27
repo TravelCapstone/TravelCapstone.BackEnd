@@ -2,6 +2,7 @@
 using Bogus;
 using EnumsNET;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using NPOI.SS.Formula;
 using System.ComponentModel.Design;
 using System.Linq;
@@ -1516,6 +1517,30 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         catch (Exception e)
         {
             result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+        }
+        return result;
+    }
+
+    public async Task<IActionResult> GetExcelQuotation(Guid privateTourRequestId)
+    {
+        IActionResult result = null;
+        try
+        {
+            //Sheet 1: Quotation
+              //TourInformation
+              //header for quotation
+              //Quotation of each category
+              //total, average, tax, final average price
+              // kế toán, Điều hành tour lập biểu
+
+            //Sheet 2: Menu
+              //Menu  Sáng   Trưa   Chiều
+              //Day1  Tự túc Menu1  Menu2
+              //Day2    ..    ..      ..
+
+        } catch(Exception ex)
+        {
+            result = null;
         }
         return result;
     }
