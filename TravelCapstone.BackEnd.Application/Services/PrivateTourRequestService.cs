@@ -806,116 +806,241 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
                         if(location.HotelOptionRatingOption1 != null)
                         {
-                            var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                            if(location.NumOfSingleRoom > 0)
+                            {
+                                var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
                                 a => location.HotelOptionRatingOption1 == a.RatingId
-                                && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == location.ServingQuantity
+                                && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
                                 ).FirstOrDefault();
-                            if (sellPriceHotel != null)
-                            {
-                                double min = sellPriceHotel!.MinPrice;
-
-                                double max = sellPriceHotel!.MaxPrice;
-                                int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
-                                double minQuotation = numOfDay * location.NumOfRoom * min;
-                                double maxQuotation = numOfDay * location.NumOfRoom * max;
-                                var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption1 == a.RatingId);
-                                quotationDetails.Add(new QuotationDetail
+                                if (sellPriceHotel != null)
                                 {
-                                    Id = Guid.NewGuid(),
-                                    OptionQuotationId = option1.Id,
-                                    QuantityOfAdult = privateTourRequest.NumOfAdult,
-                                    QuantityOfChild = privateTourRequest.NumOfChildren,
-                                    ServingQuantity = location.ServingQuantity,
-                                    Quantity = location.NumOfRoom,
-                                    MinPrice = minQuotation,
-                                    MaxPrice = maxQuotation,
-                                    FacilityRatingId = hotelRating!.Id,
-                                    StartDate = location.StartDate,
-                                    EndDate = location.EndDate,
-                                    DistrictId = location.DistrictId,
-                                    ServiceTypeId = ServiceType.RESTING
-                                });
+                                    double min = sellPriceHotel!.MinPrice;
+
+                                    double max = sellPriceHotel!.MaxPrice;
+                                    int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                    double minQuotation = numOfDay * location.NumOfSingleRoom * min;
+                                    double maxQuotation = numOfDay * location.NumOfSingleRoom * max;
+                                    var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption1 == a.RatingId);
+                                    quotationDetails.Add(new QuotationDetail
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        OptionQuotationId = option1.Id,
+                                        QuantityOfAdult = privateTourRequest.NumOfAdult,
+                                        QuantityOfChild = privateTourRequest.NumOfChildren,
+                                        ServingQuantity = 2,
+                                        Quantity = location.NumOfSingleRoom,
+                                        MinPrice = minQuotation,
+                                        MaxPrice = maxQuotation,
+                                        FacilityRatingId = hotelRating!.Id,
+                                        StartDate = location.StartDate,
+                                        EndDate = location.EndDate,
+                                        DistrictId = location.DistrictId,
+                                        ServiceTypeId = ServiceType.RESTING
+                                    });
+                                }
+                                else
+                                {
+                                    result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 2 người với phân loại {location.HotelOptionRatingOption1}");
+                                }
                             }
-                            else
+
+                            if (location.NumOfDoubleRoom > 0)
                             {
-                                result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng {location.ServingQuantity} người với phân loại {location.HotelOptionRatingOption1}");
+                                var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                                a => location.HotelOptionRatingOption1 == a.RatingId
+                                && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
+                                ).FirstOrDefault();
+                                if (sellPriceHotel != null)
+                                {
+                                    double min = sellPriceHotel!.MinPrice;
+
+                                    double max = sellPriceHotel!.MaxPrice;
+                                    int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                    double minQuotation = numOfDay * location.NumOfDoubleRoom * min;
+                                    double maxQuotation = numOfDay * location.NumOfDoubleRoom * max;
+                                    var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption1 == a.RatingId);
+                                    quotationDetails.Add(new QuotationDetail
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        OptionQuotationId = option1.Id,
+                                        QuantityOfAdult = privateTourRequest.NumOfAdult,
+                                        QuantityOfChild = privateTourRequest.NumOfChildren,
+                                        ServingQuantity = 4,
+                                        Quantity = location.NumOfDoubleRoom,
+                                        MinPrice = minQuotation,
+                                        MaxPrice = maxQuotation,
+                                        FacilityRatingId = hotelRating!.Id,
+                                        StartDate = location.StartDate,
+                                        EndDate = location.EndDate,
+                                        DistrictId = location.DistrictId,
+                                        ServiceTypeId = ServiceType.RESTING
+                                    });
+                                }
+                                else
+                                {
+                                    result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 4 người với phân loại {location.HotelOptionRatingOption1}");
+                                }
                             }
 
                         }
 
                         if (location.HotelOptionRatingOption2 != null)
                         {
-                            var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                            if (location.NumOfSingleRoom > 0)
+                            {
+                                var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
                                 a => location.HotelOptionRatingOption2 == a.RatingId
-                                && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == location.ServingQuantity
+                                && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
                                 ).FirstOrDefault();
-                            if (sellPriceHotel != null)
-                            {
-                                double min = sellPriceHotel!.MinPrice;
-
-                                double max = sellPriceHotel!.MaxPrice;
-                                int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
-                                double minQuotation = numOfDay * location.NumOfRoom * min;
-                                double maxQuotation = numOfDay * location.NumOfRoom * max;
-                                var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption2 == a.RatingId);
-                                quotationDetails.Add(new QuotationDetail
+                                if (sellPriceHotel != null)
                                 {
-                                    Id = Guid.NewGuid(),
-                                    OptionQuotationId = option2.Id,
-                                    QuantityOfAdult = privateTourRequest.NumOfAdult,
-                                    QuantityOfChild = privateTourRequest.NumOfChildren,
-                                    ServingQuantity = location.ServingQuantity,
-                                    Quantity = location.NumOfRoom,
-                                    MinPrice = minQuotation,
-                                    MaxPrice = maxQuotation,
-                                    FacilityRatingId = hotelRating!.Id,
-                                    StartDate = location.StartDate,
-                                    EndDate = location.EndDate,
-                                    DistrictId = location.DistrictId,
-                                    ServiceTypeId = ServiceType.RESTING
-                                });
+                                    double min = sellPriceHotel!.MinPrice;
+
+                                    double max = sellPriceHotel!.MaxPrice;
+                                    int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                    double minQuotation = numOfDay * location.NumOfSingleRoom * min;
+                                    double maxQuotation = numOfDay * location.NumOfSingleRoom * max;
+                                    var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption2 == a.RatingId);
+                                    quotationDetails.Add(new QuotationDetail
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        OptionQuotationId = option2.Id,
+                                        QuantityOfAdult = privateTourRequest.NumOfAdult,
+                                        QuantityOfChild = privateTourRequest.NumOfChildren,
+                                        ServingQuantity = 2,
+                                        Quantity = location.NumOfSingleRoom,
+                                        MinPrice = minQuotation,
+                                        MaxPrice = maxQuotation,
+                                        FacilityRatingId = hotelRating!.Id,
+                                        StartDate = location.StartDate,
+                                        EndDate = location.EndDate,
+                                        DistrictId = location.DistrictId,
+                                        ServiceTypeId = ServiceType.RESTING
+                                    });
+                                }
+                                else
+                                {
+                                    result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 2 người với phân loại {location.HotelOptionRatingOption2}");
+                                }
                             }
-                            else
+
+                            if (location.NumOfDoubleRoom > 0)
                             {
-                                result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng {location.ServingQuantity} người với phân loại {location.HotelOptionRatingOption2}");
+                                var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                                a => location.HotelOptionRatingOption2 == a.RatingId
+                                && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
+                                ).FirstOrDefault();
+                                if (sellPriceHotel != null)
+                                {
+                                    double min = sellPriceHotel!.MinPrice;
+
+                                    double max = sellPriceHotel!.MaxPrice;
+                                    int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                    double minQuotation = numOfDay * location.NumOfDoubleRoom * min;
+                                    double maxQuotation = numOfDay * location.NumOfDoubleRoom * max;
+                                    var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption2 == a.RatingId);
+                                    quotationDetails.Add(new QuotationDetail
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        OptionQuotationId = option2.Id,
+                                        QuantityOfAdult = privateTourRequest.NumOfAdult,
+                                        QuantityOfChild = privateTourRequest.NumOfChildren,
+                                        ServingQuantity = 4,
+                                        Quantity = location.NumOfDoubleRoom,
+                                        MinPrice = minQuotation,
+                                        MaxPrice = maxQuotation,
+                                        FacilityRatingId = hotelRating!.Id,
+                                        StartDate = location.StartDate,
+                                        EndDate = location.EndDate,
+                                        DistrictId = location.DistrictId,
+                                        ServiceTypeId = ServiceType.RESTING
+                                    });
+                                }
+                                else
+                                {
+                                    result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 4 người với phân loại {location.HotelOptionRatingOption2}");
+                                }
                             }
+
                         }
                         if (location.HotelOptionRatingOption3 != null)
                         {
-                            var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                            if (location.NumOfSingleRoom > 0)
+                            {
+                                var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
                                 a => location.HotelOptionRatingOption3 == a.RatingId
-                                && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == location.ServingQuantity
+                                && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
                                 ).FirstOrDefault();
-                            if (sellPriceHotel != null)
-                            {
-                                double min = sellPriceHotel!.MinPrice;
-
-                                double max = sellPriceHotel!.MaxPrice;
-                                int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
-                                double minQuotation = numOfDay * location.NumOfRoom * min;
-                                double maxQuotation = numOfDay * location.NumOfRoom * max;
-                                var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption3 == a.RatingId);
-                                quotationDetails.Add(new QuotationDetail
+                                if (sellPriceHotel != null)
                                 {
-                                    Id = Guid.NewGuid(),
-                                    OptionQuotationId = option3.Id,
-                                    QuantityOfAdult = privateTourRequest.NumOfAdult,
-                                    QuantityOfChild = privateTourRequest.NumOfChildren,
-                                    ServingQuantity = location.ServingQuantity,
-                                    Quantity = location.NumOfRoom,
-                                    MinPrice = minQuotation,
-                                    MaxPrice = maxQuotation,
-                                    FacilityRatingId = hotelRating!.Id,
-                                    StartDate = location.StartDate,
-                                    EndDate = location.EndDate,
-                                    DistrictId = location.DistrictId,
-                                    ServiceTypeId = ServiceType.RESTING
-                                });
+                                    double min = sellPriceHotel!.MinPrice;
+
+                                    double max = sellPriceHotel!.MaxPrice;
+                                    int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                    double minQuotation = numOfDay * location.NumOfSingleRoom * min;
+                                    double maxQuotation = numOfDay * location.NumOfSingleRoom * max;
+                                    var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption3 == a.RatingId);
+                                    quotationDetails.Add(new QuotationDetail
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        OptionQuotationId = option3.Id,
+                                        QuantityOfAdult = privateTourRequest.NumOfAdult,
+                                        QuantityOfChild = privateTourRequest.NumOfChildren,
+                                        ServingQuantity = 2,
+                                        Quantity = location.NumOfSingleRoom,
+                                        MinPrice = minQuotation,
+                                        MaxPrice = maxQuotation,
+                                        FacilityRatingId = hotelRating!.Id,
+                                        StartDate = location.StartDate,
+                                        EndDate = location.EndDate,
+                                        DistrictId = location.DistrictId,
+                                        ServiceTypeId = ServiceType.RESTING
+                                    });
+                                }
+                                else
+                                {
+                                    result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 2 người với phân loại {location.HotelOptionRatingOption3}");
+                                }
                             }
-                            else
+
+                            if (location.NumOfDoubleRoom > 0)
                             {
-                                result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng {location.ServingQuantity} người với phân loại {location.HotelOptionRatingOption3}");
+                                var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                                a => location.HotelOptionRatingOption3 == a.RatingId
+                                && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
+                                ).FirstOrDefault();
+                                if (sellPriceHotel != null)
+                                {
+                                    double min = sellPriceHotel!.MinPrice;
+
+                                    double max = sellPriceHotel!.MaxPrice;
+                                    int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                    double minQuotation = numOfDay * location.NumOfDoubleRoom * min;
+                                    double maxQuotation = numOfDay * location.NumOfDoubleRoom * max;
+                                    var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption3 == a.RatingId);
+                                    quotationDetails.Add(new QuotationDetail
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        OptionQuotationId = option3.Id,
+                                        QuantityOfAdult = privateTourRequest.NumOfAdult,
+                                        QuantityOfChild = privateTourRequest.NumOfChildren,
+                                        ServingQuantity = 4,
+                                        Quantity = location.NumOfDoubleRoom,
+                                        MinPrice = minQuotation,
+                                        MaxPrice = maxQuotation,
+                                        FacilityRatingId = hotelRating!.Id,
+                                        StartDate = location.StartDate,
+                                        EndDate = location.EndDate,
+                                        DistrictId = location.DistrictId,
+                                        ServiceTypeId = ServiceType.RESTING
+                                    });
+                                }
+                                else
+                                {
+                                    result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 4 người với phân loại {location.HotelOptionRatingOption3}");
+                                }
                             }
+
                         }
                     }
                     foreach (var location in item.Restaurants)
@@ -1567,7 +1692,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 // Insert sections
                 currentLine = AddTourInformation(worksheetQuotation, data.PrivateTourResponse, currentLine);
-                //currentLine = AddTourInfo(worksheetQuotation, currentLine);
+                currentLine = AddTourInfo(worksheetQuotation, data.Option1, currentLine);
 
 
                 //Sheet 2: Menu
@@ -1594,6 +1719,49 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         return result;
     }
 
+    private int AddTourInfo(ExcelWorksheet worksheetQuotation, OptionResponseDto option1, int currentLine)
+    {
+        try
+        {
+            worksheetQuotation.Cells[currentLine, 1].Value = "CHIẾT TÍNH TOUR";
+            //worksheetQuotation.Cells[currentLine, 1, 1, 4].Merge = true;
+            //worksheetQuotation.Cells[currentLine, 1, 1, 4].Style.Font.Bold = true;
+            //worksheetQuotation.Cells[currentLine, 1, 1, 4].Style.Font.Size = 30;
+
+            //worksheetQuotation.Cells[currentLine + 1, 1].Value = "I.THÔNG TIN KHÁCH";
+            //worksheetQuotation.Cells[currentLine + 1, 1].Style.Font.UnderLine = true;
+
+            //worksheetQuotation.Cells[currentLine + 2, 1].Value = "- Tên đoàn khách: ";
+            //worksheetQuotation.Cells[currentLine + 2, 3].Value = "Quốc tịch: ";
+            //worksheetQuotation.Cells[currentLine + 2, 4].Value = "VIỆT NAM";
+            //worksheetQuotation.Cells[currentLine + 3, 1].Value = "- Số lượng khách: ";
+            //worksheetQuotation.Cells[currentLine + 3, 2].Value = privateTourResponse.NumOfAdult + privateTourResponse.NumOfChildren;
+            //worksheetQuotation.Cells[currentLine + 3, 3].Value = "Trong đó số trẻ em: ";
+            //worksheetQuotation.Cells[currentLine + 3, 4].Value = privateTourResponse.NumOfChildren;
+
+            //worksheetQuotation.Cells[currentLine + 4, 1].Value = "II. THÔNG TIN TOUR";
+            //worksheetQuotation.Cells[currentLine + 4, 1].Style.Font.UnderLine = true;
+
+            //worksheetQuotation.Cells[currentLine + 5, 1].Value = "- Tuyến tham quan: ";
+            //StringBuilder places = new StringBuilder();
+            //privateTourResponse.OtherLocation!.ForEach(p => places.Append($" - {p.Province.Name}"));
+            //worksheetQuotation.Cells[currentLine + 5, 2].Value = places.ToString();
+            //worksheetQuotation.Cells[currentLine + 6, 1].Value = "- Thời gian thực hiện: ";
+            //worksheetQuotation.Cells[currentLine + 6, 2].Value = $"{privateTourResponse.StartDate.Date} - {privateTourResponse.EndDate.Date}";
+
+            //worksheetQuotation.Cells[currentLine + 7, 1].Value = "III. THÔNG TIN TOUR";
+            //worksheetQuotation.Cells[currentLine + 7, 1].Style.Font.UnderLine = true;
+
+
+
+        }
+        catch (Exception ex)
+        {
+            return -1;
+        }
+        return currentLine + 8;
+    }
+
     private int AddTourInformation(ExcelWorksheet worksheetQuotation, PrivateTourResponseDto? privateTourResponse, int currentLine)
     {
         try
@@ -1601,6 +1769,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             worksheetQuotation.Cells[currentLine, 1].Value = "CHIẾT TÍNH TOUR";
             worksheetQuotation.Cells[currentLine, 1, 1, 4].Merge = true;
             worksheetQuotation.Cells[currentLine, 1, 1, 4].Style.Font.Bold = true;
+            worksheetQuotation.Cells[currentLine, 1, 1, 4].Style.Font.Size = 30;
 
             worksheetQuotation.Cells[currentLine + 1, 1].Value = "I.THÔNG TIN KHÁCH";
             worksheetQuotation.Cells[currentLine + 1, 1].Style.Font.UnderLine = true;
@@ -1608,13 +1777,32 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             worksheetQuotation.Cells[currentLine + 2, 1].Value = "- Tên đoàn khách: ";
             worksheetQuotation.Cells[currentLine + 2, 3].Value = "Quốc tịch: ";
             worksheetQuotation.Cells[currentLine + 2, 4].Value = "VIỆT NAM";
+            worksheetQuotation.Cells[currentLine + 3, 1].Value = "- Số lượng khách: ";
+            worksheetQuotation.Cells[currentLine + 3, 2].Value = privateTourResponse.NumOfAdult + privateTourResponse.NumOfChildren;
+            worksheetQuotation.Cells[currentLine + 3, 3].Value = "Trong đó số trẻ em: ";
+            worksheetQuotation.Cells[currentLine + 3, 4].Value = privateTourResponse.NumOfChildren;
+
+            worksheetQuotation.Cells[currentLine + 4, 1].Value = "II. THÔNG TIN TOUR";
+            worksheetQuotation.Cells[currentLine + 4, 1].Style.Font.UnderLine = true;
+
+            worksheetQuotation.Cells[currentLine + 5, 1].Value = "- Tuyến tham quan: ";
+            StringBuilder places = new StringBuilder();
+            privateTourResponse.OtherLocation!.ForEach(p => places.Append($" - {p.Province.Name}"));
+            worksheetQuotation.Cells[currentLine + 5, 2].Value = places.ToString();
+            worksheetQuotation.Cells[currentLine + 6, 1].Value = "- Thời gian thực hiện: ";
+            worksheetQuotation.Cells[currentLine + 6, 2].Value = $"{privateTourResponse.StartDate.Date} - {privateTourResponse.EndDate.Date}";
+
+            worksheetQuotation.Cells[currentLine + 7, 1].Value = "III. THÔNG TIN TOUR";
+            worksheetQuotation.Cells[currentLine + 7, 1].Style.Font.UnderLine = true;
 
 
-        } catch(Exception ex )
+
+        }
+        catch (Exception ex )
         {
             return -1;
         }
-        return currentLine + 9;
+        return currentLine + 8;
     }
 
 

@@ -57,8 +57,8 @@ public class Hotel
     public Guid DistrictId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public int ServingQuantity { get; set; }
-    public int NumOfRoom { get; set; }
+    public int NumOfSingleRoom { get; set; }
+    public int NumOfDoubleRoom { get; set; }
     public Rating? HotelOptionRatingOption1 {  get; set; }
     public Rating? HotelOptionRatingOption2 {  get; set; }
     public Rating? HotelOptionRatingOption3 {  get; set; }
