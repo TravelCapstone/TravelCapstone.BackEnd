@@ -58,6 +58,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         }
                     }
                     var closestProvinceIds = closestProvinces.Select(p => p.Id).ToList();
+                    closestProvinceIds.Add(provinceId);
                     var tourtourGuideAssignmentRepository = Resolve<IRepository<TourguideAssignment>>();
 
                     foreach (var id in closestProvinceIds)
