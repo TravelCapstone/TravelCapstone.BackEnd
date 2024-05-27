@@ -48,9 +48,8 @@ public class ProvinceService
 public class EventGala
 {
     public DateTime Date { get; set; }
-    public Guid? Option1EventId { get; set; }
-    public Guid? Option2EventId { get; set; }
-    public Guid? Option3EventId { get; set; }
+    public Guid EventId { get; set; }
+    public string CustomEvent { get; set; }
 }
 
 public class Hotel
@@ -74,16 +73,8 @@ public class Restaurant
 public class MenuQuotation
 {
     public DateTime Date { get; set; }
-    public Guid? BreakfastMenuOption1 { get; set; }
-    public Guid? BreakfastMenuOption2 { get; set; }
-    public Guid? BreakfastMenuOption3 { get; set; }
-    public Guid? LunchMenuOption1 { get; set; }
-    public Guid? LunchMenuOption2 { get; set; }
-    public Guid? LunchMenuOption3 { get; set; }
-    public Guid? DinnerMenuOption1 { get; set; }   
-    public Guid? DinnerMenuOption2 { get; set; }
-    public Guid? DinnerMenuOption3 { get; set; }
-
+    public OptionClass option {  get; set; }
+    public Guid MenuId { get; set; }
 }
 
 public class Entertainment

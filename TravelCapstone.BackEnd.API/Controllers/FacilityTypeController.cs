@@ -20,7 +20,7 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _facilityTypeService.GetAllFacilityType();
         }
-        [HttpGet("get-all-facility-rating-by-facilityId/{id}")]
+        [HttpGet("get-all-facility-rating-by-facilityTypeId/{id}")]
         public async Task<AppActionResult> GetAllFacilityRatingByFacilityTypeId(TravelCapstone.BackEnd.Domain.Enum.FacilityType id)
         {
             return await _facilityTypeService.GetAllFacilityRatingByFacilityTypeId(id);
