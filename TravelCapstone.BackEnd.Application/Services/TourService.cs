@@ -6,6 +6,7 @@ using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Common.Utils;
+using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Application.Services;
@@ -184,8 +185,7 @@ public class TourService : GenericBackendService, ITourService
 
             };
 
-            await _repository.Insert(tour);
-            await _unitOfWork.SaveChangesAsync();
+            
 
             //Add tour guide
             var tourguideAssignmentRepository = Resolve<IRepository<TourguideAssignment>>();
@@ -218,31 +218,17 @@ public class TourService : GenericBackendService, ITourService
             var routeRepository = Resolve<IRepository<Route>>();
             var vehicleRouteRepository = Resolve<IRepository<VehicleRoute>>();
             List<PlanServiceCostDetail> planServiceCostDetails = new List<PlanServiceCostDetail>();
+            int numOfDay = 0;
+            string activityType = "";
             foreach(var item in dto.Locations)
             {
-                int numOfDay = (item.EndDate.Date - item.StartDate.Date).Days;
-                //if(item is EatingPlanLocation)
-                //{
-                //    var eating = item as EatingPlanLocation;
-                //    planServiceCostDetails.Add(new PlanServiceCostDetail
-                //    {
-                //        Id = Guid.NewGuid(),
-                //        Name = $"Dịch vụ ăn uống vào ngày {eating.StartDate.Date} lúc {eating.StartDate.Hour} giờ",
-                //        Description = "",
-                //        Quantity = eating.NumOfServiceUse * eating.MealPerDay * numOfDay,
-                //        StartDate = eating.StartDate,
-                //        EndDate = eating.EndDate,
-                //        TourId = tour.Id,
-                //        SellPriceHistoryId = eating.SellPriceHistoryId,
-                //    });
-                //} 
-                
-                //else
-                {
+                numOfDay = (item.EndDate - item.StartDate).Days;
+                numOfDay = (numOfDay > 0)? numOfDay : 1;
+                activityType = item.ServiceType == ServiceType.RESTING ? "Nghỉ ngơi" : item.ServiceType == ServiceType.FOODANDBEVARAGE ? "Ăn uống" : item.ServiceType == ServiceType.ENTERTAIMENT ? "Tham quan, vui chơi" : "Event";
                     planServiceCostDetails.Add(new PlanServiceCostDetail
                     {
                         Id = Guid.NewGuid(),
-                        Name = $"Dịch vụ ăn uống vào ngày {item.StartDate.Date} lúc {item.StartDate.Hour} giờ",
+                        Name = $"{activityType} vào ngày {item.StartDate.Date} lúc {item.StartDate.Hour} giờ",
                         Description = "",
                         Quantity = item.NumOfServiceUse * numOfDay,
                         StartDate = item.StartDate,
@@ -250,13 +236,12 @@ public class TourService : GenericBackendService, ITourService
                         TourId = tour.Id,
                         SellPriceHistoryId = item.SellPriceHistoryId,
                     });
-                }
                 sellPriceIdCheckList.Add(item.SellPriceHistoryId);
             }
 
             foreach (var item in dto.Vehicles)
             {
-                int numOfDay = (item.EndDate - item.StartDate).Value.Days;
+                numOfDay = (item.EndDate - item.StartDate).Value.Days;
                 if (item.VehicleType == Domain.Enum.VehicleType.PLANE || item.VehicleType == Domain.Enum.VehicleType.BOAT)
                 {
                     planServiceCostDetails.Add(new PlanServiceCostDetail
@@ -405,6 +390,7 @@ public class TourService : GenericBackendService, ITourService
                         }
                     }
                 }
+                await _repository.Insert(tour);
                 await dayPlanRepository!.InsertRange(dayPlans);
                 await routeRepository!.InsertRange(routes);
                 await vehicleRouteRepository!.InsertRange(vehicleRoutes);

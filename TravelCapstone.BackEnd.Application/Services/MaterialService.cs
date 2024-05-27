@@ -44,13 +44,13 @@ namespace TravelCapstone.BackEnd.Application.Services
                 List<MaterialAssignment> materialAssignments = new List<MaterialAssignment>();
                 foreach(var item in request.MaterialRequests)
                 {
-                    //materialAssignments.Add(new MaterialAssignment()
-                    //{
-                    //    Id = Guid.NewGuid(),
-                    //    MaterialId = item.MaterialId,
-                    //    Quantity = item.Quantity,
-                    //    TourId = tourDb.Id
-                    //});
+                    materialAssignments.Add(new MaterialAssignment()
+                    {
+                        Id = Guid.NewGuid(),
+                        MaterialPriceHistoryId = item.MaterialSellPriceId,
+                        Quantity = item.Quantity,
+                        TourId = tourDb.Id
+                    });
                 }
                 await _assignmentRepository.InsertRange(materialAssignments);
                 await _unitOfWork.SaveChangesAsync();
