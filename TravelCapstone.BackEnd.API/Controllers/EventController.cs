@@ -21,5 +21,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetEventListWithQuantity(quantity);
         }
+
+        [HttpPost("create-custom-event-string")]
+        public async Task<AppActionResult> CreateCustomEventString(CreateCustomEventStringRequest dto)
+        {
+            return await _service.CreateCustomEventString(dto);
+        }
     }
 }

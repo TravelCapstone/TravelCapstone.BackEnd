@@ -24,16 +24,19 @@ namespace TravelCapstone.BackEnd.Application.Services;
 public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequestService
 {
     private readonly IMapper _mapper;
+    private readonly IExcelService _excelService;
     private IRepository<PrivateTourRequest> _repository;
     private IUnitOfWork _unitOfWork;
 
     public PrivateTourRequestService(
+        IExcelService excelService,
         IRepository<PrivateTourRequest> repository,
         IUnitOfWork unitOfWork,
         IMapper mapper,
         IServiceProvider serviceProvider
     ) : base(serviceProvider)
     {
+        _excelService = excelService;
         _repository = repository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -797,7 +800,54 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         MaxPrice = materialCostHistoryDb.Price * item.Quantity,
                         Quantity = item.Quantity
                     });
-                }            
+                }
+                if (dto.EventGalas != null && dto.EventGalas.Count > 0)
+                {
+                    List<OptionEvent> optionEvents = new List<OptionEvent>();
+                    foreach (var location in dto.EventGalas)
+                    {
+                        var eventDb = await eventRepository!.GetByExpression(e => e.Id == location.EventId, null);
+                        if (eventDb != null)
+                        {
+                            var optionEvent1 = new OptionEvent
+                            {
+                                Id = Guid.NewGuid(),
+                                EventId = eventDb.Id,
+                                OptionId = option1.Id,
+                                CustomEvent = location.CustomEvent,
+                                Date = location.Date
+                            };
+                            var optionEvent2 = new OptionEvent
+                            {
+                                Id = Guid.NewGuid(),
+                                EventId = eventDb.Id,
+                                OptionId = option2.Id,
+                                CustomEvent = location.CustomEvent,
+                                Date = location.Date
+                            };
+                            var optionEvent3 = new OptionEvent
+                            {
+                                Id = Guid.NewGuid(),
+                                EventId = eventDb.Id,
+                                OptionId = option3.Id,
+                                CustomEvent = location.CustomEvent,
+                                Date = location.Date
+                            };
+                            optionEvents.Add(optionEvent1);
+                            optionEvents.Add(optionEvent2);
+                            optionEvents.Add(optionEvent3);
+                            var eventCostDetail = await eventDetailPriceRepository!.GetAllDataByExpression(e => e.EventDetail!.EventId == eventDb.Id, 0, 0, e => e.Date, false, e => e.EventDetail);
+                            var latestCost = eventCostDetail.Items!.GroupBy(e => e.EventDetailId)
+                                                                   .Select(g => g.OrderByDescending(e => e.Date).FirstOrDefault())
+                                                                   .ToList();
+                            foreach (var price in latestCost)
+                            {
+                                eventTotal += price.Price * (price.EventDetail.PerPerson ? totalPeople : 1);
+                            }
+                        }
+                    }
+                    await eventOptionRepository!.InsertRange(optionEvents);
+                }
                 foreach (var item in dto.provinceServices)
                 {
                     foreach (var location in item.Hotels)
@@ -1173,53 +1223,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
 
                     }
-                    if(item.EventGalas != null && item.EventGalas.Count > 0)
-                    {
-                        List<OptionEvent> optionEvents = new List<OptionEvent>();
-                        foreach (var location in item.EventGalas)
-                        {
-                            var eventDb = await eventRepository!.GetByExpression(e => e.Id == location.EventId, null);
-                            if (eventDb != null)
-                            {
-                                var optionEvent1 = new OptionEvent
-                                {
-                                    Id = Guid.NewGuid(),
-                                    EventId = eventDb.Id,
-                                    OptionId = option1.Id,
-                                    CustomEvent = location.CustomEvent,
-                                    Date = location.Date
-                                };
-                                var optionEvent2 = new OptionEvent
-                                {
-                                    Id = Guid.NewGuid(),
-                                    EventId = eventDb.Id,
-                                    OptionId = option2.Id,
-                                    CustomEvent = location.CustomEvent,
-                                    Date = location.Date
-                                };
-                                var optionEvent3 = new OptionEvent
-                                {
-                                    Id = Guid.NewGuid(),
-                                    EventId = eventDb.Id,
-                                    OptionId = option3.Id,
-                                    CustomEvent = location.CustomEvent,
-                                    Date = location.Date
-                                };
-                                optionEvents.Add(optionEvent1);
-                                optionEvents.Add(optionEvent2);
-                                optionEvents.Add(optionEvent3);
-                                var eventCostDetail = await eventDetailPriceRepository!.GetAllDataByExpression(e => e.EventDetail!.EventId == eventDb.Id, 0, 0, e => e.Date, false, e => e.EventDetail);
-                                var latestCost = eventCostDetail.Items!.GroupBy(e => e.EventDetailId)
-                                                                       .Select(g => g.OrderByDescending(e => e.Date).FirstOrDefault())
-                                                                       .ToList();
-                                foreach (var price in latestCost)
-                                {
-                                    eventTotal += price.Price * (price.EventDetail.PerPerson ? totalPeople : 1);
-                                }
-                            }
-                        }
-                        await eventOptionRepository!.InsertRange(optionEvents);
-                    }
+                    
                 }
                 List<HumanResourceCost> driverCostOption1 = new List<HumanResourceCost>();
                 List<HumanResourceCost> driverCostOption2 = new List<HumanResourceCost>();
@@ -1723,10 +1727,63 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
     {
         try
         {
-            worksheetQuotation.Cells[currentLine, 1].Value = "CHIẾT TÍNH TOUR";
-            //worksheetQuotation.Cells[currentLine, 1, 1, 4].Merge = true;
-            //worksheetQuotation.Cells[currentLine, 1, 1, 4].Style.Font.Bold = true;
-            //worksheetQuotation.Cells[currentLine, 1, 1, 4].Style.Font.Size = 30;
+            worksheetQuotation.Cells[currentLine, 1].Value = "NỘI DUNG";
+            worksheetQuotation.Cells[currentLine, 1, currentLine + 1, 1].Merge = true;
+            worksheetQuotation.Cells[currentLine, 2].Value = "HƯỚNG DẪN CHI";
+            worksheetQuotation.Cells[currentLine, 2, currentLine, 4].Merge = true;
+            worksheetQuotation.Cells[currentLine, 5].Value = "NỘI DUNG";
+            worksheetQuotation.Cells[currentLine, 5, currentLine + 1, 5].Merge = true;
+            worksheetQuotation.Cells[currentLine + 1, 2].Value = "Đơn giá";
+            worksheetQuotation.Cells[currentLine + 1, 3].Value = "Số lượng";
+            worksheetQuotation.Cells[currentLine + 1, 4].Value = "Thành tiền";
+            worksheetQuotation.Cells[currentLine + 2, 1].Value = "A";
+            worksheetQuotation.Cells[currentLine + 2, 2].Value = "1";
+            worksheetQuotation.Cells[currentLine + 2, 3].Value = "2";
+            worksheetQuotation.Cells[currentLine + 2, 4].Value = "3=1*2";
+            worksheetQuotation.Cells[currentLine + 2, 5].Value = "HOÀN THUẾ";
+            worksheetQuotation.Cells[currentLine + 3, 1].Value = "1/KHÁCH SẠN/RESORT";
+            int i = 4;
+
+            foreach(var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == ServiceType.RESTING))
+            {
+                worksheetQuotation.Cells[currentLine + i, 1].Value = $"Khách sạn ngày {resting.StartDate.Value.Date}";
+                worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / (resting.QuantityOfAdult + resting.QuantityOfChild);
+                worksheetQuotation.Cells[currentLine + i, 3].Value = resting.QuantityOfAdult + resting.QuantityOfChild;
+                worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
+                worksheetQuotation.Cells[currentLine + i, 5].Value = resting.FacilityRating.Rating.Name;
+                i++;
+            }
+            string meal = null;
+
+            foreach (var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == ServiceType.FOODANDBEVARAGE))
+            {
+                if(resting.StartDate.Value.Hour <= 10)
+                {
+                    meal = "Bữa sáng";
+                } else if(resting.StartDate.Value.Hour < 14)
+                {
+                    meal = "Bữa trưa";
+                } else
+                {
+                    meal = "Bữa tối";
+                }
+                worksheetQuotation.Cells[currentLine + i, 1].Value = $"{meal} ngày {resting.StartDate}";
+                worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / (resting.QuantityOfAdult + resting.QuantityOfChild);
+                worksheetQuotation.Cells[currentLine + i, 3].Value = resting.QuantityOfAdult + resting.QuantityOfChild;
+                worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
+                worksheetQuotation.Cells[currentLine + i, 5].Value = resting.FacilityRating.Rating.Name;
+                i++;
+            }
+
+            foreach (var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == ServiceType.ENTERTAIMENT))
+            {
+                worksheetQuotation.Cells[currentLine + i, 1].Value = $"Khách sạn ngày {resting.StartDate}";
+                worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / (resting.QuantityOfAdult + resting.QuantityOfChild);
+                worksheetQuotation.Cells[currentLine + i, 3].Value = resting.QuantityOfAdult + resting.QuantityOfChild;
+                worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
+                worksheetQuotation.Cells[currentLine + i, 5].Value = resting.FacilityRating.Rating.Name;
+                i++;
+            }
 
             //worksheetQuotation.Cells[currentLine + 1, 1].Value = "I.THÔNG TIN KHÁCH";
             //worksheetQuotation.Cells[currentLine + 1, 1].Style.Font.UnderLine = true;
@@ -1794,7 +1851,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
             worksheetQuotation.Cells[currentLine + 7, 1].Value = "III. THÔNG TIN TOUR";
             worksheetQuotation.Cells[currentLine + 7, 1].Style.Font.UnderLine = true;
-
+            _excelService.SetBorders(worksheetQuotation, worksheetQuotation.Cells[currentLine, 1, currentLine + 7, 4], OfficeOpenXml.Style.ExcelBorderStyle.None, OfficeOpenXml.Style.ExcelBorderStyle.None);
 
 
         }

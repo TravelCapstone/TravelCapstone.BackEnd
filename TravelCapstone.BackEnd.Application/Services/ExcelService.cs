@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,6 +67,46 @@ namespace TravelCapstone.BackEnd.Application.Services
             {
             }
             return string.Empty;
+        }
+
+        public void SetBorders(ExcelWorksheet worksheet, ExcelRange range, ExcelBorderStyle outerBorderStyle, ExcelBorderStyle innerBorderStyle)
+        {
+            // Set the outer borders
+            range.Style.Border.Top.Style = outerBorderStyle;
+            range.Style.Border.Left.Style = outerBorderStyle;
+            range.Style.Border.Right.Style = outerBorderStyle;
+            range.Style.Border.Bottom.Style = outerBorderStyle;
+
+            // Set the inner borders for each cell in the range
+            int startRow = range.Start.Row;
+            int endRow = range.End.Row;
+            int startColumn = range.Start.Column;
+            int endColumn = range.End.Column;
+
+            for (int row = startRow; row <= endRow; row++)
+            {
+                for (int col = startColumn; col <= endColumn; col++)
+                {
+                    var cell = worksheet.Cells[row, col];
+
+                    if (row != startRow)
+                    {
+                        cell.Style.Border.Top.Style = innerBorderStyle;
+                    }
+                    if (row != endRow)
+                    {
+                        cell.Style.Border.Bottom.Style = innerBorderStyle;
+                    }
+                    if (col != startColumn)
+                    {
+                        cell.Style.Border.Left.Style = innerBorderStyle;
+                    }
+                    if (col != endColumn)
+                    {
+                        cell.Style.Border.Right.Style = innerBorderStyle;
+                    }
+                }
+            }
         }
     }
 }

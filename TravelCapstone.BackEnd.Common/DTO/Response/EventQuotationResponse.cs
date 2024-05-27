@@ -17,6 +17,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Response
 
     public class EventDetailReponse
     {
+        public Guid HistoryPriceId { get; set; }
         public string Name { get; set; } = null!;
         public int Quantity { get; set; }
         public bool PerPerson { get; set; }
