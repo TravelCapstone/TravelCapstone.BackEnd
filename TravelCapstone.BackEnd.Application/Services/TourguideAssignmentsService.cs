@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,14 +30,19 @@ namespace TravelCapstone.BackEnd.Application.Services
             var result = new AppActionResult();
             try
             {
+                var accountRepository = Resolve<IRepository<Account>>();
                 var provinceRepository = Resolve<IRepository<Province>>();
+                var roleRepository = Resolve<IRepository<IdentityRole>>();
+                var userRolesRepository = Resolve<IRepository<IdentityUserRole<string>>>();
+                var tourGuideScope = Resolve<IRepository<TourguideScope>>();
+                var tourGuideList = new List<Account>();
                 var provinceDb = await provinceRepository!.GetById(provinceId);
                 if (provinceDb == null)
                 {
                     result = BuildAppActionResultError(result, $"Không tìm thấy thông tin địa điểm bắt đầu với id {provinceId}");
                     return result;
                 }
-                var provinceList = await provinceRepository.GetAllDataByExpression(null, 0 , 0 , null, false, null);
+                var provinceList = await provinceRepository.GetAllDataByExpression(null, 0, 0, null, false, null);
                 if (provinceList.Items != null && provinceList.Items.Count > 0)
                 {
                     double shortestDistance = double.MaxValue;
@@ -48,23 +54,52 @@ namespace TravelCapstone.BackEnd.Application.Services
                         if (distance < shortestDistance)
                         {
                             shortestDistance = distance;
-                            closestProvinces.Add(item);  
+                            closestProvinces.Add(item);
                         }
                     }
                     var closestProvinceIds = closestProvinces.Select(p => p.Id).ToList();
                     var tourtourGuideAssignmentRepository = Resolve<IRepository<TourguideAssignment>>();
+
                     foreach (var id in closestProvinceIds)
                     {
-                        var tourtouGuideAssignmentList = await tourtourGuideAssignmentRepository!.GetAllDataByExpression(p => p.ProvinceId == provinceId && p.Tour!.EndDate >= startDate || p.Tour.StartDate <= endDate
-                        , 0, 0, null, true, p => p.Account!);
-                        if (tourtouGuideAssignmentList.Items != null && tourtouGuideAssignmentList.Items.Count > 0)
+                        var tourguideAssignmentList = await tourtourGuideAssignmentRepository!.GetAllDataByExpression(
+                            p => p.ProvinceId == provinceId && (p.Tour!.EndDate >= startDate || p.Tour.StartDate <= endDate),
+                            0, 0, null, true, p => p.Account!, p => p.Province!
+                        );
+
+                        if (tourguideAssignmentList.Items != null && tourguideAssignmentList.Items.Count > 0)
                         {
-                            var assignedTourguide = tourtouGuideAssignmentList!.Items!.Select(p => p.AccountId);
-                            result.Result = await _tourguideAssignmentRepository.GetAllDataByExpression(p => !assignedTourguide.Contains(p.AccountId), pageNumber, pageSize, null, true, p => p.Account!, p => p.Province!);
+                            var assignedTourguide = tourguideAssignmentList!.Items!.Select(p => p.AccountId).ToList();
+                            var anotherTourguideInProvince = await tourGuideScope!.GetAllDataByExpression(p => !assignedTourguide.Contains(p.AccountId) && p.District!.ProvinceId == id, 0, 0, null, false, null);
+
+                            var anotherTourguideInProvinceIds = anotherTourguideInProvince!.Items!.Select(p => p.AccountId).ToList();
+
+                            // Get tour guide role ID
+                            var tourGuideRole = await roleRepository!.GetAllDataByExpression(r => r.Name == "TOUR GUIDE", 0, 0, null, true, null);
+                            var tourGuideRoleId = tourGuideRole!.Items!.FirstOrDefault()?.Id;
+                            // Get all user roles
+                            var userRoles = await userRolesRepository!.GetAllDataByExpression(ur => ur.RoleId == tourGuideRoleId && anotherTourguideInProvinceIds.Contains(ur.UserId), 0, 0, null, true, null);
+                            var availableTourGuideIds = userRoles.Items!.Select(ur => ur.UserId).ToList();
+
+                            var tourguideDb = await accountRepository!.GetByExpression(
+                                p => availableTourGuideIds.Contains(p.Id)
+                            );
+                            if (tourguideDb != null)
+                            {
+                                tourGuideList.Add(tourguideDb);
+                            }
+                            // Assuming you need to process or return tourguideDb, do it here.
+
+                            result.Result = new PagedResult<Account>
+                            {
+                                Items = tourGuideList,
+                                TotalPages = anotherTourguideInProvince.TotalPages,
+                            };
                         }
                     }
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
             }
