@@ -3,6 +3,7 @@ using Bogus;
 using EnumsNET;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NPOI.HPSF;
 using NPOI.SS.Formula;
 using OfficeOpenXml;
@@ -849,10 +850,10 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             optionEvents.Add(optionEvent2);
                             optionEvents.Add(optionEvent3);
 
-                            var latestCost = await eventService!.DeserializeCustomEventString(location.CustomEvent);
-                            if (latestCost.IsSuccess)
+                            var latestCost = JsonConvert.DeserializeObject<CustomEventStringResponse>(location.CustomEvent);
+                            if (latestCost != null)
                             {
-                                eventTotal += (latestCost.Result as CustomEventStringResponse).Total;
+                                eventTotal += (latestCost as CustomEventStringResponse).Total;
                             }
                         }
                     }
@@ -1789,7 +1790,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
             foreach (var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == Domain.Enum.ServiceType.ENTERTAIMENT))
             {
-                worksheetQuotation.Cells[currentLine + i, 1].Value = $"Khách sạn ngày {resting.StartDate}";
+                worksheetQuotation.Cells[currentLine + i, 1].Value = $"Tham quan {resting.Quantity} {resting.StartDate}";
                 worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / (resting.QuantityOfAdult + resting.QuantityOfChild);
                 worksheetQuotation.Cells[currentLine + i, 3].Value = resting.QuantityOfAdult + resting.QuantityOfChild;
                 worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
