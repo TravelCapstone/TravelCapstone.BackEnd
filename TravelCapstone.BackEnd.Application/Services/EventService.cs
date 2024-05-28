@@ -42,24 +42,25 @@ namespace TravelCapstone.BackEnd.Application.Services
                 response.EventId = eventDb.Id;
                 response.Name = eventDb.Name;
                 response.Total = 0;
-                EventDetailPriceHistory history = null;
+                EventDetailPriceHistory curr = null;
                 foreach (var detail in dto.eventDetailPriceHistoryRequests)
                 {
-                    history = await eventDetailPriceRepository!.GetByExpression(d => d.EventDetailId == d.EventDetailId, d => d.EventDetail);
-                    if (history == null)
+                    var history = await eventDetailPriceRepository!.GetAllDataByExpression(d => d.EventDetailId == d.EventDetailId,0,0,null,false, d => d.EventDetail);
+                    if (history.Items == null || history.Items.Count == 0)
                     {
                         result = BuildAppActionResultError(result, $"Không tìm thấy giá chi tiết sự kiện với id {detail.EventDetailPriceHistoryId}");
                         return result;
                     }
+                    curr = history.Items.OrderByDescending(h => h.Date).FirstOrDefault();
                     response.eventDetailPriceHistoryResponses.Add(new EventDetailPriceHistoryResponse
                     {
                         EventDetailPriceHistoryId = detail.EventDetailPriceHistoryId,
-                        Name = history.EventDetail.Name,
+                        Name = curr.EventDetail.Name,
                         Quantity = detail.Quantity,
-                        Price = history.Price,
-                        Total = detail.Quantity * history.Price
+                        Price = curr.Price,
+                        Total = detail.Quantity * curr.Price
                     });
-                    response.Total += history.Price * detail.Quantity;
+                    response.Total += curr.Price * detail.Quantity;
                 }
                 result.Result = JsonConvert.SerializeObject(response);
             }catch(Exception ex)
