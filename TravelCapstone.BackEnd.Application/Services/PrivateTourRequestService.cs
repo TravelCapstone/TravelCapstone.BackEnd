@@ -17,7 +17,17 @@ using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Common.Utils;
 using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
+using TravelCapstone.BackEnd.Domain.Models.EnumModels;
 using static TravelCapstone.BackEnd.Common.DTO.Response.MapInfo;
+using FacilityType = TravelCapstone.BackEnd.Domain.Enum.FacilityType;
+using OptionClass = TravelCapstone.BackEnd.Domain.Enum.OptionClass;
+using OptionQuotationStatus = TravelCapstone.BackEnd.Domain.Enum.OptionQuotationStatus;
+using OrderStatus = TravelCapstone.BackEnd.Domain.Enum.OrderStatus;
+using PrivateTourStatus = TravelCapstone.BackEnd.Domain.Enum.PrivateTourStatus;
+using Rating = TravelCapstone.BackEnd.Domain.Enum.Rating;
+using ServiceAvailability = TravelCapstone.BackEnd.Domain.Enum.ServiceAvailability;
+using ServiceType = TravelCapstone.BackEnd.Domain.Enum.ServiceType;
+using VehicleType = TravelCapstone.BackEnd.Domain.Enum.VehicleType;
 
 namespace TravelCapstone.BackEnd.Application.Services;
 
@@ -482,7 +492,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                            null);
                         var sellHotel = await sellPriceRepository!.GetAllDataByExpression(
                             a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
-                            && a.FacilityService.ServiceTypeId == ServiceType.RESTING
+                            && a.FacilityService.ServiceTypeId == Domain.Enum.ServiceType.RESTING
                             && location.HotelOptionRatingOption1 == a.FacilityService.Facility.FacilityRating!.RatingId
                             ,
                             0, 0, null, false, null
@@ -506,7 +516,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         var listHotel = await facilityRepository!.GetAllDataByExpression(
                            a => a.Communce!.DistrictId == location.DistrictId
                           && location.HotelOptionRatingOption2 == a.FacilityRating!.RatingId &&
-                          a.FacilityRating.FacilityTypeId == FacilityType.HOTEL,
+                          a.FacilityRating.FacilityTypeId == Domain.Enum.FacilityType.HOTEL,
                            0,
                            0, null, false,
                            null);
@@ -801,6 +811,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         Quantity = item.Quantity
                     });
                 }
+
+                var eventService = Resolve<IEventService>();
                 if (dto.EventGalas != null && dto.EventGalas.Count > 0)
                 {
                     List<OptionEvent> optionEvents = new List<OptionEvent>();
@@ -836,13 +848,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             optionEvents.Add(optionEvent1);
                             optionEvents.Add(optionEvent2);
                             optionEvents.Add(optionEvent3);
-                            var eventCostDetail = await eventDetailPriceRepository!.GetAllDataByExpression(e => e.EventDetail!.EventId == eventDb.Id, 0, 0, e => e.Date, false, e => e.EventDetail);
-                            var latestCost = eventCostDetail.Items!.GroupBy(e => e.EventDetailId)
-                                                                   .Select(g => g.OrderByDescending(e => e.Date).FirstOrDefault())
-                                                                   .ToList();
-                            foreach (var price in latestCost)
+
+                            var latestCost = await eventService!.DeserializeCustomEventString(location.CustomEvent);
+                            if (latestCost.IsSuccess)
                             {
-                                eventTotal += price.Price * (price.EventDetail.PerPerson ? totalPeople : 1);
+                                eventTotal += (latestCost.Result as CustomEventStringResponse).Total;
                             }
                         }
                     }
@@ -1298,7 +1308,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         {
                             int totalVehicle = (int)Math.Ceiling((decimal)((decimal)(privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren) / price.Items[0].TransportServiceDetail.FacilityService!.ServingQuantity));
                             int totalDays = (vehicle.EndDate - vehicle.StartDate).Days;
-                            if(vehicle.OptionClass1 != null)
+                            if(vehicle.OptionClass1 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
                             {
                                 vehicleQuotationDetails.Add(new VehicleQuotationDetail
                                 {
@@ -1319,7 +1329,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 });
                             }
 
-                            if (vehicle.OptionClass2 != null)
+                            if (vehicle.OptionClass2 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
                             {
                                 vehicleQuotationDetails.Add(new VehicleQuotationDetail
                                 {
@@ -1340,7 +1350,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 });
                             }
 
-                            if (vehicle.OptionClass3 != null)
+                            if (vehicle.OptionClass3 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
                             {
                                 vehicleQuotationDetails.Add(new VehicleQuotationDetail
                                 {
@@ -1753,6 +1763,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 worksheetQuotation.Cells[currentLine + i, 5].Value = resting.FacilityRating.Rating.Name;
                 i++;
             }
+            worksheetQuotation.Cells[currentLine + i++, 1].Value = "1/KHÁCH SẠN/RESORT";
+
             string meal = null;
 
             foreach (var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == ServiceType.FOODANDBEVARAGE))
@@ -1775,7 +1787,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 i++;
             }
 
-            foreach (var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == ServiceType.ENTERTAIMENT))
+            foreach (var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == Domain.Enum.ServiceType.ENTERTAIMENT))
             {
                 worksheetQuotation.Cells[currentLine + i, 1].Value = $"Khách sạn ngày {resting.StartDate}";
                 worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / (resting.QuantityOfAdult + resting.QuantityOfChild);
@@ -1785,6 +1797,14 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 i++;
             }
 
+            if (option1.OptionEvent != null) {
+                foreach (var item in option1.OptionEvent)
+                {
+                    //worksheetQuotation.Cells[currentLine + i++, 1].Value = item.na;
+                    //worksheetQuotation.Cells[currentLine + i, 1].Value = resting.FacilityRating.Rating.Name;
+
+                }
+            }
             //worksheetQuotation.Cells[currentLine + 1, 1].Value = "I.THÔNG TIN KHÁCH";
             //worksheetQuotation.Cells[currentLine + 1, 1].Style.Font.UnderLine = true;
 
