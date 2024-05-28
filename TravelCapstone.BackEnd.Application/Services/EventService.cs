@@ -31,25 +31,52 @@ namespace TravelCapstone.BackEnd.Application.Services
             AppActionResult result = new AppActionResult();
             try
             {
+                var eventDetailPriceRepository = Resolve<IRepository<EventDetailPriceHistory>>();
+                CustomEventStringResponse response = new CustomEventStringResponse();
                 var eventDb = await _repository.GetById(dto.EventId);
                 if (eventDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy sự kiện với  id {dto.EventId}");
+                    result = BuildAppActionResultError(result, $"Không tìm thấy sự kiện với id {dto.EventId}");
                     return result;
                 }
-                var eventDetailPriceRepository = Resolve<IRepository<EventDetailPriceHistory>>();
+                response.EventId = eventDb.Id;
+                response.Name = eventDb.Name;
+                response.Total = 0;
                 EventDetailPriceHistory history = null;
-                foreach(var detail in dto.eventDetailPriceHistoryRequests)
+                foreach (var detail in dto.eventDetailPriceHistoryRequests)
                 {
-                    history = await eventDetailPriceRepository!.GetById(detail.EventDetailPriceHistoryId);
-                    if(history == null)
+                    history = await eventDetailPriceRepository!.GetByExpression(d => d.EventDetailId == d.EventDetailId, d => d.EventDetail);
+                    if (history == null)
                     {
                         result = BuildAppActionResultError(result, $"Không tìm thấy giá chi tiết sự kiện với id {detail.EventDetailPriceHistoryId}");
                         return result;
                     }
+                    response.eventDetailPriceHistoryResponses.Add(new EventDetailPriceHistoryResponse
+                    {
+                        EventDetailPriceHistoryId = detail.EventDetailPriceHistoryId,
+                        Name = history.EventDetail.Name,
+                        Quantity = detail.Quantity,
+                        Price = history.Price,
+                        Total = detail.Quantity * history.Price
+                    });
+                    response.Total += history.Price * detail.Quantity;
                 }
-                result.Result = JsonConvert.SerializeObject(dto);
+                result.Result = JsonConvert.SerializeObject(response);
             }catch(Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> DeserializeCustomEventString(string json)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                result.Result = JsonConvert.DeserializeObject<CustomEventStringResponse>(json);               
+            }
+            catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
             }

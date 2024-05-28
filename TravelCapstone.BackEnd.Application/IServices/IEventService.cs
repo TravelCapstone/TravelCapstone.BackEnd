@@ -12,5 +12,6 @@ namespace TravelCapstone.BackEnd.Application.IServices
     {
         public Task<AppActionResult> GetEventListWithQuantity(int quantity);
         public Task<AppActionResult> CreateCustomEventString(CreateCustomEventStringRequest dto);
+        public Task<AppActionResult> DeserializeCustomEventString(string json);
     }
 }

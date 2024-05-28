@@ -14,7 +14,7 @@ namespace TravelCapstone.BackEnd.Application.Services;
 
 public class MapService : GenericBackendService, IMapService
 {
-    public const string APIKEY = "bX323UpVrQKJOzTIN8f5SrKURGkScXuUSVz606iF";
+    public const string APIKEY = "AFSFy0pKHHUhZ89JFJhQ6AJMjPXEcMcKyzVnGj7L";
     private IUnitOfWork _unitOfWork;
 
     public MapService(IUnitOfWork unitOfWork ,IServiceProvider serviceProvider) : base(serviceProvider)
