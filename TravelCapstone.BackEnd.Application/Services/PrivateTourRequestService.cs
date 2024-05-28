@@ -287,7 +287,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 option.OptionEvent = eventOptionDb.Items;
                 option.TourguideQuotationDetails = tourGuideQuotationDetailDb.Items;
                 option.QuotationDetails = quotationDetailDb.Items!.OrderBy(o => o.StartDate).ToList();
-                option.VehicleQuotationDetails = await GetOrderedList(vehicleQuotationDetailDb.Items!.ToList());
+                option.VehicleQuotationDetails = vehicleQuotationDetailDb.Items!.ToList();
+                //option.VehicleQuotationDetails = await GetOrderedList(vehicleQuotationDetailDb.Items!.ToList());
                 if (item.OptionClassId == OptionClass.ECONOMY)
                     data.Option1 = option;
                 else if (item.OptionClassId == OptionClass.MIDDLE)
@@ -770,11 +771,15 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 double eventTotal = 0;
                 foreach (var item in dto.TourGuideCosts)
                 {
+                    var tourguideCost = await humanResourceFeeService!.GetSalary(dto.TourGuideCosts, true);
+                    tourguideTotal = (double)tourguideCost.Result!;
                     tourguideQuotationDetails.Add(new TourguideQuotationDetail
                     {
                         Id = Guid.NewGuid(),
                         IsMainTourGuide = item.ProvinceId == null,
                         Quantity = item.Quantity,
+                        NumOfDay = item.NumOfDay,
+                        Total = tourguideTotal,
                         ProvinceId = item.ProvinceId,
                         OptionId = option1.Id
                     });
@@ -784,6 +789,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         Id = Guid.NewGuid(),
                         IsMainTourGuide = item.ProvinceId == null,
                         Quantity = item.Quantity,
+                        NumOfDay = item.NumOfDay,
+                        Total = tourguideTotal,
                         ProvinceId = item.ProvinceId,
                         OptionId = option2.Id
                     });
@@ -792,12 +799,13 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         Id = Guid.NewGuid(),
                         IsMainTourGuide = item.ProvinceId == null,
                         Quantity = item.Quantity,
+                        NumOfDay = item.NumOfDay,
+                        Total = tourguideTotal,
                         ProvinceId = item.ProvinceId,
                         OptionId = option3.Id
                     });
                 }
-                var tourguideCost = await humanResourceFeeService!.GetSalary(dto.TourGuideCosts, true);
-                tourguideTotal = (double)tourguideCost.Result!; 
+                
 
                 foreach(var item in dto.MaterialCosts)
                 {
@@ -1707,7 +1715,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 // Insert sections
                 currentLine = AddTourInformation(worksheetQuotation, data.PrivateTourResponse, currentLine);
-                currentLine = AddTourInfo(worksheetQuotation, data.Option1, currentLine);
+                currentLine = await AddTourInfo(worksheetQuotation, data.Option1, currentLine);
 
 
                 //Sheet 2: Menu
@@ -1734,8 +1742,9 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         return result;
     }
 
-    private int AddTourInfo(ExcelWorksheet worksheetQuotation, OptionResponseDto option1, int currentLine)
+    private async Task<int> AddTourInfo(ExcelWorksheet worksheetQuotation, OptionResponseDto option1, int currentLine)
     {
+        int i = 4;
         try
         {
             worksheetQuotation.Cells[currentLine, 1].Value = "NỘI DUNG";
@@ -1753,7 +1762,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             worksheetQuotation.Cells[currentLine + 2, 4].Value = "3=1*2";
             worksheetQuotation.Cells[currentLine + 2, 5].Value = "HOÀN THUẾ";
             worksheetQuotation.Cells[currentLine + 3, 1].Value = "1/KHÁCH SẠN/RESORT";
-            int i = 4;
 
             foreach(var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == ServiceType.RESTING))
             {
@@ -1764,7 +1772,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 worksheetQuotation.Cells[currentLine + i, 5].Value = resting.FacilityRating.Rating.Name;
                 i++;
             }
-            worksheetQuotation.Cells[currentLine + i++, 1].Value = "1/KHÁCH SẠN/RESORT";
+            worksheetQuotation.Cells[currentLine + i++, 1].Value = "2/ĂN UỐNG";
 
             string meal = null;
 
@@ -1780,7 +1788,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 {
                     meal = "Bữa tối";
                 }
-                worksheetQuotation.Cells[currentLine + i, 1].Value = $"{meal} ngày {resting.StartDate}";
+                worksheetQuotation.Cells[currentLine + i, 1].Value = $"{meal} ngày {resting.StartDate.Value.Date}";
                 worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / (resting.QuantityOfAdult + resting.QuantityOfChild);
                 worksheetQuotation.Cells[currentLine + i, 3].Value = resting.QuantityOfAdult + resting.QuantityOfChild;
                 worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
@@ -1788,56 +1796,157 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 i++;
             }
 
+            worksheetQuotation.Cells[currentLine + i++, 1].Value = "3/THAM QUAN";
+
             foreach (var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == Domain.Enum.ServiceType.ENTERTAIMENT))
             {
-                worksheetQuotation.Cells[currentLine + i, 1].Value = $"Tham quan {resting.Quantity} {resting.StartDate}";
+                worksheetQuotation.Cells[currentLine + i, 1].Value = $"Tham quan {resting.Quantity} {resting.StartDate.Value.Date}";
                 worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / (resting.QuantityOfAdult + resting.QuantityOfChild);
                 worksheetQuotation.Cells[currentLine + i, 3].Value = resting.QuantityOfAdult + resting.QuantityOfChild;
                 worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
                 worksheetQuotation.Cells[currentLine + i, 5].Value = resting.FacilityRating.Rating.Name;
                 i++;
             }
+
+            worksheetQuotation.Cells[currentLine + i++, 1].Value = "4/GÓI GALA + TEAM BUILDING";
 
             if (option1.OptionEvent != null) {
                 foreach (var item in option1.OptionEvent)
                 {
-                    //worksheetQuotation.Cells[currentLine + i++, 1].Value = item.na;
-                    //worksheetQuotation.Cells[currentLine + i, 1].Value = resting.FacilityRating.Rating.Name;
+                    if (!item.CustomEvent.Equals("string"))
+                    {
+                        CustomEventStringResponse customEvent = JsonConvert.DeserializeObject<CustomEventStringResponse>(item.CustomEvent)!;
+                        if (customEvent != null)
+                        {
+                            worksheetQuotation.Cells[currentLine + i++, 1].Value = customEvent.Name;
+                            customEvent.eventDetailPriceHistoryResponses.ForEach(e =>
+                            {
+                                worksheetQuotation.Cells[currentLine + i, 1].Value = e.Name;
+                                worksheetQuotation.Cells[currentLine + i, 2].Value = e.Price;
+                                worksheetQuotation.Cells[currentLine + i, 3].Value = e.Quantity;
+                                worksheetQuotation.Cells[currentLine + i, 4].Value = e.Quantity * e.Price;
+                                i++;
+                            });
+                        }
+                    }
 
                 }
             }
-            //worksheetQuotation.Cells[currentLine + 1, 1].Value = "I.THÔNG TIN KHÁCH";
-            //worksheetQuotation.Cells[currentLine + 1, 1].Style.Font.UnderLine = true;
+            worksheetQuotation.Cells[currentLine + i++, 1].Value = "5/DI CHUYỂN";
 
-            //worksheetQuotation.Cells[currentLine + 2, 1].Value = "- Tên đoàn khách: ";
-            //worksheetQuotation.Cells[currentLine + 2, 3].Value = "Quốc tịch: ";
-            //worksheetQuotation.Cells[currentLine + 2, 4].Value = "VIỆT NAM";
-            //worksheetQuotation.Cells[currentLine + 3, 1].Value = "- Số lượng khách: ";
-            //worksheetQuotation.Cells[currentLine + 3, 2].Value = privateTourResponse.NumOfAdult + privateTourResponse.NumOfChildren;
-            //worksheetQuotation.Cells[currentLine + 3, 3].Value = "Trong đó số trẻ em: ";
-            //worksheetQuotation.Cells[currentLine + 3, 4].Value = privateTourResponse.NumOfChildren;
+            if (option1.VehicleQuotationDetails != null && option1.VehicleQuotationDetails.Count > 0)
+            {
+                foreach (var resting in option1.VehicleQuotationDetails)
+                {
+                    worksheetQuotation.Cells[currentLine + i, 1].Value = $"Xe loại {resting.VehicleType} trong {resting.NumOfRentingDay} ngày";
+                    worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / resting.NumOfVehicle;
+                    worksheetQuotation.Cells[currentLine + i, 3].Value = resting.NumOfVehicle;
+                    worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
+                    i++;
+                }
+            }
 
-            //worksheetQuotation.Cells[currentLine + 4, 1].Value = "II. THÔNG TIN TOUR";
-            //worksheetQuotation.Cells[currentLine + 4, 1].Style.Font.UnderLine = true;
+            worksheetQuotation.Cells[currentLine + i, 1].Value = $"Tồng phí tài xế";
+            worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.DriverCost;
+            i++;
 
-            //worksheetQuotation.Cells[currentLine + 5, 1].Value = "- Tuyến tham quan: ";
-            //StringBuilder places = new StringBuilder();
-            //privateTourResponse.OtherLocation!.ForEach(p => places.Append($" - {p.Province.Name}"));
-            //worksheetQuotation.Cells[currentLine + 5, 2].Value = places.ToString();
-            //worksheetQuotation.Cells[currentLine + 6, 1].Value = "- Thời gian thực hiện: ";
-            //worksheetQuotation.Cells[currentLine + 6, 2].Value = $"{privateTourResponse.StartDate.Date} - {privateTourResponse.EndDate.Date}";
+            worksheetQuotation.Cells[currentLine + i++, 1].Value = "6/CÔNG TÁC PHÍ";
+            string forLocalTourGuide = "";
+            if (option1.TourguideQuotationDetails != null && option1.TourguideQuotationDetails.Count > 0)
+            {
+                foreach (var tourguide in option1.TourguideQuotationDetails)
+                {
+                    if (tourguide.ProvinceId != null)
+                    {
+                        forLocalTourGuide = $"tại {tourguide.Province.Name}";
+                    }
+                    else
+                    {
+                        forLocalTourGuide = "";
+                    }
+                    worksheetQuotation.Cells[currentLine + i, 1].Value = $"{tourguide.Quantity} HDV / Ngày {forLocalTourGuide}";
+                    worksheetQuotation.Cells[currentLine + i, 2].Value = tourguide.Total / tourguide.Quantity;
+                    worksheetQuotation.Cells[currentLine + i, 3].Value = tourguide.Quantity;
+                    worksheetQuotation.Cells[currentLine + i, 4].Value = tourguide.Total;
+                    i++;
+                }
+            }
 
-            //worksheetQuotation.Cells[currentLine + 7, 1].Value = "III. THÔNG TIN TOUR";
-            //worksheetQuotation.Cells[currentLine + 7, 1].Style.Font.UnderLine = true;
+            worksheetQuotation.Cells[currentLine + i, 1].Value = "Escort";
+            worksheetQuotation.Cells[currentLine + i, 2].Value = option1.OptionQuotation.EscortFee;
+            worksheetQuotation.Cells[currentLine + i, 3].Value = 1;
+            worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.EscortFee;
+            i++;
 
+            worksheetQuotation.Cells[currentLine + i, 1].Value = "CTP Điều hành";
+            worksheetQuotation.Cells[currentLine + i, 2].Value = option1.OptionQuotation.OperatingFee;
+            worksheetQuotation.Cells[currentLine + i, 3].Value = 1;
+            worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.OperatingFee;
+            i++;
 
+            worksheetQuotation.Cells[currentLine + i++, 1].Value = "7/CHI PHÍ KHÁC";
+            MaterialPriceHistory material = null;
+            var materialHistoryPriceRepository = Resolve<IRepository<MaterialPriceHistory>>();
+            foreach(var item in option1.QuotationDetails.Where(q => q.MaterialPriceHistoryId != null))
+            {
+                material = await materialHistoryPriceRepository!.GetByExpression(i => i.Id == item.MaterialPriceHistoryId, m => m.Material);
+                if(material != null)
+                {
+                    worksheetQuotation.Cells[currentLine + i, 1].Value = material.Material.Name;
+                    worksheetQuotation.Cells[currentLine + i, 2].Value = material.Price;
+                    worksheetQuotation.Cells[currentLine + i, 3].Value = item.QuantityOfAdult + item.QuantityOfChild;
+                    worksheetQuotation.Cells[currentLine + i, 4].Value = (material.Price) * (item.QuantityOfAdult + item.QuantityOfChild);
+                    i++;
+                }
+            }
+            int quantity = option1.OptionQuotation.PrivateTourRequest.NumOfAdult + option1.OptionQuotation.PrivateTourRequest.NumOfChildren;
+
+            var assurancePriceHistoryRepository = Resolve<IRepository<AssurancePriceHistory>>();
+            var assurance = await assurancePriceHistoryRepository!.GetByExpression(a => a.Id == option1.OptionQuotation.AssurancePriceHistoryId, a => a.Assurance);
+            if(assurance != null)
+            {
+                worksheetQuotation.Cells[currentLine + i, 1].Value = assurance.Assurance.Name;
+                worksheetQuotation.Cells[currentLine + i, 2].Value = assurance.Price;
+                worksheetQuotation.Cells[currentLine + i, 3].Value = quantity;
+                worksheetQuotation.Cells[currentLine + i, 4].Value = quantity * assurance.Price;
+            }
+            i++;
+
+            worksheetQuotation.Cells[currentLine + i, 1].Value = "Phí dịch vụ tổ chức";
+            worksheetQuotation.Cells[currentLine + i, 2].Value = option1.OptionQuotation.OrganizationCost;
+            worksheetQuotation.Cells[currentLine + i, 3].Value = 1;
+            worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.OrganizationCost;
+            i++;
+
+            worksheetQuotation.Cells[currentLine + i, 1].Value = "8/ TỔNG CỘNG CHI";
+            worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.MaxTotal;
+            i++;
+
+            worksheetQuotation.Cells[currentLine + i, 1].Value = "GIÁ NET 1 PAX";
+            worksheetQuotation.Cells[currentLine + i, 3].Value = quantity; 
+            worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.MaxTotal / quantity;
+            i++;
+
+            worksheetQuotation.Cells[currentLine + i, 1].Value = "VAT 8%";
+            worksheetQuotation.Cells[currentLine + i, 3].Value = 0.08;
+            worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.MaxTotal * 0.08 / quantity;
+            i++;
+
+            worksheetQuotation.Cells[currentLine + i, 1].Value = "GIÁ BÁN";
+            worksheetQuotation.Cells[currentLine + i, 3].Value = 0.08;
+            worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.MaxTotal * 1.08 / quantity;
+            i++;
+            //worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / resting.NumOfVehicle;
+            //worksheetQuotation.Cells[currentLine + i, 3].Value = resting.NumOfVehicle;
+            //worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
+            i++;
 
         }
         catch (Exception ex)
         {
             return -1;
         }
-        return currentLine + 8;
+        return currentLine + i;
     }
 
     private int AddTourInformation(ExcelWorksheet worksheetQuotation, PrivateTourResponseDto? privateTourResponse, int currentLine)
