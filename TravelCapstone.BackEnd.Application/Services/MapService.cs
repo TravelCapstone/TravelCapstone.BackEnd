@@ -14,7 +14,7 @@ namespace TravelCapstone.BackEnd.Application.Services;
 
 public class MapService : GenericBackendService, IMapService
 {
-    public const string APIKEY = "wtgwU8jhhz9v6Zn2QzdwSiKOffgE8Uj3fUpLqn9W";
+    public const string APIKEY = "37kdgnXduQ5abL1Yq9J9fNssLEMqbEtqHYZoqnnW";
     private IUnitOfWork _unitOfWork;
 
     public MapService(IUnitOfWork unitOfWork ,IServiceProvider serviceProvider) : base(serviceProvider)
@@ -224,30 +224,27 @@ public class MapService : GenericBackendService, IMapService
                     string placeEndPoint = null;
                     TripInfo.Leg currentTrip = null;
                     TripInfo.Waypoint currentWaypoint = null;
-                    List<RestResponse> provinceResponse = new List<RestResponse>();
-
+                    //List<RestResponse> provinceResponse = new List<RestResponse>();
                     obj.Waypoints = obj.Waypoints.OrderBy(o => o.WaypointIndex).ToList();
 
-                    for(int i = 0; i < obj.Trips[0].Legs.Count; i++)
-                    {
-                        placeEndPoint = $"https://rsapi.goong.io/Place/Detail?place_id={obj.Waypoints[i].PlaceId}&api_key={APIKEY}";
-                        response = await client.ExecuteAsync(new RestRequest(placeEndPoint));
-                        provinceResponse.Add(response);
-                        await Task.Delay(200);
-                    }
-                    string currentProvinceName = null;
+                    //for(int i = 0; i < obj.Trips[0].Legs.Count; i++)
+                    //{
+                    //    placeEndPoint = $"https://rsapi.goong.io/Place/Detail?place_id={obj.Waypoints[i].PlaceId}&api_key={APIKEY}";
+                    //    response = await client.ExecuteAsync(new RestRequest(placeEndPoint));
+                    //    provinceResponse.Add(response);
+                    //    await Task.Delay(350);
+                    //}
+                    Province currentProvinceName = null;
 
                     for(int i = 0; i < obj.Trips[0].Legs.Count; i++)
                     {
                         currentTrip = obj.Trips[0].Legs[i];
                         currentWaypoint = obj.Waypoints[i];
-                        response = provinceResponse[i];
-                        LocationResultDTO.GeocodeResponse location;
-                        if(response.IsSuccessStatusCode)
+                        currentProvinceName = (await provinceRepository.GetByExpression(p => Math.Abs((double)(currentWaypoint.Location[0] - p.lat)) <= 0.0007 
+                                                                                          && Math.Abs((double)(currentWaypoint.Location[1] - p.lng)) <= 0.001))!;
+                        if(currentProvinceName != null)
                         {
-                            location = JsonConvert.DeserializeObject<LocationResultDTO.GeocodeResponse>(response.Content!)!;
-                            currentProvinceName = location.Result.FormattedAddress.Split(", ")[location.Result.FormattedAddress.Split(", ").Length - 1];
-                            if (currentProvinceName.Contains(startProvince.Name) || startProvince.Name.Contains(currentProvinceName))
+                            if (currentProvinceName.Name.Contains(startProvince.Name) || startProvince.Name.Contains(currentProvinceName.Name))
                             {
                                 optimalTripResponseDTO.OptimalTrip!.Add(new RouteNode
                                 {
@@ -260,12 +257,12 @@ public class MapService : GenericBackendService, IMapService
                                 });
                                 continue;
                             }
-                            var province = onWayProvinces.Items.FirstOrDefault(p => currentProvinceName.Contains(p.Name) || p.Name.Contains(currentProvinceName));
+                            var province = onWayProvinces.Items.FirstOrDefault(p => currentProvinceName.Name.Contains(p.Name) || p.Name.Contains(currentProvinceName.Name));
                             if (province != null)
                             {
                                 optimalTripResponseDTO.OptimalTrip!.Add(new RouteNode
                                 {
-                                    Index= currentWaypoint.WaypointIndex,
+                                    Index = currentWaypoint.WaypointIndex,
                                     ProvinceId = province.Id,
                                     ProvinceName = province.Name,
                                     VehicleToNextDestination = VehicleType.BUS,
@@ -421,4 +418,6 @@ public class MapService : GenericBackendService, IMapService
 
         return (numberOfDays, numberOfNights);
     }
+
+    
 }
