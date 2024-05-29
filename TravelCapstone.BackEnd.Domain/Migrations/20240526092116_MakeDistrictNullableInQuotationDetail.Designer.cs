@@ -2418,7 +2418,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.ToTable("RequestedLocations");
                 });
 
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.RoomQuantityDetail", b =>
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.FamilyDetailRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -3725,7 +3725,7 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("Province");
                 });
 
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.RoomQuantityDetail", b =>
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.FamilyDetailRequest", b =>
                 {
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.PrivateTourRequest", "PrivateTourRequest")
                         .WithMany()
