@@ -25,5 +25,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _vehicleService.GetPriceForVehicle(filter, pageNumber, pageSize);  
         }
+
+        [HttpGet("get-available-vehicle-type/{provinceStartPointId}/{provinceEndPointId}")]
+        public async Task<AppActionResult> GetAvailableVehicleType(Guid provinceStartPointId, Guid provinceEndPointId)
+        {
+            return await _vehicleService.GetAvailableVehicleType(provinceStartPointId, provinceEndPointId);
+        }
     }
 }
