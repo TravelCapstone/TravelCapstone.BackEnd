@@ -1735,6 +1735,31 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.ToTable("FacilityServices");
                 });
 
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.FamilyDetailRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("NumOfAdult")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumOfChildren")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("PrivateTourRequestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TotalFamily")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrivateTourRequestId");
+
+                    b.ToTable("FamilyDetailRequests");
+                });
+
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.ManagementFeeReference", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2201,7 +2226,16 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<int>("NumOfDay")
                         .HasColumnType("int");
 
+                    b.Property<int>("NumOfFamily")
+                        .HasColumnType("int");
+
                     b.Property<int>("NumOfNight")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumOfSingleFemale")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumOfSingleMale")
                         .HasColumnType("int");
 
                     b.Property<int>("PrivateTourStatusId")
@@ -2414,28 +2448,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasIndex("ProvinceId");
 
                     b.ToTable("RequestedLocations");
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.RoomQuantityDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PrivateTourRequestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("QuantityPerRoom")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalRoom")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PrivateTourRequestId");
-
-                    b.ToTable("RoomQuantityDetails");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Route", b =>
@@ -3289,6 +3301,17 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("Unit");
                 });
 
+            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.FamilyDetailRequest", b =>
+                {
+                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.PrivateTourRequest", "PrivateTourRequest")
+                        .WithMany()
+                        .HasForeignKey("PrivateTourRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PrivateTourRequest");
+                });
+
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.ManagementFeeReference", b =>
                 {
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.EnumModels.ManagementFeeType", "ManagementFeeType")
@@ -3723,17 +3746,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("PrivateTourRequest");
 
                     b.Navigation("Province");
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.RoomQuantityDetail", b =>
-                {
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.PrivateTourRequest", "PrivateTourRequest")
-                        .WithMany()
-                        .HasForeignKey("PrivateTourRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PrivateTourRequest");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Route", b =>
