@@ -491,5 +491,40 @@ namespace TravelCapstone.BackEnd.Application.Services
             }
             return result;
         }
+
+        public async Task<AppActionResult> GetAvailableVehicleType(Guid provinceStartPointId, Guid provinceEndPointId)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                List<VehicleType> data = new List<VehicleType>();
+                data.AddRange(new List<VehicleType>
+                {
+                    Domain.Enum.VehicleType.BUS,
+                    Domain.Enum.VehicleType.COACH,
+                    Domain.Enum.VehicleType.LIMOUSINE,
+                    Domain.Enum.VehicleType.CAR,
+                });
+                var referencePriceRepository = Resolve<IRepository<ReferenceTransportPrice>>();
+                var availableVehicle = await referencePriceRepository!.GetAllDataByExpression(r => r.Departure.Commune.District.ProvinceId == provinceStartPointId && r.Arrival.Commune.District.ProvinceId == provinceEndPointId, 0, 0, null, false, null);
+                if (availableVehicle.Items != null && availableVehicle.Items.Count > 0)
+                {
+                    if(availableVehicle.Items.Where(a => a.ProviderName.Contains("Air")).Count() > 0)
+                    {
+                        data.Add(Domain.Enum.VehicleType.PLANE);
+                    }
+
+                    if (availableVehicle.Items.Where(a => !a.ProviderName.Contains("Air")).Count() > 0)
+                    {
+                        data.Add(Domain.Enum.VehicleType.BOAT);
+                    }
+                }
+                result.Result = data;
+            } catch(Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
     }
 }

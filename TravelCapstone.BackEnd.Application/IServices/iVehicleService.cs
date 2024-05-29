@@ -18,5 +18,6 @@ namespace TravelCapstone.BackEnd.Application.IServices
         public Task<IActionResult> GetPriceQuotationTemplate();
         public Task<AppActionResult> GetAvailableVehicle(DateTime startTime, DateTime endTime, int pageNumber, int pageSize);
         public Task<AppActionResult> GetPriceForVehicle(FilterTransportServiceRequest filter, int pageNumber, int pageSize);
+        public Task<AppActionResult> GetAvailableVehicleType(Guid provinceStartPointId, Guid provinceEndPointId);
     }
 }
