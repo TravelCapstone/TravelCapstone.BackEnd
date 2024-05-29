@@ -72,7 +72,7 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<MaterialPriceHistory> MaterialPriceHistories { get; set; }
     public DbSet<OptionEvent> OptionEvents { get; set; }
     public DbSet<ManagementFeeReference> ManagementFeeReferences { get; set; }
-    public DbSet<RoomQuantityDetail> RoomQuantityDetails { get; set; }
+    public DbSet<FamilyDetailRequest> FamilyDetailRequests { get; set; }
     #endregion
 
     #region Enum

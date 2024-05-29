@@ -15,6 +15,9 @@ public class PrivateTourRequest: BaseEntity
     public int NumOfNight { get; set; }
     public int NumOfAdult { get; set; }
     public int NumOfChildren { get; set; }
+    public int NumOfFamily { get; set; }
+    public int NumOfSingleMale { get; set; }
+    public int NumOfSingleFemale { get; set; }
     public Guid TourId { get; set; }
     [ForeignKey(nameof(TourId))] public Tour Tour { get; set; } = null!;
 

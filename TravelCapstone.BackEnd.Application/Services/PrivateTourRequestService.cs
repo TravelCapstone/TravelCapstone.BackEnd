@@ -89,10 +89,31 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 result = BuildAppActionResultError(result, "Thời gian có thể đi ngắn hơn lộ trình của tour mẫu");
                 return result;
             }
+
             if (!IsValidTime(tourDb.EndDate, tourDb.StartDate, privateTourequestDTO.NumOfDay,
                     privateTourequestDTO.NumOfNight))
             {
                 result = BuildAppActionResultError(result, "Lộ trình yêu cầu ngắn hơn lộ trình của tour mẫu");
+                return result;
+            }
+
+            int totalChildren = 0;
+            int totalAdult = 0;
+            foreach(var item in privateTourequestDTO.FamilyDetails)
+            {
+                totalAdult += item.NumOfAdult * item.TotalFamily;
+                totalChildren += item.NumOfChildren * item.TotalFamily;
+            }
+
+            if(totalAdult + privateTourequestDTO.NumOfSingleFemale + privateTourequestDTO.NumOfSingleMale != privateTourequestDTO.NumOfAdult)
+            {
+                result = BuildAppActionResultError(result, "Tổng số người lớn không hợp lệ");
+                return result;
+            }
+
+            if (totalChildren != privateTourequestDTO.NumOfChildren)
+            {
+                result = BuildAppActionResultError(result, "Tổng số trẻ em không hợp lệ");
                 return result;
             }
 
@@ -106,6 +127,9 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 Description = privateTourequestDTO.Description,
                 NumOfAdult = privateTourequestDTO.NumOfAdult,
                 NumOfChildren = privateTourequestDTO.NumOfChildren,
+                NumOfFamily = privateTourequestDTO.NumOfFamily,
+                NumOfSingleMale = privateTourequestDTO.NumOfSingleMale,
+                NumOfSingleFemale = privateTourequestDTO.NumOfSingleFemale,
                 NumOfDay = privateTourequestDTO.NumOfDay,
                 NumOfNight = privateTourequestDTO.NumOfNight,
                 TourId = privateTourequestDTO.TourId,
@@ -146,17 +170,18 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 }
             }
 
-            if (privateTourequestDTO.RoomQuantityDetailRequest != null && privateTourequestDTO.RoomQuantityDetailRequest.Count > 0)
+            if (privateTourequestDTO.FamilyDetails != null && privateTourequestDTO.FamilyDetails.Count > 0)
             {
-                var roomQuantityDetailRepository = Resolve<IRepository<RoomQuantityDetail>>();
-                foreach (var detail in privateTourequestDTO.RoomQuantityDetailRequest)
+                var roomQuantityDetailRepository = Resolve<IRepository<FamilyDetailRequest>>();
+                foreach (var detail in privateTourequestDTO.FamilyDetails)
                 {
-                    await roomQuantityDetailRepository!.Insert(new RoomQuantityDetail
+                    await roomQuantityDetailRepository!.Insert(new FamilyDetailRequest
                     {
                         Id = Guid.NewGuid(),
                         PrivateTourRequestId = request.Id,
-                        QuantityPerRoom = detail.QuantityPerRoom,
-                        TotalRoom = detail.TotalRoom,
+                        NumOfAdult = detail.NumOfAdult,
+                        NumOfChildren = detail.NumOfChildren,
+                        TotalFamily = detail.TotalFamily
                     });
                 }
             }
@@ -212,13 +237,13 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         var result = new AppActionResult();
         var accountRepository = Resolve<IRepository<Account>>();
         var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
-        var roomQuantityDetailRepository = Resolve<IRepository<RoomQuantityDetail>>();
+        var roomQuantityDetailRepository = Resolve<IRepository<FamilyDetailRequest>>();
         try
         {
             var data = await _repository.GetAllDataByExpression
             (null, pageNumber,
                 pageSize, a => a.CreateDate, false,
-                p => p.Tour, p => p.CreateByAccount!, p => p.Province!);
+                p => p.Tour, p => p.CreateByAccount!, p => p.Province!, p => p.HotelFacilityRating, p => p.RestaurantFacilityRating);
             var responseList = _mapper.Map<PagedResult<PrivateTourResponseDto>>(data);
             foreach (var item in responseList.Items!)
             {
@@ -255,9 +280,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             data.PrivateTourResponse = _mapper.Map<PrivateTourResponseDto>(privateTourRequestDb);
             data.PrivateTourResponse.StartLocationCommune = await communeRepository!.GetByExpression(c => c.Id == privateTourRequestDb.StartLocationCommuneId, c => c.District.Province);
             var requestedLocationRepository = Resolve<IRepository<RequestedLocation>>();
-            var roomQuantityDetailRepository = Resolve<IRepository<RoomQuantityDetail>>();
+            var roomQuantityDetailRepository = Resolve<IRepository<FamilyDetailRequest>>();
             var requestedLocationDb = await requestedLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == privateTourRequestDb.Id, 0, 0, null, false, r => r.Province!);
             data.PrivateTourResponse.OtherLocation = requestedLocationDb.Items;
+            var roomQuantityDetailDb = await roomQuantityDetailRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == privateTourRequestDb.Id, 0, 0, null, false, null);
+            data.PrivateTourResponse.RoomDetails = roomQuantityDetailDb.Items;
             var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
             var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
             var vehicleQuotationDetailRepository = Resolve<IRepository<VehicleQuotationDetail>>();
@@ -287,8 +314,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 option.OptionEvent = eventOptionDb.Items;
                 option.TourguideQuotationDetails = tourGuideQuotationDetailDb.Items;
                 option.QuotationDetails = quotationDetailDb.Items!.OrderBy(o => o.StartDate).ToList();
-                option.VehicleQuotationDetails = vehicleQuotationDetailDb.Items!.ToList();
-                //option.VehicleQuotationDetails = await GetOrderedList(vehicleQuotationDetailDb.Items!.ToList());
+                //option.VehicleQuotationDetails = vehicleQuotationDetailDb.Items!.ToList();
+                option.VehicleQuotationDetails = await GetOrderedList(vehicleQuotationDetailDb.Items!.ToList());
                 if (item.OptionClassId == OptionClass.ECONOMY)
                     data.Option1 = option;
                 else if (item.OptionClassId == OptionClass.MIDDLE)
@@ -372,11 +399,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                     startDistrict = (Guid)innerCurrent.EndPointDistrictId!;
                                 }
                             }
-                            else
+                            else if(current.Count == 1)
                             {
                                 result.Add(inProvince[0]);
                                 vehicleQuotationDetails.Remove(inProvince[0]);
-                            }
+                            } 
                         }
                     }
 
