@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
+using TravelCapstone.BackEnd.Domain.Models.EnumModels;
 
 namespace TravelCapstone.BackEnd.Common.DTO.Request
 {
@@ -50,8 +51,8 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
 
     public class PlanLocation
     {
-        public Guid FacilityId { get; set; }
         public Guid SellPriceHistoryId { get; set; }
+        public Domain.Enum.ServiceType ServiceType { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int NumOfServiceUse { get; set; }
@@ -59,7 +60,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
 
     public class PlanVehicle
     {
-        public VehicleType VehicleType { get; set; }
+        public Domain.Enum.VehicleType VehicleType { get; set; }
         public Guid? VehicleId { get; set; }
         public Guid? StartPoint { get; set; }
         public Guid? EndPoint { get; set; }

@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Domain.Models;
 
@@ -23,6 +25,65 @@ namespace TravelCapstone.BackEnd.Application.Services
             _repository = repository;
             _unitOfWork = unitOfWork;
         }
+
+        public async Task<AppActionResult> CreateCustomEventString(CreateCustomEventStringRequest dto)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var eventDetailPriceRepository = Resolve<IRepository<EventDetailPriceHistory>>();
+                CustomEventStringResponse response = new CustomEventStringResponse();
+                var eventDb = await _repository.GetById(dto.EventId);
+                if (eventDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy sự kiện với id {dto.EventId}");
+                    return result;
+                }
+                response.EventId = eventDb.Id;
+                response.Name = eventDb.Name;
+                response.Total = 0;
+                EventDetailPriceHistory curr = null;
+                foreach (var detail in dto.eventDetailPriceHistoryRequests)
+                {
+                    var history = await eventDetailPriceRepository!.GetAllDataByExpression(d => d.EventDetailId == d.EventDetailId,0,0,null,false, d => d.EventDetail);
+                    if (history.Items == null || history.Items.Count == 0)
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy giá chi tiết sự kiện với id {detail.EventDetailPriceHistoryId}");
+                        return result;
+                    }
+                    curr = history.Items.OrderByDescending(h => h.Date).FirstOrDefault();
+                    response.eventDetailPriceHistoryResponses.Add(new EventDetailPriceHistoryResponse
+                    {
+                        EventDetailPriceHistoryId = detail.EventDetailPriceHistoryId,
+                        Name = curr.EventDetail.Name,
+                        Quantity = detail.Quantity,
+                        Price = curr.Price,
+                        Total = detail.Quantity * curr.Price
+                    });
+                    response.Total += curr.Price * detail.Quantity;
+                }
+                result.Result = JsonConvert.SerializeObject(response);
+            }catch(Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> DeserializeCustomEventString(string json)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                result.Result = JsonConvert.DeserializeObject<CustomEventStringResponse>(json);               
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
         public async Task<AppActionResult> GetEventListWithQuantity(int quantity)
         {
             AppActionResult result = new AppActionResult();
@@ -58,6 +119,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         {
                             eventDetailReponses.Add(new EventDetailReponse
                             {
+                                HistoryPriceId = detail.Id,
                                 Name = detail.EventDetail.Name,
                                 PerPerson = detail.EventDetail.PerPerson,
                                 Price = detail.Price,

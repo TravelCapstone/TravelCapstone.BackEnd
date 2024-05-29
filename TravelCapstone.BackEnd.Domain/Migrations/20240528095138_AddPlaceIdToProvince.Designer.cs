@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240528095138_AddPlaceIdToProvince")]
+    partial class AddPlaceIdToProvince
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2263,6 +2265,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("GoongPlaceId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2690,9 +2695,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<bool>("IsMainTourGuide")
                         .HasColumnType("bit");
 
-                    b.Property<int>("NumOfDay")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("OptionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2701,9 +2703,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
-
-                    b.Property<double>("Total")
-                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

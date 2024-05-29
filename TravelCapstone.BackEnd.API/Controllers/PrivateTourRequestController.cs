@@ -63,4 +63,10 @@ public class PrivateTourRequestController : Controller
     {
         return await _service.SendToCustomer(privateTourRequestId);
     }
+
+    [HttpGet("get-excel-quotation/{privateTourRequestId}")]
+    public async Task<IActionResult> GetExcelQuotation(Guid privateTourRequestId)
+    {
+        return await _service.GetExcelQuotation(privateTourRequestId);
+    }
 }
