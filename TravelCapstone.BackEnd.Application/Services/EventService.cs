@@ -43,24 +43,30 @@ namespace TravelCapstone.BackEnd.Application.Services
                 response.Name = eventDb.Name;
                 response.Total = 0;
                 EventDetailPriceHistory curr = null;
+                int quantity = 0;
                 foreach (var detail in dto.eventDetailPriceHistoryRequests)
                 {
-                    var history = await eventDetailPriceRepository!.GetAllDataByExpression(d => d.EventDetailId == d.EventDetailId,0,0,null,false, d => d.EventDetail);
-                    if (history.Items == null || history.Items.Count == 0)
+                    var history = await eventDetailPriceRepository!.GetByExpression(d => d.Id == detail.EventDetailPriceHistoryId, d => d.EventDetail);
+                    if (history != null)
                     {
                         result = BuildAppActionResultError(result, $"Không tìm thấy giá chi tiết sự kiện với id {detail.EventDetailPriceHistoryId}");
                         return result;
                     }
-                    curr = history.Items.OrderByDescending(h => h.Date).FirstOrDefault();
+                    quantity = history.EventDetail.PerPerson ? detail.Quantity : 1;
+                    if(quantity < 1)
+                    {
+                        result = BuildAppActionResultError(result, $"Số lượng sử dụng dịch vụ {history.EventDetail.Name} phải lớn hơn 0");
+                        return result;
+                    }
                     response.eventDetailPriceHistoryResponses.Add(new EventDetailPriceHistoryResponse
                     {
                         EventDetailPriceHistoryId = detail.EventDetailPriceHistoryId,
-                        Name = curr.EventDetail.Name,
-                        Quantity = detail.Quantity,
-                        Price = curr.Price,
-                        Total = detail.Quantity * curr.Price
+                        Name = history.EventDetail.Name,
+                        Quantity = quantity,
+                        Price = history.Price,
+                        Total = quantity * history.Price
                     });
-                    response.Total += curr.Price * detail.Quantity;
+                    response.Total += history.Price * quantity;
                 }
                 result.Result = JsonConvert.SerializeObject(response);
             }catch(Exception ex)
