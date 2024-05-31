@@ -69,4 +69,10 @@ public class PrivateTourRequestController : Controller
     {
         return await _service.GetExcelQuotation(privateTourRequestId);
     }
+
+    [HttpPost("get-room-suggestion")]
+    public async Task<AppActionResult> GetRoomSuggestion([FromBody]RoomSuggestionRequest dto)
+    {
+        return await _service.GetRoomSuggestion(dto);
+    }
 }

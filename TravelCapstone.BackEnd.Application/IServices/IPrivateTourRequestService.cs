@@ -22,4 +22,6 @@ public interface IPrivateTourRequestService
    // Task<AppActionResult> GetServiceRatingListByServiceType(Guid provinceId, Domain.Enum.FacilityType serviceTypeId);
    Task<IActionResult> GetExcelQuotation(Guid privateTourRequestId);
 
+    Task<AppActionResult> GetRoomSuggestion(RoomSuggestionRequest dto);
+
 }
