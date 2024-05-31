@@ -2019,6 +2019,111 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         return currentLine + 8;
     }
 
+    public async Task<AppActionResult> GetRoomSuggestion(RoomSuggestionRequest dto)
+    {
+        AppActionResult result = new AppActionResult();
+        try
+        {
+            int roomForFour = 0;
+            int roomForTwo = 0;
+            if(dto.FamilyDetails.Count > 0)
+            {
+                int total = 0;
+                foreach (var family in dto.FamilyDetails)
+                {
+                    total = family.NumOfChildren + family.NumOfAdult;
+                    if (total <= 3)
+                    {
+                        if(family.NumOfChildren > 0)
+                        {
+                            roomForTwo += family.TotalFamily;
+                        }
+                        else
+                        {
+                            roomForFour += family.TotalFamily;
+                        }
+                    }
+                    if (total <= 5) roomForFour += family.TotalFamily;
+                    else if(total <= 7)
+                    {
+                        roomForFour += family.TotalFamily;
+                        roomForTwo += family.TotalFamily;
+                    }
+                    else
+                    {
+                        int forFour = 0;
+                        int forTwo = 0;
+                        if (family.NumOfChildren > 0) 
+                        { 
+                            forFour = total / 5;
+                            if(total % 5 > 0)
+                            {
+                                if (total % 5 > 3) forFour++;
+                                else forTwo = total % 5;
+                            }
+                        }
+                        else
+                        {
+                            forFour = total / 4;
+                            if (total % 4 > 0)
+                            {
+                                if (total % 4 > 2) forFour++;
+                                else forTwo = total % 4;
+                            }
+                        }
+                        roomForFour += forFour * family.TotalFamily;
+                        roomForTwo += forTwo * family.TotalFamily;
+                    }
+
+                }
+            }
+            roomForFour += dto.NumOfSingleMale / 4;
+            if(dto.NumOfSingleMale % 4 != 0)
+            {
+                if (dto.NumOfSingleMale % 4 > 2)
+                {
+                    roomForFour++;
+                }
+                else
+                {
+                    roomForTwo++;
+                }
+            }
+            
+
+            roomForFour += dto.NumOfSingleFemale / 4;
+            if(dto.NumOfSingleFemale % 4 != 0)
+            {
+                if (dto.NumOfSingleFemale % 4 > 2)
+                {
+                    roomForFour++;
+                }
+                else
+                {
+                    roomForTwo++;
+                }
+            }
+
+            result.Result = new List<RoomSuggestionResponse>
+            {
+                new RoomSuggestionResponse
+                {
+                    RoomSize = 4,
+                    NumOfRoom = roomForFour
+                },
+                new RoomSuggestionResponse
+                {
+                    RoomSize = 2,
+                    NumOfRoom = roomForTwo
+                }
+            };
+        } catch(Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+        return result;
+    }
+
 
 
 
