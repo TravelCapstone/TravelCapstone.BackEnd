@@ -47,7 +47,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 foreach (var detail in dto.eventDetailPriceHistoryRequests)
                 {
                     var history = await eventDetailPriceRepository!.GetByExpression(d => d.Id == detail.EventDetailPriceHistoryId, d => d.EventDetail);
-                    if (history != null)
+                    if (history == null)
                     {
                         result = BuildAppActionResultError(result, $"Không tìm thấy giá chi tiết sự kiện với id {detail.EventDetailPriceHistoryId}");
                         return result;
