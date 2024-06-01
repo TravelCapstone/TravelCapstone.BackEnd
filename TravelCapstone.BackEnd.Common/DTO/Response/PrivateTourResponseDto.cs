@@ -13,6 +13,9 @@ public class PrivateTourResponseDto
     public DateTime EndDate { get; set; }
     public int NumOfAdult { get; set; }
     public int NumOfChildren { get; set; }
+    public int NumOfFamily { get; set; }
+    public int NumOfSingleMale { get; set; }
+    public int NumOfSingleFemale { get; set; }
     public int NumOfDay { get; set; }
     public int NumOfNight { get; set; }
     public PrivateTourStatus Status { get; set; }
@@ -28,7 +31,7 @@ public class PrivateTourResponseDto
     public FacilityRating MinRestaurantRating { get; set; }
     public DietaryPreference DietaryPreference { get; set; }
     public List<RequestedLocation>? OtherLocation { get; set; }
-    public List<RoomQuantityDetail>? RoomDetails { get; set; }
+    public List<FamilyDetailRequest>? RoomDetails { get; set; }
     public Guid TourId { get; set; }
     public Tour? Tour { get; set; }
     public string? AccountId { get; set; }
