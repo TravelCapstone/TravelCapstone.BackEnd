@@ -247,18 +247,18 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
         }
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        IConfiguration config = new ConfigurationBuilder()
-                       .SetBasePath(Directory.GetCurrentDirectory())
-                       .AddJsonFile("appsettings.json", true, true)
-                       .Build();
-        string cs = config["ConnectionStrings:Host"];
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseSqlServer(cs);
-        }
-        //optionsBuilder.UseSqlServer(
-        //   "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
-    }
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     IConfiguration config = new ConfigurationBuilder()
+    //                    .SetBasePath(Directory.GetCurrentDirectory())
+    //                    .AddJsonFile("appsettings.json", true, true)
+    //                    .Build();
+    //     string cs = config["ConnectionStrings:Host"];
+    //     if (!optionsBuilder.IsConfigured)
+    //     {
+    //         optionsBuilder.UseSqlServer(cs);
+    //     }
+    //     //optionsBuilder.UseSqlServer(
+    //     //   "server=.;database=TravelCapstone;uid=sa;pwd=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+    // }
 }
