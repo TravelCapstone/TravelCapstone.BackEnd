@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NPOI.HPSF;
 using NPOI.SS.Formula;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -307,7 +308,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             {
                 OptionResponseDto option = new OptionResponseDto();
                 option.OptionQuotation = item;
-                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false,a => a.District!.Province!, a => a.ServiceType!, a=> a.FacilityRating!.FacilityType!, a => a.FacilityRating!.Rating!, a => a.Menu);
+                var quotationDetailDb = await quotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false,a => a.District!.Province!, a => a.ServiceType!, a=> a.FacilityRating!.FacilityType!, a => a.FacilityRating!.Rating!, a => a.Menu, a => a.MaterialPriceHistory.Material);
                 var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionQuotationId == item.Id, 0, 0, null, false, a=> a.StartPoint!, a => a.EndPoint!);
                 var tourGuideQuotationDetailDb = await tourguideQuotationDetailRepository!.GetAllDataByExpression(q => q.OptionId == item.Id, 0, 0, null, false, q => q.Province!);
                 var eventOptionDb = await optionEventRepository!.GetAllDataByExpression(o => o.OptionId == item.Id, 0, 0, null, false, o => o.Event);
@@ -1750,7 +1751,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 //Day1  Tự túc Menu1  Menu2
                 //Day2    ..    ..      ..
                 var worksheetMenu = package.Workbook.Worksheets.Add("Menu");
-
+                await AddMenuInfo(worksheetMenu, data.Option1.QuotationDetails.Where(q => q.MenuId != null));
 
                 // Save the new workbook
                 var excelBytes = package.GetAsByteArray();
@@ -1767,6 +1768,110 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             result = null;
         }
         return result;
+    }
+
+    private async Task AddMenuInfo(ExcelWorksheet worksheet, IEnumerable<QuotationDetail> menuQuotations)
+    {
+        try
+        {
+            if (worksheet == null) return;
+            if (menuQuotations == null || menuQuotations.Count() == 0) return;
+            worksheet.Cells["A1:D1"].Merge = true;
+            worksheet.Cells["A1"].Value = "MENU DỰ KIẾN CHO ĐOÀN";
+            worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            worksheet.Cells["A1"].Style.Font.Bold = true;
+            worksheet.Cells["A1"].Style.Font.Size = 14;
+
+            // Tạo các tiêu đề dưới header
+            worksheet.Cells["A2"].Value = "Ngày";
+            worksheet.Cells["B2"].Value = "Sáng";
+            worksheet.Cells["C2"].Value = "Trưa";
+            worksheet.Cells["D2"].Value = "Chiều/Tối";
+            
+            int i = 3;
+            DateTime startDate = (DateTime)menuQuotations.Where(m => m.StartDate != null).OrderBy(m => m.StartDate).FirstOrDefault().StartDate;
+            var menuByDay = menuQuotations.GroupBy(m => m.StartDate.Value.Date).ToDictionary(key => key, value => value.Select(v => new { v.StartDate, v.Menu }));
+
+                StringBuilder morning = new StringBuilder();
+                StringBuilder lunch = new StringBuilder();
+                StringBuilder dinner = new StringBuilder();
+            List<string> dishNames = new List<string>();
+            var menuDishRepository = Resolve<IRepository<MenuDish>>();
+            var dishRepository = Resolve<IRepository<Dish>>();
+            int option = 1;
+            foreach (var kvp in menuByDay)
+            {
+                var breakfastMenu = kvp.Value.Where(m => m.StartDate.Value.Hour < 10);
+                var lunchMenu = kvp.Value.Where(m => m.StartDate.Value.Hour >= 11 && m.StartDate.Value.Hour <= 14);
+                var dinnerMenu = kvp.Value.Where(m => m.StartDate.Value.Hour >= 18);
+                if(breakfastMenu != null && breakfastMenu.Count() > 0)
+                {                  
+                        option = 1;
+                        morning = new StringBuilder();
+                        foreach(var menu in breakfastMenu)
+                        {
+                            morning.AppendLine($"Menu {option++}: {menu.Menu.Name}");
+                            dishNames = await GetMenuDish(menu.Menu.Id, menuDishRepository!, dishRepository!);
+                            dishNames.ForEach(d => morning.Append(d));
+                        }
+                }
+
+                if (lunchMenu != null && lunchMenu.Count() > 0)
+                {
+                    option = 1;
+                    lunch = new StringBuilder();
+                    foreach (var menu in lunchMenu)
+                    {
+                        lunch.AppendLine($"Menu {option++}: {menu.Menu.Name}");
+                        dishNames = await GetMenuDish(menu.Menu.Id, menuDishRepository!, dishRepository!);
+                        dishNames.ForEach(d => lunch.Append(d));
+                    }
+                }
+
+                if (dinnerMenu != null && dinnerMenu.Count() > 0)
+                {
+                    option = 1;
+                    dinner = new StringBuilder();
+                    foreach (var menu in dinnerMenu)
+                    {
+                        dinner.AppendLine($"Menu {option++}: {menu.Menu.Name}");
+                        dishNames = await GetMenuDish(menu.Menu.Id, menuDishRepository!, dishRepository!);
+                        dishNames.ForEach(d => dinner.Append(d));
+                    }
+                }
+
+                worksheet.Cells[i, 1].Value = $"Ngày {Math.Ceiling((kvp.Key.Key - startDate).TotalDays)}";
+                worksheet.Cells[i, 2].Value = morning.ToString();
+                worksheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+                worksheet.Cells[i, 3].Value = lunch.ToString();
+                worksheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+                worksheet.Cells[i, 4].Value = lunch.ToString();
+                worksheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+                i++;
+            }
+        } catch(Exception ex)
+        {
+
+        }
+    }
+
+    private async Task<List<string>> GetMenuDish(Guid id, IRepository<MenuDish> menuDishRepository, IRepository<Dish> dishRepository)
+    {
+        List<string> dishName = new List<string>();
+        try
+        {
+            var menuDishDb = await menuDishRepository.GetAllDataByExpression(m => m.MenuId == id, 0, 0, null, false, null);
+            if(menuDishDb.Items != null && menuDishDb.Items.Count() > 0) 
+            {
+                List<Guid> dishIds = menuDishDb.Items.DistinctBy(d => d.DishId).Select(d => d.DishId).ToList();
+                var dishes = await dishRepository.GetAllDataByExpression(d => dishIds.Contains(d.Id), 0, 0, null, false, null);
+                dishName = dishes.Items.Select(d => d.Name).ToList();
+            }
+        } catch(Exception ex)
+        {
+
+        }
+        return dishName;
     }
 
     private async Task<int> AddTourInfo(ExcelWorksheet worksheetQuotation, OptionResponseDto option1, int currentLine)
@@ -1788,22 +1893,28 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             worksheetQuotation.Cells[currentLine + 2, 3].Value = "2";
             worksheetQuotation.Cells[currentLine + 2, 4].Value = "3=1*2";
             worksheetQuotation.Cells[currentLine + 2, 5].Value = "HOÀN THUẾ";
+
             worksheetQuotation.Cells[currentLine + 3, 1].Value = "1/KHÁCH SẠN/RESORT";
 
-            foreach(var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == ServiceType.RESTING))
+            DateTime startDate = option1.QuotationDetails.Where(q => q.StartDate != null).OrderBy(q => q.StartDate).FirstOrDefault()!.StartDate!.Value;
+
+            foreach(var resting in option1.QuotationDetails.OrderBy(q => q.StartDate).Where(q => q.ServiceTypeId == ServiceType.RESTING))
             {
-                worksheetQuotation.Cells[currentLine + i, 1].Value = $"Khách sạn ngày {resting.StartDate.Value.Date}";
+
+                worksheetQuotation.Cells[currentLine + i, 1].Value = $"Khách sạn ngày {(resting.StartDate.Value.Date - startDate).TotalDays + 1}";
                 worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / (resting.QuantityOfAdult + resting.QuantityOfChild);
                 worksheetQuotation.Cells[currentLine + i, 3].Value = resting.QuantityOfAdult + resting.QuantityOfChild;
                 worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
                 worksheetQuotation.Cells[currentLine + i, 5].Value = resting.FacilityRating.Rating.Name;
                 i++;
             }
+            i++;
+
             worksheetQuotation.Cells[currentLine + i++, 1].Value = "2/ĂN UỐNG";
 
             string meal = null;
 
-            foreach (var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == ServiceType.FOODANDBEVARAGE))
+            foreach (var resting in option1.QuotationDetails.OrderBy(q => q.StartDate).Where(q => q.ServiceTypeId == ServiceType.FOODANDBEVARAGE))
             {
                 if(resting.StartDate.Value.Hour <= 10)
                 {
@@ -1815,25 +1926,29 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 {
                     meal = "Bữa tối";
                 }
-                worksheetQuotation.Cells[currentLine + i, 1].Value = $"{meal} ngày {resting.StartDate.Value.Date}";
+                worksheetQuotation.Cells[currentLine + i, 1].Value = $"{meal} ngày {(resting.StartDate.Value.Date - startDate).TotalDays + 1}";
                 worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / (resting.QuantityOfAdult + resting.QuantityOfChild);
                 worksheetQuotation.Cells[currentLine + i, 3].Value = resting.QuantityOfAdult + resting.QuantityOfChild;
                 worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
                 worksheetQuotation.Cells[currentLine + i, 5].Value = resting.FacilityRating.Rating.Name;
                 i++;
             }
+
+            i++;
 
             worksheetQuotation.Cells[currentLine + i++, 1].Value = "3/THAM QUAN";
 
             foreach (var resting in option1.QuotationDetails.Where(q => q.ServiceTypeId == Domain.Enum.ServiceType.ENTERTAIMENT))
             {
-                worksheetQuotation.Cells[currentLine + i, 1].Value = $"Tham quan {resting.Quantity} {resting.StartDate.Value.Date}";
+                worksheetQuotation.Cells[currentLine + i, 1].Value = $"Tham quan {resting.Quantity} địa điểm";
                 worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / (resting.QuantityOfAdult + resting.QuantityOfChild);
                 worksheetQuotation.Cells[currentLine + i, 3].Value = resting.QuantityOfAdult + resting.QuantityOfChild;
                 worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
                 worksheetQuotation.Cells[currentLine + i, 5].Value = resting.FacilityRating.Rating.Name;
                 i++;
             }
+
+            i++;
 
             worksheetQuotation.Cells[currentLine + i++, 1].Value = "4/GÓI GALA + TEAM BUILDING";
 
@@ -1859,14 +1974,17 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
                 }
             }
+
+            i++;
+
             worksheetQuotation.Cells[currentLine + i++, 1].Value = "5/DI CHUYỂN";
 
             if (option1.VehicleQuotationDetails != null && option1.VehicleQuotationDetails.Count > 0)
             {
                 foreach (var resting in option1.VehicleQuotationDetails)
                 {
-                    worksheetQuotation.Cells[currentLine + i, 1].Value = $"Xe loại {resting.VehicleType} trong {resting.NumOfRentingDay} ngày";
-                    worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / resting.NumOfVehicle;
+                    worksheetQuotation.Cells[currentLine + i, 1].Value = $"Xe loại {resting.VehicleType} trong {resting.NumOfRentingDay} ngày, đi từ {resting.StartPoint.Name}";
+                    worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / (resting.NumOfVehicle == 0? 1: resting.NumOfVehicle);
                     worksheetQuotation.Cells[currentLine + i, 3].Value = resting.NumOfVehicle;
                     worksheetQuotation.Cells[currentLine + i, 4].Value = resting.MaxPrice;
                     i++;
@@ -1911,6 +2029,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.OperatingFee;
             i++;
 
+            i++;
+
             worksheetQuotation.Cells[currentLine + i++, 1].Value = "7/CHI PHÍ KHÁC";
             MaterialPriceHistory material = null;
             var materialHistoryPriceRepository = Resolve<IRepository<MaterialPriceHistory>>();
@@ -1938,29 +2058,34 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 worksheetQuotation.Cells[currentLine + i, 4].Value = quantity * assurance.Price;
             }
             i++;
+            i++;
 
             worksheetQuotation.Cells[currentLine + i, 1].Value = "Phí dịch vụ tổ chức";
             worksheetQuotation.Cells[currentLine + i, 2].Value = option1.OptionQuotation.OrganizationCost;
             worksheetQuotation.Cells[currentLine + i, 3].Value = 1;
             worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.OrganizationCost;
             i++;
+            i++;
 
             worksheetQuotation.Cells[currentLine + i, 1].Value = "8/ TỔNG CỘNG CHI";
             worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.MaxTotal;
+            i++;
             i++;
 
             worksheetQuotation.Cells[currentLine + i, 1].Value = "GIÁ NET 1 PAX";
             worksheetQuotation.Cells[currentLine + i, 3].Value = quantity; 
             worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.MaxTotal / quantity;
             i++;
+            i++;
 
             worksheetQuotation.Cells[currentLine + i, 1].Value = "VAT 8%";
             worksheetQuotation.Cells[currentLine + i, 3].Value = 0.08;
             worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.MaxTotal * 0.08 / quantity;
             i++;
+            i++;
 
             worksheetQuotation.Cells[currentLine + i, 1].Value = "GIÁ BÁN";
-            worksheetQuotation.Cells[currentLine + i, 3].Value = 0.08;
+            worksheetQuotation.Cells[currentLine + i, 3].Value = 1.08;
             worksheetQuotation.Cells[currentLine + i, 4].Value = option1.OptionQuotation.MaxTotal * 1.08 / quantity;
             i++;
             //worksheetQuotation.Cells[currentLine + i, 2].Value = resting.MaxPrice / resting.NumOfVehicle;
