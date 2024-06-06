@@ -21,10 +21,10 @@ namespace TravelCapstone.BackEnd.API.Controllers
             return await _service.GetServiceLatestPrice(facilityServiceId);
         }
 
-        [HttpGet("get-sell-price-by-menu-id/{menuId}")]
-        public async Task<AppActionResult> GetMenuServiceLatestPrice(Guid menuId)
+        [HttpGet("get-sell-price-by-menu-id/{menuId}/{numOfServiceUse}")]
+        public async Task<AppActionResult> GetMenuServiceLatestPrice(Guid menuId, int numOfServiceUse)
         {
-            return await _service.GetMenuServiceLatestPrice(menuId);
+            return await _service.GetMenuServiceLatestPrice(menuId, numOfServiceUse);
         }
 
         [HttpGet("get-sell-price-by-transport-service-id/{transportDetailId}")]

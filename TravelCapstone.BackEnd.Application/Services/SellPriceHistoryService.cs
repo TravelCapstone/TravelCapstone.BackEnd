@@ -619,7 +619,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
-        public async Task<AppActionResult> GetMenuServiceLatestPrice(Guid menuId)
+        public async Task<AppActionResult> GetMenuServiceLatestPrice(Guid menuId, int numOfServiceUse)
         {
             AppActionResult result = new AppActionResult();
             try
@@ -632,17 +632,11 @@ namespace TravelCapstone.BackEnd.Application.Services
                     return result;
                 }
 
-                var sellPriceDb = await _repository.GetAllDataByExpression(s => s.MenuId == menuId, 0, 0, s => s.Date, false, null);
-                var sellPriceGroup = sellPriceDb.Items!.GroupBy(s => s.MOQ).ToDictionary(g => g.Key, g => g.ToList());
-                List<SellPriceHistory> data = new List<SellPriceHistory>();
-                foreach (var kvp in sellPriceGroup)
-                {
-                    data.Add(kvp.Value.MaxBy(s => s.Date)!);
-                }
-                result.Result = new PagedResult<SellPriceHistory>
-                {
-                    Items = data,
-                };
+                var sellPriceDb = await _repository.GetAllDataByExpression(s => s.MenuId == menuId && s.MOQ <= numOfServiceUse, 0, 0, s => s.Date, false, s => s.Menu.FacilityService.Facility);
+
+                var latestSellPrice = sellPriceDb.Items!.GroupBy(s => s.MOQ).Select(s => s.OrderByDescending(s => s.MOQ).OrderByDescending(s => s.Date).FirstOrDefault()).FirstOrDefault();
+                
+                result.Result = latestSellPrice;
             }
             catch (Exception ex)
             {
