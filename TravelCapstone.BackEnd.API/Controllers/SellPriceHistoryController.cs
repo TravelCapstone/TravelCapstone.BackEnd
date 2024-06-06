@@ -86,5 +86,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetVehiclePriceRange(dto);
         }
+
+        [HttpGet("get-latest-hotel-price/{districtId}/{ratingId}/{servingQuantity}/{numOfServiceUse}/{pageNumber:int}/{pageSize:int}")]
+        public async Task<AppActionResult> GetHotelLatestPriceByDistrict(Guid districtId, Guid ratingId, int servingQuantity, int numOfServiceUse, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _service.GetHotelLatestPriceByDistrict(districtId, ratingId, servingQuantity, numOfServiceUse,pageNumber, pageSize);
+        }
     }
 }
