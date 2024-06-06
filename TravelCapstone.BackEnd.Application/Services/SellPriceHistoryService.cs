@@ -960,5 +960,31 @@ namespace TravelCapstone.BackEnd.Application.Services
             }
             return data;
         }
+
+        public async Task<AppActionResult> GetHotelLatestPriceByDistrict(Guid districtId, Guid ratingId, int servingQuantity, int numOfServiceUse, int pageNumber, int pageSize)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var sellPriceDb = await _repository.GetAllDataByExpression(s => s.FacilityService.Facility.Communce.DistrictId == districtId && s.FacilityService.Facility.FacilityRatingId == ratingId && s.MOQ <= numOfServiceUse && s.FacilityService.ServingQuantity == servingQuantity, 0, 0, null, false, s => s.FacilityService.Facility);
+                if(sellPriceDb.Items == null || sellPriceDb.Items.Count() == 0)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy giá phòng như yêu cầu");
+                    return result;
+                }
+
+                var latestSellPrice = sellPriceDb.Items.GroupBy(s => s.FacilityServiceId).Select(s => s.OrderByDescending(s => s.Date).OrderByDescending(s => s.MOQ).FirstOrDefault()).Skip(pageNumber - 1).Take(pageSize).ToList();
+                latestSellPrice.ForEach(l => l.Price *= numOfServiceUse);
+                result.Result = new PagedResult<SellPriceHistory>
+                {
+                    Items = latestSellPrice.ToList(),
+                    TotalPages = (latestSellPrice.Count() % pageSize == 0) ? latestSellPrice.Count() / pageSize : latestSellPrice.Count() / pageSize + 1
+                };
+            } catch(Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
     }
 }

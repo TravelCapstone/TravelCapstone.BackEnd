@@ -224,11 +224,11 @@ public class TourService : GenericBackendService, ITourService
             {
                 numOfDay = (item.EndDate - item.StartDate).Days;
                 numOfDay = (numOfDay > 0)? numOfDay : 1;
-                activityType = item.ServiceType == ServiceType.RESTING ? "Nghỉ ngơi" : item.ServiceType == ServiceType.FOODANDBEVARAGE ? "Ăn uống" : item.ServiceType == ServiceType.ENTERTAIMENT ? "Tham quan, vui chơi" : "Event";
+                //activityType = item.ServiceType == ServiceType.RESTING ? "Nghỉ ngơi" : item.ServiceType == ServiceType.FOODANDBEVARAGE ? "Ăn uống" : item.ServiceType == ServiceType.ENTERTAIMENT ? "Tham quan, vui chơi" : "Event";
                     planServiceCostDetails.Add(new PlanServiceCostDetail
                     {
                         Id = Guid.NewGuid(),
-                        Name = $"{activityType} vào ngày {item.StartDate.Date} lúc {item.StartDate.Hour} giờ",
+                        Name = $"{item.StartDate.Date} lúc {item.StartDate.Hour} giờ",
                         Description = "",
                         Quantity = item.NumOfServiceUse * numOfDay,
                         StartDate = item.StartDate,

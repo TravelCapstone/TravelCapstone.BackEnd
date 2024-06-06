@@ -52,7 +52,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
     public class PlanLocation
     {
         public Guid SellPriceHistoryId { get; set; }
-        public Domain.Enum.ServiceType ServiceType { get; set; }
+        //public Domain.Enum.ServiceType ServiceType { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int NumOfServiceUse { get; set; }
