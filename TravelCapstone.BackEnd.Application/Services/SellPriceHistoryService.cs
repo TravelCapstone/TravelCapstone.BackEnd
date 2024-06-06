@@ -635,8 +635,19 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var sellPriceDb = await _repository.GetAllDataByExpression(s => s.MenuId == menuId && s.MOQ <= numOfServiceUse, 0, 0, s => s.Date, false, s => s.Menu.FacilityService.Facility);
 
                 var latestSellPrice = sellPriceDb.Items!.GroupBy(s => s.MOQ).Select(s => s.OrderByDescending(s => s.MOQ).OrderByDescending(s => s.Date).FirstOrDefault()).FirstOrDefault();
-                
-                result.Result = latestSellPrice;
+                if(latestSellPrice != null)
+                {
+                    MenuPriceResponse data = new MenuPriceResponse();
+                    latestSellPrice.Price *= numOfServiceUse;
+                    data.SellPriceHistory = latestSellPrice;
+                    var menuDishRepository = Resolve<IRepository<MenuDish>>();
+                    var menuDishDb = await menuDishRepository.GetAllDataByExpression(m => m.MenuId == latestSellPrice.MenuId, 0, 0, null, false, m => m.Dish);
+                    var menuResponse = new MenuResponse();
+                    menuResponse.Menu = latestSellPrice.Menu;
+                    menuResponse.Dishes = menuDishDb.Items.DistinctBy(m => m.DishId).Select(m => m.Dish).ToList();
+                    data.MenuResponse = menuResponse;
+                    result.Result = data;
+                }
             }
             catch (Exception ex)
             {
