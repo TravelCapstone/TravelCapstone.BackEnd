@@ -74,6 +74,7 @@ public class ServiceProviderService : GenericBackendService, IServiceProviderSer
                     Description = item.Description,
                     CommunceId = item.CommunceId,
                     IsActive = true,
+                    PhoneNumber = item.PhoneNumber,
                     //Type = item.Type,
                     ServiceProviderId = serviceProviderId
                 };
