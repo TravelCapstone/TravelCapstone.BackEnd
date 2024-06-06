@@ -413,30 +413,27 @@ namespace TravelCapstone.BackEnd.Application.Services
             return string.Empty;
         }
 
-        public async Task<AppActionResult> GetAvailableVehicle(DateTime startTime, DateTime endTime, int pageNumber, int pageSize)
+        public async Task<AppActionResult> GetAvailableVehicle(VehicleType type, DateTime startTime, DateTime endTime, int pageNumber, int pageSize)
         {
             AppActionResult result = new AppActionResult();
             try
             {
-                var routeRepository = Resolve<IRepository<Route>>();
-                var routeDb = await routeRepository!.GetAllDataByExpression(p => p.StartTime.Date >= startTime.Date && p.EndTime.Date <= endTime.Date ||
-                                                                                p.StartTime.Date <= startTime.Date && p.EndTime.Date >= endTime.Date ||
-                                                                                p.StartTime.Date <= startTime.Date && p.EndTime.Date >= endTime.Date, 0, 0, null, false, null);
-                if (routeDb == null)
+                var vehicleRouteRepository = Resolve<IRepository<VehicleRoute>>();
+                var routeDb = await vehicleRouteRepository!.GetAllDataByExpression(p => type == p.VehicleType && p.Route.StartTime.Date >= startTime.Date && p.Route.EndTime.Date <= endTime.Date, 0, 0, null, false, null);
+                if (routeDb.Items == null || routeDb.Items.Count == 0)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy lịch trình yêu cầu với thời gian {startTime} và {endTime}");
-                    return result;
+                    //result = BuildAppActionResultError(result, $"Không tìm thấy lịch trình yêu cầu với thời gian {startTime} và {endTime}");
+                    result.Result = await _repository.GetAllDataByExpression(v => v.VehicleTypeId == type, pageNumber, pageSize, null, false, null);
                 }
                 else if (routeDb.Items != null && routeDb.Items.Count > 0)
                 {
-                    var vehicleRouteRepository = Resolve<IRepository<VehicleRoute>>();
                     List<Guid> vehicleIds = new List<Guid>();
                     foreach (var item in routeDb.Items)
                     {
                         var vehicleRouteDb = await vehicleRouteRepository!.GetAllDataByExpression(p => p.RouteId == item.Id, 0, 0, null, false, null);
                         vehicleIds.AddRange(vehicleRouteDb!.Items!.Where(v => v.VehicleId != null).Select(p => (Guid)p!.VehicleId!));
                     }
-                    result.Result = await _repository.GetAllDataByExpression(p => !vehicleIds.Contains(p.Id), pageNumber, pageSize, null, false, null);
+                    result.Result = await _repository.GetAllDataByExpression(v => !vehicleIds.Contains(v.Id) , pageNumber, pageSize, null, false, null);
                 }
             }
             catch (Exception ex)
@@ -446,7 +443,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
-        public async Task<AppActionResult> GetPriceForVehicle(FilterTransportServiceRequest filter, int pageNumber, int pageSize)
+        public async Task<AppActionResult> GetPriceForVehicle(FilterTransportServiceRequest filter)
         {
             AppActionResult result = new AppActionResult();
             try
@@ -468,10 +465,16 @@ namespace TravelCapstone.BackEnd.Application.Services
                 if (filter.VehicleType == Domain.Enum.VehicleType.PLANE || filter.VehicleType == Domain.Enum.VehicleType.BOAT)
                 {
                     var referenceTransportPriceRepository = Resolve<IRepository<ReferenceTransportPrice>>();
-                    result.Result = await referenceTransportPriceRepository!.GetAllDataByExpression(
-                        p => p.Departure!.Commune!.District!.ProvinceId == filter.FirstLocation.ProvinceId && p.Arrival!.Commune!.District!.ProvinceId == filter.SecondLocation.ProvinceId,
-                        pageNumber, pageSize, null, false, p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!, p => p.ReferencePriceRating!
+                    var referencePriceDb = await referenceTransportPriceRepository!.GetAllDataByExpression(
+                        p => p.Departure!.Commune!.District!.ProvinceId == filter.FirstLocation.ProvinceId && p.Arrival!.Commune!.District!.ProvinceId == filter.SecondLocation.ProvinceId
+                        && p.DepartureDate >= filter.StartDate && p.ArrivalDate <= filter.EndDate,
+                        0, 0, null, false, p => p.Departure!.Commune!.District!.Province!, p => p.Arrival!.Commune!.District!.Province!, p => p.ReferencePriceRating!
                         );
+                    if( referencePriceDb.Items != null && referencePriceDb.Items.Count > 0) {
+                        var latestPrice = referencePriceDb.Items.OrderBy(r => r.DepartureDate).FirstOrDefault();
+                        latestPrice.AdultPrice *= filter.NumOfServiceUse;
+                        result.Result = latestPrice;
+                    }
                 } else 
                 {
                     var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
@@ -481,7 +484,10 @@ namespace TravelCapstone.BackEnd.Application.Services
                     {
                         var facilityServiceIds = facilityServiceDb.Items.Select(p => p.Id);
                         var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
-                        result.Result = await sellPriceRepository!.GetAllDataByExpression(p => facilityServiceIds.Contains(p.TransportServiceDetail!.FacilityServiceId), pageNumber, pageSize, p => p.Date, false, p => p.FacilityService!, p => p.TransportServiceDetail!);
+                        var sellPriceDb = await sellPriceRepository!.GetAllDataByExpression(p => facilityServiceIds.Contains(p.TransportServiceDetail!.FacilityServiceId) && p.MOQ <= filter.NumOfServiceUse && p.TransportServiceDetail.VehicleTypeId == filter.VehicleType, 0, 0, p => p.Date, false, p => p.FacilityService!, p => p.TransportServiceDetail!);
+                        var latestPrice = sellPriceDb.Items.GroupBy(s => s.MOQ).Select(s => s.OrderByDescending(s => s.Date).FirstOrDefault()).OrderByDescending(s => s.MOQ).FirstOrDefault();
+                        latestPrice.Price *= filter.NumOfServiceUse * Math.Ceiling((filter.EndDate.Value.Date - filter.StartDate.Value.Date).TotalDays);
+                        result.Result = latestPrice;
                     }
                 }
             }
