@@ -25,7 +25,6 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
     public class DayPlanRoute
     {
         public DateTime Date { get; set; }
-        public string? Name { get; set; }
         public string? Description { get; set; }
         public List<DetailDayPlanRoute> DetailDayPlanRoutes { get; set; } = new List<DetailDayPlanRoute>();
     }
@@ -34,7 +33,6 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
     {
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public string Name { get; set; } = null!;
         public string? Note {  get; set; }
         public Guid? StartFacilityId { get; set; }
         public Guid? StartPortId { get; set; }
@@ -47,6 +45,8 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public string TourguideId { get; set; } = null!;
         public Guid ProvinceId { get; set; }
         public Guid? DistrictId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }   
     }
 
     public class PlanLocation

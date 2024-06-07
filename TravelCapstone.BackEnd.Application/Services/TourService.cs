@@ -196,7 +196,9 @@ public class TourService : GenericBackendService, ITourService
                     Id = Guid.NewGuid(),
                     ProvinceId = item.ProvinceId,
                     AccountId = item.TourguideId,
-                    TourId = tour.Id
+                    TourId = tour.Id,
+                    StartTime = item.StartDate,
+                    EndTime = item.EndDate
                 });
             }
 
@@ -312,7 +314,6 @@ public class TourService : GenericBackendService, ITourService
                     Id = Guid.NewGuid(),
                     Date = item.Date,
                     Description = item.Description,
-                    Name = item.Name,
                     TourId = tour.Id
                 });
                 Guid? parentRouteId = null;
@@ -346,7 +347,6 @@ public class TourService : GenericBackendService, ITourService
                     routes.Add(new Route
                     {
                         Id = Guid.NewGuid(),
-                        Name = detailRoute.Name,
                         Note = detailRoute.Note,
                         StartTime = detailRoute.StartTime,
                         EndTime = detailRoute.EndTime,

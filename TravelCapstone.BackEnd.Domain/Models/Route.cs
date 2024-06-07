@@ -6,8 +6,6 @@ namespace TravelCapstone.BackEnd.Domain.Models;
 public class Route
 {
     [Key] public Guid Id { get; set; }
-
-    public string? Name { get; set; }
     public string? Note { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }

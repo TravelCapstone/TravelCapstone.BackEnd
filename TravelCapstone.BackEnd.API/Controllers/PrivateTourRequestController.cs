@@ -41,10 +41,10 @@ public class PrivateTourRequestController : Controller
         return await _service.GetPrivateTourRequestById(id);
     }
 
-    [HttpGet("get-private-tour-request-by-id-for-customer/{id}")]
-    public async Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(Guid id)
+    [HttpGet("get-private-tour-request-by-id-for-customer/{id}/{pageNumber:int}/{pageSize:int}")]
+    public async Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(string id, int pageNumber, int pageSize)
     {
-        return await _service.GetPrivateTourRequestByIdForCustomer(id);
+        return await _service.GetPrivateTourRequestByIdForCustomer(id, pageNumber, pageSize);
     }
 
     [HttpPost("create-options-private-tour")]

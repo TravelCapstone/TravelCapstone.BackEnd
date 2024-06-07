@@ -29,5 +29,6 @@ namespace TravelCapstone.BackEnd.Application.IServices
         public Task<AppActionResult> GetServiceLatestPrice(Guid facilityServiceId);
         public Task<AppActionResult> GetMenuServiceLatestPrice(Guid menuId, int numOfServiceUse);
         public Task<AppActionResult> GetTransportServiceLatestPrice(Guid transportDetailId);
+        public Task<AppActionResult> GetEntertainmentLatestPrice(Guid districtId, Guid privateTourRequestId);
     }
 }
