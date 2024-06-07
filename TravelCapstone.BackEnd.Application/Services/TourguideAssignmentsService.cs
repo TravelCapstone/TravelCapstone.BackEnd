@@ -44,7 +44,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var tourGuideScopeDb = await tourGuideScope!.GetAllDataByExpression(t => t.District.ProvinceId == provinceId, 0, 0, null, false, t => t.Account);
                 var tourGuides = tourGuideScopeDb.Items!.DistinctBy(t => t.AccountId).Select(t => t.Account);
                 var tourAssignmentRepository = Resolve<IRepository<TourguideAssignment>>(); //a < d && b > c
-                var tourAssignmentDb = await tourAssignmentRepository!.GetAllDataByExpression(t => t.Tour.StartDate <= endDate && t.Tour.EndDate >= startDate, 0, 0, null, false, null);
+                var tourAssignmentDb = await tourAssignmentRepository!.GetAllDataByExpression(t => t.Tour.StartDate.Date <= endDate.Date && t.Tour.EndDate.Date >= startDate.Date, 0, 0, null, false, null);
                 if(tourAssignmentDb.Items != null && tourAssignmentDb.Items.Count > 0)
                 {
                     var busyTourGuide = tourAssignmentDb.Items.DistinctBy(a => a.AccountId).Select(a  => a.AccountId);
@@ -73,6 +73,12 @@ namespace TravelCapstone.BackEnd.Application.Services
                 result = BuildAppActionResultError(result, ex.Message);
             }
             return result;
+        }
+
+        private bool CheckVar(DateTime a, DateTime b, DateTime c, DateTime d)
+        {
+            bool res = a <= d && b >= c;
+            return res;
         }
 
         private double CalculateDistance(double? lat1, double? lon1, double? lat2, double? lon2)
