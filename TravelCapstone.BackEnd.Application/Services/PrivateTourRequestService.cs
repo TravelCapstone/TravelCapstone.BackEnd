@@ -2375,6 +2375,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(v => v.OptionQuotationId == optionId, 0, 0, null, false, v => v.StartPoint, v => v.EndPoint);
             var provinces = vehicleQuotationDetailDb.Items!.OrderBy(v =>v.StartDate)
                 .SelectMany(route => new[] { route.StartPoint, route.EndPoint })
+                                           .Where(p => p != null)
                                            .DistinctBy(p => p.Id)
                                            .ToList();
             result.Result = provinces;
