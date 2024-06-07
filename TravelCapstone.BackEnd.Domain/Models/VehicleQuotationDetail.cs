@@ -14,6 +14,8 @@ namespace TravelCapstone.BackEnd.Domain.Models
         [Key]
         public Guid Id { get; set; }
         public VehicleType VehicleType { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public int NumOfRentingDay { get; set; }
         public Guid StartPointId { get; set; }
         [ForeignKey(nameof(StartPointId))]

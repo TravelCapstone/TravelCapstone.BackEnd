@@ -23,5 +23,6 @@ public interface IPrivateTourRequestService
    Task<IActionResult> GetExcelQuotation(Guid privateTourRequestId);
 
     Task<AppActionResult> GetRoomSuggestion(RoomSuggestionRequest dto);
+    Task<AppActionResult> GetProvinceOfOption(Guid optionId);
 
 }

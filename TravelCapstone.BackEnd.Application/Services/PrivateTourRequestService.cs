@@ -1293,6 +1293,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 {
                                     Id = Guid.NewGuid(),
                                     OptionQuotationId = option1.Id,
+                                    StartDate = vehicle.StartDate,
+                                    EndDate = vehicle.EndDate,
                                     MinPrice = totalPeople * price.Items!.Min(a => a.AdultPrice),
                                     MaxPrice = totalPeople * price.Items!.Max(a => a.AdultPrice),
                                     StartPointId = (Guid)vehicle.StartPoint!,
@@ -1300,7 +1302,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                     StartPointDistrictId = vehicle.StartPointDistrict != null ? (Guid)vehicle.StartPointDistrict : null,
                                     EndPointDistrictId = vehicle.EndPointDistrict != null ? (Guid)vehicle.EndPointDistrict : null,
                                     VehicleType = vehicle.VehicleType
-                                });
+                                }); ;
                               
                             }
 
@@ -1310,6 +1312,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 {
                                     Id = Guid.NewGuid(),
                                     OptionQuotationId = option2.Id,
+                                    StartDate = vehicle.StartDate,
+                                    EndDate = vehicle.EndDate,
                                     MinPrice = totalPeople * price.Items!.Min(a => a.AdultPrice),
                                     MaxPrice = totalPeople * price.Items!.Max(a => a.AdultPrice),
                                     StartPointId = (Guid)vehicle.StartPoint,
@@ -1326,6 +1330,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 {
                                     Id = Guid.NewGuid(),
                                     OptionQuotationId = option3.Id,
+                                    StartDate = vehicle.StartDate,
+                                    EndDate = vehicle.EndDate,
                                     MinPrice = totalPeople * price.Items!.Min(a => a.AdultPrice),
                                     MaxPrice = totalPeople * price.Items!.Max(a => a.AdultPrice),
                                     StartPointId = (Guid)vehicle.StartPoint!,
@@ -1352,6 +1358,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 {
                                     Id = Guid.NewGuid(),
                                     OptionQuotationId = option1.Id,
+                                    StartDate = vehicle.StartDate,
+                                    EndDate = vehicle.EndDate,
                                     MinPrice = vehicle.NumOfVehicle * totalDays * price.Items!.Min(a => a.Price),
                                     MaxPrice = vehicle.NumOfVehicle * totalDays * price.Items!.Max(a => a.Price),
                                     NumOfRentingDay = totalDays,
@@ -1373,6 +1381,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 {
                                     Id = Guid.NewGuid(),
                                     OptionQuotationId = option2.Id,
+                                    StartDate = vehicle.StartDate,
+                                    EndDate = vehicle.EndDate,
                                     MinPrice = vehicle.NumOfVehicle * totalDays * price.Items!.Min(a => a.Price),
                                     MaxPrice = vehicle.NumOfVehicle * totalDays * price.Items!.Max(a => a.Price),
                                     NumOfRentingDay = totalDays,
@@ -1394,6 +1404,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 {
                                     Id = Guid.NewGuid(),
                                     OptionQuotationId = option3.Id,
+                                    StartDate = vehicle.StartDate,
+                                    EndDate = vehicle.EndDate,
                                     MinPrice = vehicle.NumOfVehicle * totalDays * price.Items!.Min(a => a.Price),
                                     MaxPrice = vehicle.NumOfVehicle * totalDays * price.Items!.Max(a => a.Price),
                                     NumOfRentingDay = totalDays,
@@ -2348,6 +2360,27 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 }
             };
         } catch(Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+        return result;
+    }
+
+    public async Task<AppActionResult> GetProvinceOfOption(Guid optionId)
+    {
+        AppActionResult result = new();
+        try
+        {
+            var vehicleQuotationDetailRepository = Resolve<IRepository<VehicleQuotationDetail>>();
+            var vehicleQuotationDetailDb = await vehicleQuotationDetailRepository!.GetAllDataByExpression(v => v.OptionQuotationId == optionId, 0, 0, null, false, v => v.StartPoint, v => v.EndPoint);
+            var provinces = vehicleQuotationDetailDb.Items!.OrderBy(v =>v.StartDate)
+                .SelectMany(route => new[] { route.StartPoint, route.EndPoint })
+                                           .DistinctBy(p => p.Id)
+                                           .ToList();
+            result.Result = provinces;
+
+        }
+        catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
         }

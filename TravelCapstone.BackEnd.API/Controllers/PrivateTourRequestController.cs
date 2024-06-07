@@ -75,4 +75,10 @@ public class PrivateTourRequestController : Controller
     {
         return await _service.GetRoomSuggestion(dto);
     }
+
+    [HttpGet("get-province-of-option/{optionId}")]
+    public async Task<AppActionResult> GetProvinceOfOption(Guid optionId)
+    {
+        return await _service.GetProvinceOfOption(optionId);
+    }
 }
