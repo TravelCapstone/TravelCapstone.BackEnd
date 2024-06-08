@@ -334,11 +334,11 @@ public class TourService : GenericBackendService, ITourService
                         EndPortId = null;
                         if (detailRoute.StartId != null)
                         {
-                            if (portIds.Contains((Guid)detailRoute.StartId))
+                            if ((await portRepository!.GetById(detailRoute.StartId)) != null)
                             {
                                 StartPortId = detailRoute.StartId;
                             }
-                            else if (facilityId.Contains((Guid)detailRoute.StartId))
+                            else if ((await facilityRepository!.GetById(detailRoute.StartId)) != null)
                             {
                                 StartFacilityId = detailRoute.StartId;
                             }
@@ -351,11 +351,11 @@ public class TourService : GenericBackendService, ITourService
 
                         if (detailRoute.EndId != null)
                         {
-                            if (portIds.Contains((Guid)detailRoute.EndId))
+                            if ((await portRepository!.GetById(detailRoute.EndId)) != null)
                             {
                                 StartPortId = detailRoute.EndId;
                             }
-                            else if (facilityId.Contains((Guid)detailRoute.EndId))
+                            else if ((await facilityRepository!.GetById(detailRoute.EndId)) != null)
                             {
                                 StartFacilityId = detailRoute.EndId;
                             }
