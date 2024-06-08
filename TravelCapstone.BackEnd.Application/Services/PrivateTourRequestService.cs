@@ -246,7 +246,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             var data = await _repository.GetAllDataByExpression
             (null, pageNumber,
                 pageSize, a => a.CreateDate, false,
-                p => p.Tour, p => p.CreateByAccount!, p => p.Province!, p => p.HotelFacilityRating, p => p.RestaurantFacilityRating);
+                p => p.Tour, p => p.CreateByAccount!, p => p.Province!, p => p.HotelFacilityRating, p => p.RestaurantFacilityRating, p=> p.Tour, p=> p.Commune.District.Province);
             var responseList = _mapper.Map<PagedResult<PrivateTourResponseDto>>(data);
             foreach (var item in responseList.Items!)
             {
