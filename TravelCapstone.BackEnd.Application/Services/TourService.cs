@@ -407,14 +407,12 @@ public class TourService : GenericBackendService, ITourService
                         }
                     }
                 }
-                await _repository.Insert(tour);
-                await dayPlanRepository!.InsertRange(dayPlans);
-                await routeRepository!.InsertRange(routes);
-                await vehicleRouteRepository!.InsertRange(vehicleRoutes);
-                await _unitOfWork.SaveChangesAsync();
-
             }
-
+            await _repository.Insert(tour);
+            await dayPlanRepository!.InsertRange(dayPlans);
+            await routeRepository!.InsertRange(routes);
+            await vehicleRouteRepository!.InsertRange(vehicleRoutes);
+            await _unitOfWork.SaveChangesAsync();
         } catch (Exception ex)
         {
             result = BuildAppActionResultError(result, ex.Message);
