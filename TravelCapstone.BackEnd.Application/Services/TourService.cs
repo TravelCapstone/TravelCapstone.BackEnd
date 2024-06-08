@@ -318,30 +318,47 @@ public class TourService : GenericBackendService, ITourService
                 });
                 Guid? parentRouteId = null;
                 Route parentRoute = null;
-                foreach(var detailRoute in item.DetailDayPlanRoutes) 
+                Guid? StartFacilityId = null;
+                Guid? EndFacilityId = null;
+                Guid? StartPortId = null;
+                Guid? EndPortId = null;
+
+                foreach (var detailRoute in item.DetailDayPlanRoutes) 
                 {
-                    if(detailRoute.StartPortId != null && !portIds.Contains((Guid)detailRoute.StartPortId))
+                     StartFacilityId = null;
+                     EndFacilityId = null;
+                     StartPortId = null;
+                     EndPortId = null;
+                    if (detailRoute.StartId != null)
                     {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy cảng với id {detailRoute.StartPortId} trong thông tin tour chi tiết");
-                        return result;
+                        if (portIds.Contains((Guid)detailRoute.StartId))
+                        {
+                            StartPortId = detailRoute.StartId;
+                        } else if(facilityId.Contains((Guid)detailRoute.StartId))
+                        {
+                            StartFacilityId = detailRoute.StartId;
+                        } else
+                        {
+                            result = BuildAppActionResultError(result, $"Không tìm thấy cảng hoặc cơ sở với id {detailRoute.StartId} trong thông tin tour chi tiết");
+                            return result;
+                        }
                     }
 
-                    if (detailRoute.EndPortId != null && !portIds.Contains((Guid)detailRoute.EndPortId))
+                    if (detailRoute.EndId != null)
                     {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy cảng với id {detailRoute.EndPortId} trong thông tin tour chi tiết");
-                        return result;
-                    }
-
-                    if (detailRoute.StartFacilityId != null && !facilityId.Contains((Guid)detailRoute.StartFacilityId))
-                    {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy cơ sở với id {detailRoute.StartFacilityId} trong thông tin tour chi tiết");
-                        return result;
-                    }
-
-                    if (detailRoute.EndFacilityId != null && !facilityId.Contains((Guid)detailRoute.EndFacilityId))
-                    {
-                        result = BuildAppActionResultError(result, $"Không tìm thấy cơ sở với id {detailRoute.EndFacilityId} trong thông tin tour chi tiết");
-                        return result;
+                        if (portIds.Contains((Guid)detailRoute.EndId))
+                        {
+                            StartPortId = detailRoute.EndId;
+                        }
+                        else if (facilityId.Contains((Guid)detailRoute.EndId))
+                        {
+                            StartFacilityId = detailRoute.EndId;
+                        }
+                        else
+                        {
+                            result = BuildAppActionResultError(result, $"Không tìm thấy cảng hoặc cơ sở với id {detailRoute.EndId} trong thông tin tour chi tiết");
+                            return result;
+                        }
                     }
 
                     routes.Add(new Route
@@ -350,10 +367,10 @@ public class TourService : GenericBackendService, ITourService
                         Note = detailRoute.Note,
                         StartTime = detailRoute.StartTime,
                         EndTime = detailRoute.EndTime,
-                        StartPointId = detailRoute.StartFacilityId,
-                        EndPointId = detailRoute.EndFacilityId,
-                        PortStartPointId = detailRoute.StartPortId,
-                        PortEndPointId = detailRoute.EndPortId,
+                        StartPointId = StartFacilityId,
+                        EndPointId = EndFacilityId,
+                        PortStartPointId = StartPortId,
+                        PortEndPointId = EndPortId,
                         DayPlanId = dayPlans[dayPlans.Count - 1].Id,
                         ParentRouteId = parentRouteId,
 
@@ -365,8 +382,8 @@ public class TourService : GenericBackendService, ITourService
                                               .FirstOrDefault();
                     if (vehicle != null)
                     {
-                        var portDb = await portRepository!.GetAllDataByExpression(p => (detailRoute.StartPortId != null && detailRoute.StartPortId == p.Id) && (detailRoute.EndPortId != null && detailRoute.StartPortId == p.Id), 0, 0, null, false, null);
-                        if (portDb.Items.Count > 0)
+                        var portDb = await portRepository!.GetAllDataByExpression(p => (StartPortId != null && StartPortId == p.Id) || (EndPortId != null && EndPortId == p.Id), 0, 0, null, false, null);
+                        if (portDb.Items.Count > 1)
                         {
                             vehicleRoutes.Add(new VehicleRoute
                             {
@@ -377,7 +394,7 @@ public class TourService : GenericBackendService, ITourService
                                 DriverId = vehicle.DriverId,
                                 ReferenceBrandName = portDb.Items[0].Name
                             });
-                        } else if ((detailRoute.StartPortId is null) || (detailRoute.EndPortId is null))
+                        } else if ((StartPortId is null) || (EndPortId is null))
                         {
                             vehicleRoutes.Add(new VehicleRoute
                             {

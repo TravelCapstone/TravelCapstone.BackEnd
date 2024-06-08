@@ -93,6 +93,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                             {
                                 Id = (Guid)vehicle.StartPortId,
                                 Name = vehicle.StartPort.Name,
+                                Address = vehicle.StartPort.Address,
                                 IsFacility = false
                             });
                         }
@@ -103,6 +104,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                             {
                                 Id = (Guid)vehicle.EndPortId,
                                 Name = vehicle.EndPort.Name,
+                                Address = vehicle.EndPort.Address,
                                 IsFacility = false
                             });
                         }
@@ -119,6 +121,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         {
                             Id = quotation.Menu.FacilityService.FacilityId,
                             Name = quotation.Menu.FacilityService.Facility.Name,
+                            Address = quotation.Menu.FacilityService.Facility.Address,
                             IsFacility = true
                         });
                     }
@@ -136,6 +139,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                             {
                                 Id = sellPriceDb.FacilityService.FacilityId,
                                 Name = sellPriceDb.FacilityService.Facility.Name,
+                                Address = sellPriceDb.FacilityService.Facility.Address,
                                 IsFacility = true
                             });
                         }

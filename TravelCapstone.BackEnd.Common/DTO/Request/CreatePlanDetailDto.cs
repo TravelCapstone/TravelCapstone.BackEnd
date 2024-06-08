@@ -34,10 +34,8 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string? Note {  get; set; }
-        public Guid? StartFacilityId { get; set; }
-        public Guid? StartPortId { get; set; }
-        public Guid? EndFacilityId { get; set; }
-        public Guid? EndPortId { get; set; }
+        public Guid? StartId { get; set; }
+        public Guid? EndId { get; set; }
     }
 
     public class Tourguide
