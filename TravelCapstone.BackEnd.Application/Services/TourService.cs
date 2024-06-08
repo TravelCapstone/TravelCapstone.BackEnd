@@ -414,6 +414,8 @@ public class TourService : GenericBackendService, ITourService
                         }
                     }
                 }
+                privateTourRequestDb.PrivateTourStatusId = PrivateTourStatus.PLANCREATED;
+                await privateTourRequestRepository.Update(privateTourRequestDb);
                 await _repository.Insert(tour);
                 await dayPlanRepository!.InsertRange(dayPlans);
                 await routeRepository!.InsertRange(routes);
