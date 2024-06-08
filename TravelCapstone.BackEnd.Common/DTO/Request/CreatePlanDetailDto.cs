@@ -54,7 +54,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public Guid SellPriceHistoryId { get; set; }
         //public Domain.Enum.ServiceType ServiceType { get; set; }
         public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public int NumOfServiceUse { get; set; }
     }
 
@@ -66,7 +66,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public Guid? EndPoint { get; set; }
         public Guid? PortStartPoint { get; set; }
         public Guid? PortEndPoint { get; set; }
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public Guid? DriverId { get; set; }
         public Guid? SellPriceHistoryId { get; set; }

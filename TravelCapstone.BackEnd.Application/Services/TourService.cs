@@ -224,17 +224,17 @@ public class TourService : GenericBackendService, ITourService
             string activityType = "";
             foreach(var item in dto.Locations)
             {
-                numOfDay = (item.EndDate - item.StartDate).Days;
+                numOfDay = (item.EndDate.HasValue) ? (item.EndDate.Value.Date - item.StartDate.Date).Days : 0;
                 numOfDay = (numOfDay > 0)? numOfDay : 1;
                 //activityType = item.ServiceType == ServiceType.RESTING ? "Nghỉ ngơi" : item.ServiceType == ServiceType.FOODANDBEVARAGE ? "Ăn uống" : item.ServiceType == ServiceType.ENTERTAIMENT ? "Tham quan, vui chơi" : "Event";
                     planServiceCostDetails.Add(new PlanServiceCostDetail
                     {
                         Id = Guid.NewGuid(),
-                        Name = $"{item.StartDate.Date} lúc {item.StartDate.Hour} giờ",
+                        Name = $"{item.StartDate.Date} lúc {item.StartDate.Date.Hour} giờ",
                         Description = "",
                         Quantity = item.NumOfServiceUse * numOfDay,
-                        StartDate = item.StartDate,
-                        EndDate = item.EndDate,
+                        StartDate = item.StartDate.Date,
+                        EndDate = item.EndDate.Value.Date,
                         TourId = tour.Id,
                         SellPriceHistoryId = item.SellPriceHistoryId,
                     });
@@ -249,11 +249,11 @@ public class TourService : GenericBackendService, ITourService
                     planServiceCostDetails.Add(new PlanServiceCostDetail
                     {
                         Id = Guid.NewGuid(),
-                        Name = $"Dịch vụ di chuyển vào ngày {item.StartDate.Value.Date} lúc {item.StartDate.Value.Hour} giờ",
+                        Name = $"Dịch vụ di chuyển vào ngày {item.StartDate.Date} lúc {item.StartDate.Hour} giờ",
                         Description = "",
                         Quantity = privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren,
-                        StartDate = (DateTime)item.StartDate,
-                        EndDate = (DateTime)item.EndDate,
+                        StartDate = item.StartDate,
+                        EndDate = item.EndDate.HasValue? item.EndDate.Value : item.StartDate.Date.AddHours(4),
                         TourId = tour.Id,
                         ReferenceTransportPriceId = item.ReferencePriceId,
                     });
@@ -264,11 +264,11 @@ public class TourService : GenericBackendService, ITourService
                     planServiceCostDetails.Add(new PlanServiceCostDetail
                     {
                         Id = Guid.NewGuid(),
-                        Name = $"Dịch vụ di chuyển vào ngày {item.StartDate.Value.Date} lúc {item.StartDate.Value.Hour} giờ",
+                        Name = $"Dịch vụ di chuyển vào ngày {item.StartDate.Date} lúc {item.StartDate.Date.Hour} giờ",
                         Description = "",
                         Quantity = item.NumOfVehicle * numOfDay,
-                        StartDate = (DateTime)item.StartDate,
-                        EndDate = (DateTime)item.EndDate,
+                        StartDate = item.StartDate,
+                        EndDate = item.EndDate.HasValue? item.EndDate.Value : item.StartDate.Date.AddHours(4),
                         TourId = tour.Id,
                         SellPriceHistoryId = item.SellPriceHistoryId,
                     });
