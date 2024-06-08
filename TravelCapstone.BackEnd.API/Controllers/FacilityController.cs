@@ -30,5 +30,11 @@ namespace TravelCapstone.BackEnd.API.Controllers
         {
             return await _service.GetAllFacilityByRatingId(filter,ratingId,pageNumber, pageSize);
         }
+
+        [HttpPost("get-facility-and-port-information")]
+        public async Task<AppActionResult> GetFacilityAndPortInformation([FromBody] FacilityAndPortRequest dto)
+        {
+            return await _service.GetFacilityAndPortInformation(dto);
+        }
     }
     }

@@ -13,5 +13,7 @@ namespace TravelCapstone.BackEnd.Application.IServices
         public Task<AppActionResult> GetFacilityByProvinceId(FilterLocation filter, int pageNumber, int pageSize);
         public Task<AppActionResult> GetAllFacility( int pageNumber, int pageSize);
         public Task<AppActionResult> GetAllFacilityByRatingId( FilterLocation filter,TravelCapstone.BackEnd.Domain.Enum.Rating ratingId,int pageNumber, int pageSize);
+
+        public Task<AppActionResult> GetFacilityAndPortInformation(FacilityAndPortRequest dto);
     }
 }
