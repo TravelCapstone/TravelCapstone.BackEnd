@@ -426,8 +426,6 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
 
     public async Task<AppActionResult> CreateOptionsPrivateTour(CreateOptionsPrivateTourDto dto)
     {
-        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-        {
             var result = new AppActionResult();
             var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
             var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
@@ -1148,17 +1146,15 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         {
                             PagedResult<SellPriceHistory> menuPriceList = null;
                             SellPriceHistory menuPrice = null;
-                            Menu menu = null;
                             foreach (var dayMenu in location.MenuQuotations)
                             {
                                 menuPriceList = null;
                                 menuPrice = null;
-                                menu = null;
                                 int quantity = 0;
                                 int totalService = 0;
                                 foreach (var MenuId in dayMenu.MenuIds)
                                 {
-                                    menu = await menuRepository!.GetByExpression(m => m.Id == MenuId, m => m.FacilityService);
+                                    var menu = await menuRepository!.GetByExpression(m => m.Id == MenuId, m => m.FacilityService);
                                     quantity = menu.FacilityService.ServiceAvailabilityId == ServiceAvailability.BOTH ? privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren :
                                                    menu.FacilityService.ServiceAvailabilityId == ServiceAvailability.ADULT ? privateTourRequest.NumOfAdult : privateTourRequest.NumOfChildren;
                                     totalService = (int)Math.Ceiling((double)(quantity / menu.FacilityService.ServingQuantity));
@@ -1544,10 +1540,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     await vehicleQuotationDetailRepository!.InsertRange(vehicleQuotationDetails);
                     await tourguideQuotationDetailRepository!.InsertRange(tourguideQuotationDetails);
                     int rowAffected = await _unitOfWork.SaveChangesAsync();
-                    if(rowAffected > 0)
-                    {
-                        scope.Complete();
-                    }
+                    
                 }
 
             }
@@ -1557,7 +1550,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             }
 
             return result;
-        }
+        
     }
 
     public async Task<AppActionResult> ConfirmOptionPrivateTour(Guid optionId, string accountId)
