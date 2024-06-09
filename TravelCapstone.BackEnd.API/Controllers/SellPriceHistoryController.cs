@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Domain.Enum;
 
@@ -20,10 +21,10 @@ namespace TravelCapstone.BackEnd.API.Controllers
             return await _service.GetServiceLatestPrice(facilityServiceId);
         }
 
-        [HttpGet("get-sell-price-by-menu-id/{menuId}")]
-        public async Task<AppActionResult> GetMenuServiceLatestPrice(Guid menuId)
+        [HttpGet("get-sell-price-by-menu-id/{menuId}/{numOfServiceUse}")]
+        public async Task<AppActionResult> GetMenuServiceLatestPrice(Guid menuId, int numOfServiceUse)
         {
-            return await _service.GetMenuServiceLatestPrice(menuId);
+            return await _service.GetMenuServiceLatestPrice(menuId, numOfServiceUse);
         }
 
         [HttpGet("get-sell-price-by-transport-service-id/{transportDetailId}")]
@@ -80,10 +81,22 @@ namespace TravelCapstone.BackEnd.API.Controllers
             return await _service.GetAveragePriceOfMealService(districId, privatetourRequestId, ratingId, mealType, servingQuantity, pageNumber, pageSize);
         }
 
-        [HttpGet("get-vehicle-price-range")]
-        public async Task<AppActionResult> GetVehiclePriceRange(Guid startPoint, Guid endPoint, VehicleType vehicleType, int Quantity, DateTime StartDate, DateTime EndDate, int pageNumber = 1, int pageSize = 10)
+        [HttpPost("get-vehicle-price-range")]
+        public async Task<AppActionResult> GetVehiclePriceRange([FromBody]VehiclePriceRangeRequest dto)
         {
-            return await _service.GetVehiclePriceRange(startPoint, endPoint, vehicleType, Quantity, StartDate, EndDate, pageNumber, pageSize);
+            return await _service.GetVehiclePriceRange(dto);
+        }
+
+        [HttpGet("get-latest-hotel-price/{districtId}/{ratingId}/{servingQuantity}/{numOfServiceUse}/{pageNumber:int}/{pageSize:int}")]
+        public async Task<AppActionResult> GetHotelLatestPriceByDistrict(Guid districtId, Guid ratingId, int servingQuantity, int numOfServiceUse, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _service.GetHotelLatestPriceByDistrict(districtId, ratingId, servingQuantity, numOfServiceUse,pageNumber, pageSize);
+        }
+
+        [HttpGet("get-latest-entertaiment-price/{districtId}/{privateTourRequestId}")]
+        public async Task<AppActionResult> GetEntertainmentLatestPrice(Guid districtId, Guid privateTourRequestId)
+        {
+            return await _service.GetEntertainmentLatestPrice(districtId, privateTourRequestId);
         }
     }
 }

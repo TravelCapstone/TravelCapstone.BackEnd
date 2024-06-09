@@ -12,6 +12,8 @@ namespace TravelCapstone.BackEnd.Domain.Models
     {
         [Key]
         public Guid Id { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
         public string AccountId { get; set; } = null!;
         [ForeignKey(nameof(AccountId))]
         public Account? Account { get; set; }

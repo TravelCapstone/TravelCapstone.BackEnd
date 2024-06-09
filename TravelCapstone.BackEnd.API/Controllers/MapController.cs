@@ -35,6 +35,7 @@ public class MapController : ControllerBase
         return await _service.ImportPositionToProvince();
     }
 
+
     [HttpPost("get-optimal-path")]
     public async Task<AppActionResult> ImportPosition(Guid StartDestinationId, List<Guid> DestinationIds, bool IsPilgrimageTrip)
     {

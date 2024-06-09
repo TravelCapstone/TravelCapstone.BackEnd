@@ -9,10 +9,10 @@ public class QuotationDetail
     [Key] public Guid Id { get; set; }
     public int QuantityOfAdult { get; set; }
     public int QuantityOfChild { get; set; }
-    public Guid FacilityRatingId { get; set; }
+    public Guid? FacilityRatingId { get; set; }
     [ForeignKey(nameof(FacilityRatingId))]
     public FacilityRating? FacilityRating { get; set; }
-    public Enum.ServiceType ServiceTypeId { get; set; }
+    public Enum.ServiceType? ServiceTypeId { get; set; }
     [ForeignKey(nameof(ServiceTypeId))]
     public ServiceType? ServiceType { get; set; }
     public int ServingQuantity { get; set; }
@@ -26,7 +26,7 @@ public class QuotationDetail
     public Guid OptionQuotationId { get; set; }
     [ForeignKey(nameof(OptionQuotationId))]
     public OptionQuotation? OptionQuotation { get; set; }
-    public Guid DistrictId { get; set; }
+    public Guid? DistrictId { get; set; }
     [ForeignKey(nameof(DistrictId))]
     public District? District { get; set; }
     public Guid? MenuId { get; set; }

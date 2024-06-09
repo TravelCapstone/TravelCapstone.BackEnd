@@ -13,6 +13,7 @@ public class Facility
     
     public bool IsActive { get; set; }
     public string Address { get; set; }=null!;
+    public string? PhoneNumber { get; set; }
     public Guid CommunceId { get; set; }
 
     [ForeignKey(nameof(CommunceId))]

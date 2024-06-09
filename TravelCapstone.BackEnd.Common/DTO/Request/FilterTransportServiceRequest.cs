@@ -15,6 +15,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public VehicleType VehicleType { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public int NumOfServiceUse {  get; set; }
 
         public class Location
         {

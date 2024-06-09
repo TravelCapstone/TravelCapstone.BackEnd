@@ -15,7 +15,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
 
     public class MaterialRequest
     {
-        public Guid MaterialId { get; set; }
+        public Guid MaterialSellPriceId { get; set; }
         public int Quantity { get; set; }
     }
 }

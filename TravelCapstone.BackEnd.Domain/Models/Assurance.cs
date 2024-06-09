@@ -12,6 +12,7 @@ namespace TravelCapstone.BackEnd.Domain.Models
         [Key]
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
+        public string Description { get; set; } = null!;
         public int DayMOQ { get; set; }
     }
 }

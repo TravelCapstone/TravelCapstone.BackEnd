@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Common.Utils;
 using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Application.Services
@@ -28,46 +30,55 @@ namespace TravelCapstone.BackEnd.Application.Services
             var result = new AppActionResult();
             try
             {
+                var accountRepository = Resolve<IRepository<Account>>();
                 var provinceRepository = Resolve<IRepository<Province>>();
-                var provinceDb = await provinceRepository!.GetById(provinceId);
-                if (provinceDb == null)
-                {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy thông tin địa điểm bắt đầu với id {provinceId}");
-                    return result;
-                }
-                var provinceList = await provinceRepository.GetAllDataByExpression(null, 0 , 0 , null, false, null);
-                if (provinceList.Items != null && provinceList.Items.Count > 0)
-                {
-                    double shortestDistance = double.MaxValue;
-                    List<Province> closestProvinces = new List<Province>();
+                var roleRepository = Resolve<IRepository<IdentityRole>>();
+                var userRolesRepository = Resolve<IRepository<IdentityUserRole<string>>>();
+                var tourGuideScope = Resolve<IRepository<TourguideScope>>();
+                var tourGuideSalaryHistoryRepository = Resolve<IRepository<TourGuideSalaryHistory>>();
+                var tourGuideList = new List<Account>();
 
-                    foreach (var item in provinceList.Items)
+                //get tourguide hoạt động trong province đó
+                // get hoạt động assign của các tour guide đó
+                // trả mấy ní rảnh
+                var tourGuideScopeDb = await tourGuideScope!.GetAllDataByExpression(t => t.District.ProvinceId == provinceId, 0, 0, null, false, t => t.Account);
+                var tourGuides = tourGuideScopeDb.Items!.DistinctBy(t => t.AccountId).Select(t => t.Account);
+                var tourAssignmentRepository = Resolve<IRepository<TourguideAssignment>>(); //a < d && b > c
+                var tourAssignmentDb = await tourAssignmentRepository!.GetAllDataByExpression(t => t.Tour.StartDate.Date <= endDate.Date && t.Tour.EndDate.Date >= startDate.Date, 0, 0, null, false, null);
+                if(tourAssignmentDb.Items != null && tourAssignmentDb.Items.Count > 0)
+                {
+                    var busyTourGuide = tourAssignmentDb.Items.DistinctBy(a => a.AccountId).Select(a  => a.AccountId);
+                    tourGuides = tourGuides.Where(t => !busyTourGuide.Contains(t.Id));
+                }
+
+                List<TourGuideSalaryHistory> tourGuideSalaryHistories = new List<TourGuideSalaryHistory>();
+                foreach(var tourGuide in tourGuides)
+                {
+                    var tourGuideSalaryHistoryDb = await tourGuideSalaryHistoryRepository!.GetAllDataByExpression(t => t.AccountId == tourGuide!.Id, 0,0, null, false, t => t.Account!);
+                    if(tourGuideSalaryHistoryDb.Items != null && tourGuideSalaryHistoryDb.Items.Count > 0)
                     {
-                        double distance = CalculateDistance(provinceDb.lat, provinceDb.lng, item.lat, item.lng);
-                        if (distance < shortestDistance)
-                        {
-                            shortestDistance = distance;
-                            closestProvinces.Add(item);  
-                        }
-                    }
-                    var closestProvinceIds = closestProvinces.Select(p => p.Id).ToList();
-                    var tourtourGuideAssignmentRepository = Resolve<IRepository<TourguideAssignment>>();
-                    foreach (var id in closestProvinceIds)
-                    {
-                        var tourtouGuideAssignmentList = await tourtourGuideAssignmentRepository!.GetAllDataByExpression(p => p.ProvinceId == provinceId && p.Tour!.EndDate >= startDate || p.Tour.StartDate <= endDate
-                        , 0, 0, null, true, p => p.Account!);
-                        if (tourtouGuideAssignmentList.Items != null && tourtouGuideAssignmentList.Items.Count > 0)
-                        {
-                            var assignedTourguide = tourtouGuideAssignmentList!.Items!.Select(p => p.AccountId);
-                            result.Result = await _tourguideAssignmentRepository.GetAllDataByExpression(p => !assignedTourguide.Contains(p.AccountId), pageNumber, pageSize, null, true, p => p.Account!, p => p.Province!);
-                        }
+                        tourGuideSalaryHistories.Add(tourGuideSalaryHistoryDb.Items.OrderByDescending(t => t.Date).FirstOrDefault()!);
                     }
                 }
-            } catch (Exception ex)
+                    result.Result = new PagedResult<TourGuideSalaryHistory>
+                    {
+                        Items = tourGuideSalaryHistories.ToList()!,
+                        TotalPages = (tourGuideSalaryHistories.Count() % pageSize == 0) ? tourGuideSalaryHistories.Count() / pageSize : tourGuideSalaryHistories.Count() / pageSize + 1
+                    };
+
+
+            }
+            catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
             }
             return result;
+        }
+
+        private bool CheckVar(DateTime a, DateTime b, DateTime c, DateTime d)
+        {
+            bool res = a <= d && b >= c;
+            return res;
         }
 
         private double CalculateDistance(double? lat1, double? lon1, double? lat2, double? lon2)
@@ -119,13 +130,13 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;  
         }
 
-        public async Task<AppActionResult> GetMaxTourGuideNumber(int numOfVehicle, Guid preValueId)
+        public async Task<AppActionResult> GetMaxTourGuideNumber(int numOfVehicle)
         {
             var result = new AppActionResult();
             try
             {
                 var preValueRepository = Resolve<IRepository<Configuration>>();
-                var preValueDb = await preValueRepository!.GetByExpression(p => p.Id == preValueId);
+                var preValueDb = await preValueRepository!.GetByExpression(p =>  p.Name == SD.ConfigName.CONFIG_NAME);
                 if (preValueDb == null)
                 {
                     result = BuildAppActionResultError(result, "Config này không tồn tại");

@@ -16,7 +16,8 @@ namespace TravelCapstone.BackEnd.Application.IServices
         //public Task<AppActionResult> UploadQuotation(IFormFile file);
         //public Task<AppActionResult> ValidateExcelFile(IFormFile file);
         public Task<IActionResult> GetPriceQuotationTemplate();
-        public Task<AppActionResult> GetAvailableVehicle(DateTime startTime, DateTime endTime, int pageNumber, int pageSize);
-        public Task<AppActionResult> GetPriceForVehicle(FilterTransportServiceRequest filter, int pageNumber, int pageSize);
+        public Task<AppActionResult> GetAvailableVehicle(VehicleType type, DateTime startTime, DateTime endTime, int pageNumber, int pageSize);
+        public Task<AppActionResult> GetPriceForVehicle(FilterTransportServiceRequest filter);
+        public Task<AppActionResult> GetAvailableVehicleType(Guid provinceStartPointId, Guid provinceEndPointId);
     }
 }

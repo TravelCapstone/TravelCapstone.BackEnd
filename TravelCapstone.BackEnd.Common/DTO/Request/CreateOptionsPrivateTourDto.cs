@@ -10,12 +10,14 @@ public class CreateOptionsPrivateTourDto
     public DateTime EndDate { get; set; }
     public List<HumanResourceCost> TourGuideCosts { get; set; } = new List<HumanResourceCost>();
     public List<MaterialCost> MaterialCosts { get; set; } = new List<MaterialCost>();
-    public Guid AssurancePriceHistoryId { get; set; }
+    public Guid AssurancePriceHistoryOptionId { get; set; }
+    public double AssurancePricePerPerson { get; set; }
     public double OrganizationCost { get; set; }
-    public double ContigencyFeePerPerson { get; set; }
+    public double ContingencyFee { get; set; }
     public double EscortFee { get; set; }
     public double OperatingFee { get; set; }
     public Guid PrivateTourRequestId { get; set; }
+    public List<EventGala>? EventGalas { get; set; } = new List<EventGala>();
     public List<ProvinceService> provinceServices { get; set; } = new List<ProvinceService>();
     public List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
 }
@@ -40,16 +42,14 @@ public class ProvinceService
 {
     public List<Hotel> Hotels { get; set; } = new List<Hotel>();
     public List<Restaurant> Restaurants { get; set; } = new List<Restaurant>();
-    public List<Entertainment> Entertainments { get; set; } = new List<Entertainment>();   
-    public List<EventGala>? EventGalas { get; set; } = new List<EventGala>();
+    public List<Entertainment> Entertainments { get; set; } = new List<Entertainment>();  
 }
 
 public class EventGala
 {
     public DateTime Date { get; set; }
-    public Guid? Option1EventId { get; set; }
-    public Guid? Option2EventId { get; set; }
-    public Guid? Option3EventId { get; set; }
+    public Guid EventId { get; set; }
+    public string? CustomEvent { get; set; }
 }
 
 public class Hotel
@@ -57,8 +57,8 @@ public class Hotel
     public Guid DistrictId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public int ServingQuantity { get; set; }
-    public int NumOfRoom { get; set; }
+    public int NumOfSingleRoom { get; set; }
+    public int NumOfDoubleRoom { get; set; }
     public Rating? HotelOptionRatingOption1 {  get; set; }
     public Rating? HotelOptionRatingOption2 {  get; set; }
     public Rating? HotelOptionRatingOption3 {  get; set; }
@@ -73,16 +73,8 @@ public class Restaurant
 public class MenuQuotation
 {
     public DateTime Date { get; set; }
-    public Guid? BreakfastMenuOption1 { get; set; }
-    public Guid? BreakfastMenuOption2 { get; set; }
-    public Guid? BreakfastMenuOption3 { get; set; }
-    public Guid? LunchMenuOption1 { get; set; }
-    public Guid? LunchMenuOption2 { get; set; }
-    public Guid? LunchMenuOption3 { get; set; }
-    public Guid? DinnerMenuOption1 { get; set; }   
-    public Guid? DinnerMenuOption2 { get; set; }
-    public Guid? DinnerMenuOption3 { get; set; }
-
+    public OptionClass option {  get; set; }
+    public List<Guid> MenuIds { get; set; } = new List<Guid>();
 }
 
 public class Entertainment

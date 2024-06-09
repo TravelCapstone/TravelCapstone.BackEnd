@@ -14,7 +14,8 @@ namespace TravelCapstone.BackEnd.Application.Services;
 
 public class MapService : GenericBackendService, IMapService
 {
-    public const string APIKEY = "59ShUUOfSsJVDcwkynlpIKDuUSs0djQJpZo7Oixy";
+    //xYMZRYtUiOGz90R5Lt3z7uAAJWaZb22L3hv4SKWs
+    public const string APIKEY = "xYMZRYtUiOGz90R5Lt3z7uAAJWaZb22L3hv4SKWs";
     private IUnitOfWork _unitOfWork;
 
     public MapService(IUnitOfWork unitOfWork ,IServiceProvider serviceProvider) : base(serviceProvider)
@@ -199,7 +200,7 @@ public class MapService : GenericBackendService, IMapService
                 }
             }
 
-            if (IsPilgrimageTrip)
+            if (true)
             {
                 string start = $"{startProvince.lat.ToString()},{startProvince.lng.ToString()}";
                 StringBuilder waypoints = new StringBuilder();
@@ -224,17 +225,27 @@ public class MapService : GenericBackendService, IMapService
                     string placeEndPoint = null;
                     TripInfo.Leg currentTrip = null;
                     TripInfo.Waypoint currentWaypoint = null;
+                    //List<RestResponse> provinceResponse = new List<RestResponse>();
+                    obj.Waypoints = obj.Waypoints.OrderBy(o => o.WaypointIndex).ToList();
+
+                    //for(int i = 0; i < obj.Trips[0].Legs.Count; i++)
+                    //{
+                    //    placeEndPoint = $"https://rsapi.goong.io/Place/Detail?place_id={obj.Waypoints[i].PlaceId}&api_key={APIKEY}";
+                    //    response = await client.ExecuteAsync(new RestRequest(placeEndPoint));
+                    //    provinceResponse.Add(response);
+                    //    await Task.Delay(350);
+                    //}
+                    Province currentProvinceName = null;
+
                     for(int i = 0; i < obj.Trips[0].Legs.Count; i++)
                     {
                         currentTrip = obj.Trips[0].Legs[i];
                         currentWaypoint = obj.Waypoints[i];
-                        placeEndPoint = $"https://rsapi.goong.io/Place/Detail?place_id={currentWaypoint.PlaceId}&api_key={APIKEY}";
-                        response = await client.ExecuteAsync(new RestRequest(placeEndPoint));
-                        LocationResultDTO.GeocodeResponse location;
-                        if(response.IsSuccessStatusCode)
+                        currentProvinceName = (await provinceRepository.GetByExpression(p => Math.Abs((double)(currentWaypoint.Location[0] - p.lat)) <= 0.0007 
+                                                                                          && Math.Abs((double)(currentWaypoint.Location[1] - p.lng)) <= 0.001))!;
+                        if(currentProvinceName != null)
                         {
-                            location = JsonConvert.DeserializeObject<LocationResultDTO.GeocodeResponse>(response.Content!)!;
-                            if (location.Result.FormattedAddress.Contains(startProvince.Name))
+                            if (currentProvinceName.Name.Contains(startProvince.Name) || startProvince.Name.Contains(currentProvinceName.Name))
                             {
                                 optimalTripResponseDTO.OptimalTrip!.Add(new RouteNode
                                 {
@@ -247,12 +258,12 @@ public class MapService : GenericBackendService, IMapService
                                 });
                                 continue;
                             }
-                            var province = onWayProvinces.Items.FirstOrDefault(p => location.Result.FormattedAddress.Contains(p.Name));
+                            var province = onWayProvinces.Items.FirstOrDefault(p => currentProvinceName.Name.Contains(p.Name) || p.Name.Contains(currentProvinceName.Name));
                             if (province != null)
                             {
                                 optimalTripResponseDTO.OptimalTrip!.Add(new RouteNode
                                 {
-                                    Index= currentWaypoint.WaypointIndex,
+                                    Index = currentWaypoint.WaypointIndex,
                                     ProvinceId = province.Id,
                                     ProvinceName = province.Name,
                                     VehicleToNextDestination = VehicleType.BUS,
@@ -263,7 +274,7 @@ public class MapService : GenericBackendService, IMapService
                         }
                     }
                  
-                    result.Result = optimalTripResponseDTO;
+                    result.Result = optimalTripResponseDTO.OptimalTrip.OrderBy(o => o.Index);
                 }
             }
 
@@ -408,4 +419,6 @@ public class MapService : GenericBackendService, IMapService
 
         return (numberOfDays, numberOfNights);
     }
+
+    
 }

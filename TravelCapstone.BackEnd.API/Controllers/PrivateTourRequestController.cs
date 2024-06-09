@@ -41,10 +41,10 @@ public class PrivateTourRequestController : Controller
         return await _service.GetPrivateTourRequestById(id);
     }
 
-    [HttpGet("get-private-tour-request-by-id-for-customer/{id}")]
-    public async Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(Guid id)
+    [HttpGet("get-private-tour-request-by-id-for-customer/{id}/{pageNumber:int}/{pageSize:int}")]
+    public async Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(string id, int pageNumber, int pageSize)
     {
-        return await _service.GetPrivateTourRequestByIdForCustomer(id);
+        return await _service.GetPrivateTourRequestByIdForCustomer(id, pageNumber, pageSize);
     }
 
     [HttpPost("create-options-private-tour")]
@@ -62,5 +62,23 @@ public class PrivateTourRequestController : Controller
     public async Task<AppActionResult> SendToCustomer(Guid privateTourRequestId)
     {
         return await _service.SendToCustomer(privateTourRequestId);
+    }
+
+    [HttpGet("get-excel-quotation/{privateTourRequestId}")]
+    public async Task<IActionResult> GetExcelQuotation(Guid privateTourRequestId)
+    {
+        return await _service.GetExcelQuotation(privateTourRequestId);
+    }
+
+    [HttpPost("get-room-suggestion")]
+    public async Task<AppActionResult> GetRoomSuggestion([FromBody]RoomSuggestionRequest dto)
+    {
+        return await _service.GetRoomSuggestion(dto);
+    }
+
+    [HttpGet("get-province-of-option/{optionId}")]
+    public async Task<AppActionResult> GetProvinceOfOption(Guid optionId)
+    {
+        return await _service.GetProvinceOfOption(optionId);
     }
 }

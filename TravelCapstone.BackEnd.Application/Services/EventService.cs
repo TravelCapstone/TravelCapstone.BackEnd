@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
+using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Domain.Models;
 
@@ -23,6 +25,71 @@ namespace TravelCapstone.BackEnd.Application.Services
             _repository = repository;
             _unitOfWork = unitOfWork;
         }
+
+        public async Task<AppActionResult> CreateCustomEventString(CreateCustomEventStringRequest dto)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var eventDetailPriceRepository = Resolve<IRepository<EventDetailPriceHistory>>();
+                CustomEventStringResponse response = new CustomEventStringResponse();
+                var eventDb = await _repository.GetById(dto.EventId);
+                if (eventDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy sự kiện với id {dto.EventId}");
+                    return result;
+                }
+                response.EventId = eventDb.Id;
+                response.Name = eventDb.Name;
+                response.Total = 0;
+                EventDetailPriceHistory curr = null;
+                int quantity = 0;
+                foreach (var detail in dto.eventDetailPriceHistoryRequests)
+                {
+                    var history = await eventDetailPriceRepository!.GetByExpression(d => d.Id == detail.EventDetailPriceHistoryId, d => d.EventDetail);
+                    if (history == null)
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy giá chi tiết sự kiện với id {detail.EventDetailPriceHistoryId}");
+                        return result;
+                    }
+                    quantity = history.EventDetail.PerPerson ? detail.Quantity : 1;
+                    if(quantity < 1)
+                    {
+                        result = BuildAppActionResultError(result, $"Số lượng sử dụng dịch vụ {history.EventDetail.Name} phải lớn hơn 0");
+                        return result;
+                    }
+                    response.eventDetailPriceHistoryResponses.Add(new EventDetailPriceHistoryResponse
+                    {
+                        EventDetailPriceHistoryId = detail.EventDetailPriceHistoryId,
+                        Name = history.EventDetail.Name,
+                        Quantity = quantity,
+                        Price = history.Price,
+                        Total = quantity * history.Price
+                    });
+                    response.Total += history.Price * quantity;
+                }
+                result.Result = JsonConvert.SerializeObject(response);
+            }catch(Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> DeserializeCustomEventString(string json)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                result.Result = JsonConvert.DeserializeObject<CustomEventStringResponse>(json);               
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
         public async Task<AppActionResult> GetEventListWithQuantity(int quantity)
         {
             AppActionResult result = new AppActionResult();
@@ -58,6 +125,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         {
                             eventDetailReponses.Add(new EventDetailReponse
                             {
+                                HistoryPriceId = detail.Id,
                                 Name = detail.EventDetail.Name,
                                 PerPerson = detail.EventDetail.PerPerson,
                                 Price = detail.Price,
