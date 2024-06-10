@@ -1675,6 +1675,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         //var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
         try
         {
+            var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
+            var roomQuantityDetailRepository = Resolve<IRepository<FamilyDetailRequest>>();
             var accountRepository = Resolve<IRepository<Account>>();
             var accounttDb = await accountRepository!.GetByExpression(a => a.Id == id, null);
             if (accounttDb == null)
@@ -1683,7 +1685,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 return result;
             }
 
-            var privateTourRequestDb = await _repository.GetAllDataByExpression(p => p.CreateBy == id, 0, 0, null, false, p => p.CreateByAccount);
+            var privateTourRequestDb = await _repository.GetAllDataByExpression(p => p.CreateBy == id, 0, 0, null, false, p => p.Tour, p => p.CreateByAccount!, p => p.Province!, p => p.HotelFacilityRating, p => p.RestaurantFacilityRating, p => p.Tour, p => p.Commune.District.Province);
             //data.PrivateTourResponse = _mapper.Map<PrivateTourResponseDto>(privateTourRequestDb);
             //var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
             //var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
@@ -1721,7 +1723,17 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             //{
             //    data.PrivateTourResponse.OtherLocation = list.Items;
             //}
-            result.Result = privateTourRequestDb;
+            var responseList = _mapper.Map<PagedResult<PrivateTourResponseDto>>(privateTourRequestDb);
+            foreach (var item in responseList.Items!)
+            {
+                var requestLocationDb = await requestLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, null, false, r => r.Province!);
+                item.OtherLocation = requestLocationDb.Items;
+
+                var roomQuantityDetailDb = await roomQuantityDetailRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, null, false, null);
+                item.RoomDetails = roomQuantityDetailDb.Items;
+            }
+            result.Result = responseList;
+
         }
         catch (Exception e)
         {
