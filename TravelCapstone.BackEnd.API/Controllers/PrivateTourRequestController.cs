@@ -81,4 +81,10 @@ public class PrivateTourRequestController : Controller
     {
         return await _service.GetProvinceOfOption(optionId);
     }
+
+    [HttpPost("calculate-options-cost")]
+    public async Task<AppActionResult> CalculateOptionsCost([FromBody] CreateOptionsPrivateTourDto request)
+    {
+        return await _service.CalculateOptionsCost(request);
+    }
 }
