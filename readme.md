@@ -35,7 +35,7 @@ The Travel Project is a tour management system that provides essential functiona
 - [KhangPhamBM](https://github.com/KhangPhamBM)
 
 **Front End**:
-- [chau-ngoc-tram](https://github.com/ChauNgocTram)
+- [duong-hong-quan](https://github.com/duong-hong-quan)
 - [bich-phuong](https://github.com/phuong1304)
 ## Contact
 For any questions or contributions, please contact:
