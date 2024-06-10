@@ -469,7 +469,7 @@ public class TourService : GenericBackendService, ITourService
                 result = BuildAppActionResultError(result, $"Giá của kế hoạch chi tiết cho tour với id {tourId} không tồn tại");
                 return result;
             }
-            var tourguideAssignmentDb = await tourguideAssignmentRepository!.GetAllDataByExpression(p => p.TourId == tourId, 0, 0, null, false, p => p.Account!, p => p.Province!, p => p.TourId!);
+            var tourguideAssignmentDb = await tourguideAssignmentRepository!.GetAllDataByExpression(p => p.TourId == tourId, 0, 0, null, false, p => p.Account!, p => p.Province!, p => p.Tour!);
             if (tourguideAssignmentDb.Items == null && tourguideAssignmentDb.Items!.Count <= 0)
             {
                 result = BuildAppActionResultError(result, $"Hướng dẫn viên cho tour với ${tourId} không tìm thấy");
