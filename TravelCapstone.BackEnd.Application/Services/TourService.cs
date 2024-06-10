@@ -126,7 +126,7 @@ public class TourService : GenericBackendService, ITourService
                     var travelCompanion = _mapper.Map<Customer>(dto);
                     travelCompanion.Id = id;
                     await customerRepository.Insert(travelCompanion);
-                    await smsService!.SendMessage(code);
+                    await smsService!.SendMessage(code,dto.PhoneNumber);
                     await _unitOfWork.SaveChangesAsync();
                 }
                 else
