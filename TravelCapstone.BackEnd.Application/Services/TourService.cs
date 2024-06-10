@@ -495,7 +495,7 @@ public class TourService : GenericBackendService, ITourService
             }
 
                 var groupedAndSortedRoutes = routeDb.Items
-            .GroupBy(r => r.StartPoint!.Communce!.District!.Province!)
+            .GroupBy(r => r.EndPoint!.Communce!.District!.Province!)
             .SelectMany(g => g.OrderBy(r => r.StartTime))
             .ToList();
 

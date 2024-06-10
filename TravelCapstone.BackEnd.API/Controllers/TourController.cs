@@ -42,4 +42,6 @@ public class TourController : ControllerBase
     {
         return await _service.GetPlanByTour(tourId);    
     }
+
+    
 }
