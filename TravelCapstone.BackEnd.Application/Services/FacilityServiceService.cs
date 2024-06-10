@@ -439,5 +439,19 @@ namespace TravelCapstone.BackEnd.Application.Services
             }
             return result;
         }
+
+        public async Task<AppActionResult> GetRestaurantRating(Guid Id)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var facilytiServiceRepository = Resolve<IRepository<FacilityService>>();
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, $"Co loi xay ra {ex.Message}");
+            }
+            return result;
+        }
     }
 }
