@@ -461,9 +461,15 @@ public class TourService : GenericBackendService, ITourService
             }
             var planCostDetailsDb = await planCostDetailRepository!.GetAllDataByExpression
                 (p => p.TourId == tourId, 0, 0, null, false,
+                p => p.ReferenceTransportPrice!.Arrival!.Commune!.District!.Province!,
+                p => p.ReferenceTransportPrice!.Departure!.Commune!.District!.Province!,
                 p => p.ReferenceTransportPrice!.ReferencePriceRating!,
                 p => p.SellPriceHistory!.FacilityService!.Facility!.FacilityRating!,
-                p => p.MaterialPriceHistory!);
+                p => p.SellPriceHistory!.Menu!.FacilityService!.Facility!.FacilityRating!,
+                  p => p.SellPriceHistory!.TransportServiceDetail!.FacilityService!.Facility!.FacilityRating!,
+                p => p.MaterialPriceHistory!.Material!,
+                p => p.Tour!
+                );
             if (planCostDetailsDb.Items == null && planCostDetailsDb.Items!.Count <= 0)
             {
                 result = BuildAppActionResultError(result, $"Giá của kế hoạch chi tiết cho tour với id {tourId} không tồn tại");
@@ -478,23 +484,31 @@ public class TourService : GenericBackendService, ITourService
 
             var routeDb = await routeRepository!.GetAllDataByExpression(
              p => p.DayPlan!.TourId == tourId, 0, 0, null, false,
-             p => p.DayPlan!, p => p.StartPoint!, p => p.EndPoint!,
-             p => p.PortStartPoint!, p => p.PortEndPoint!, p => p.StartPoint!, p => p.EndPoint!);
+             p => p.DayPlan!.Tour!, p => p.StartPoint!.FacilityRating!.Rating!, p => p.EndPoint!.FacilityRating!.Rating!,
+             p => p.StartPoint!.Communce!.District!.Province!,
+             p => p.EndPoint!.Communce!.District!.Province!,
+             p => p.PortStartPoint!.Commune!.District!.Province!, p => p.PortEndPoint!.Commune!.District!.Province!, p => p.ParentRoute!);
             if (routeDb.Items == null || routeDb.Items!.Count <= 0)
             {
                 result = BuildAppActionResultError(result, $"Lộ trình cho tour với id {tourId} không tìm thấy");
                 return result;
             }
 
-            var groupedAndSortedRoutes = routeDb.Items
-            .GroupBy(r => r.StartPoint)
+                var groupedAndSortedRoutes = routeDb.Items
+            .GroupBy(r => r.StartPoint!.Communce!.District!.Province!)
             .SelectMany(g => g.OrderBy(r => r.StartTime))
             .ToList();
 
             var routeIds = groupedAndSortedRoutes.Select(r => r.Id).ToList();
             var vehicleRouteDb = await vehicleRouteRepository!.GetAllDataByExpression(
                 p => routeIds.Contains(p.RouteId), 0, 0, null, false,
-                p => p.Route!, p => p.Vehicle!, p => p.Driver!);
+                p => p.Route!.StartPoint!.Communce!.District!.Province!, p => p.Vehicle!.VehicleType!,
+                p => p.Driver!, 
+                p => p.Route!.EndPoint!.Communce!.District!.Province!,
+                p => p.Route!.PortStartPoint!.Commune!.District!.Province!,
+                p => p.Route!.PortStartPoint!.Commune!.District!.Province!,
+                p => p.Route!.ParentRoute!
+                );
             if (vehicleRouteDb.Items == null || vehicleRouteDb.Items!.Count <= 0)
             {
                 result = BuildAppActionResultError(result, $"Các tuyến đường cho phương tiện liên quan đến tour với id {tourId} không tìm thấy");
