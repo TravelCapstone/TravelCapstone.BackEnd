@@ -486,7 +486,12 @@ public class TourService : GenericBackendService, ITourService
                 return result;
             }
 
-            var routeIds = routeDb.Items.Select(r => r.Id).ToList();
+            var groupedAndSortedRoutes = routeDb.Items
+            .GroupBy(r => r.StartPoint)
+            .SelectMany(g => g.OrderBy(r => r.StartTime))
+            .ToList();
+
+            var routeIds = groupedAndSortedRoutes.Select(r => r.Id).ToList();
             var vehicleRouteDb = await vehicleRouteRepository!.GetAllDataByExpression(
                 p => routeIds.Contains(p.RouteId), 0, 0, null, false,
                 p => p.Route!, p => p.Vehicle!, p => p.Driver!);
@@ -497,7 +502,7 @@ public class TourService : GenericBackendService, ITourService
             }
 
             var materialDb = await materialAssignmentRepository!.GetAllDataByExpression(p => p.TourId == tourId, 0, 0, null, false, p => p.Tour!, p => p.MaterialPriceHistory!.Material!);
-            if (materialDb.Items == null && materialDb.Items.Count <= 0)
+            if (materialDb.Items == null && materialDb.Items!.Count <= 0)
             {
                 result = BuildAppActionResultError(result, $"Các vật phẩm đi cùng tour với id {tourId} không tìm thấy");
                 return result;
@@ -506,7 +511,7 @@ public class TourService : GenericBackendService, ITourService
             tourPlanResponse.PlanServiceCostDetails = planCostDetailsDb.Items;
             tourPlanResponse.DayPlans = dayPlanDb.Items;
             tourPlanResponse.TourguideAssignments = tourguideAssignmentDb.Items;
-            tourPlanResponse.Routes = routeDb.Items;
+            tourPlanResponse.Routes = groupedAndSortedRoutes;
             tourPlanResponse.VehicleRoutes = vehicleRouteDb.Items;
             tourPlanResponse.MaterialAssignments = materialDb.Items;
 
