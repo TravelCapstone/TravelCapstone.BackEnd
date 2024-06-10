@@ -12,5 +12,5 @@ public interface ITourService
     Task<AppActionResult> RegisterTour(TourRegistrationDto dto);
     Task<AppActionResult> CreateTour(CreatePlanDetailDto dto);
     Task<AppActionResult> GetPlanByTour(Guid tourId);
-    Task<AppActionResult> UpdateOptionStatus(Guid optionId);    
+    Task<AppActionResult> UpdateOptionQuotationStatus(Guid optionId);    
 }

@@ -42,6 +42,11 @@ public class TourController : ControllerBase
     {
         return await _service.GetPlanByTour(tourId);    
     }
+    [HttpPut("update-option-quotation-status")]
+    public async Task<AppActionResult> UpdateOptionQuotationStatus(Guid optionId)
+    {
+        return await _service.UpdateOptionQuotationStatus(optionId);
+    }
 
-    
+
 }

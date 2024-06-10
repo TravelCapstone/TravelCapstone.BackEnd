@@ -542,7 +542,7 @@ public class TourService : GenericBackendService, ITourService
         return result;
     }
 
-    public async Task<AppActionResult> UpdateOptionStatus(Guid optionId)
+    public async Task<AppActionResult> UpdateOptionQuotationStatus(Guid optionId)
     {
         AppActionResult result = new AppActionResult();
         try
