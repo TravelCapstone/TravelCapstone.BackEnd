@@ -439,5 +439,29 @@ namespace TravelCapstone.BackEnd.Application.Services
             }
             return result;
         }
+
+        public async Task<AppActionResult> GetRestaurantRating(Guid Id)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var facilityServiceDb = await _repository.GetAllDataByExpression(p => p.Id == Id && p.ServiceTypeId == ServiceType.FOODANDBEVARAGE, 0 , 0, null, false,
+                    p => p.Facility!.FacilityRating!,
+                    p => p.Facility!.Communce!.District!.Province!,
+                    p => p.Facility!.ServiceProvider!
+                    , p => p.ServiceAvailability!, p =>  p.ServiceType!);
+                if (facilityServiceDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Nhà hàng với id {Id} không tìm thấy");
+                    return result;
+                }
+                result.Result = facilityServiceDb;
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, $"Co loi xay ra {ex.Message}");
+            }
+            return result;
+        }
     }
 }

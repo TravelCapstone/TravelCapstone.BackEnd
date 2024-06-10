@@ -36,4 +36,12 @@ public class TourController : ControllerBase
     {
         return await _service.CreateTour(dto);
     }
+
+    [HttpGet("get-plan-by-tour/{tourId}")]
+    public async Task<AppActionResult> GetPlanByTour(Guid tourId)
+    {
+        return await _service.GetPlanByTour(tourId);    
+    }
+
+    
 }

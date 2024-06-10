@@ -12,5 +12,6 @@ namespace TravelCapstone.BackEnd.Application.IServices {
         Task<AppActionResult> GetServiceByFacilityId(Guid Id, int pageNumber, int pageSize);
         Task<AppActionResult> GetListServiceForPlan(Guid privateTourRequestId, Guid quotationDetailId, int pageNumber, int pageSize);
         Task<AppActionResult> GetAllFacilityRating();
+        Task<AppActionResult> GetRestaurantRating(Guid Id);
     }
 }
