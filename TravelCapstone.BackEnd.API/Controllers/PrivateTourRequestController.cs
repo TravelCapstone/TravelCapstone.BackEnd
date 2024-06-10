@@ -42,7 +42,7 @@ public class PrivateTourRequestController : Controller
     }
 
     [HttpGet("get-private-tour-request-by-id-for-customer/{id}/{pageNumber:int}/{pageSize:int}")]
-    public async Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(string id, int pageNumber, int pageSize)
+    public async Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(string id, int pageNumber = 1, int pageSize = 10)
     {
         return await _service.GetPrivateTourRequestByIdForCustomer(id, pageNumber, pageSize);
     }
@@ -80,5 +80,11 @@ public class PrivateTourRequestController : Controller
     public async Task<AppActionResult> GetProvinceOfOption(Guid optionId)
     {
         return await _service.GetProvinceOfOption(optionId);
+    }
+
+    [HttpPost("calculate-options-cost")]
+    public async Task<AppActionResult> CalculateOptionsCost([FromBody] CreateOptionsPrivateTourDto request)
+    {
+        return await _service.CalculateOptionsCost(request);
     }
 }

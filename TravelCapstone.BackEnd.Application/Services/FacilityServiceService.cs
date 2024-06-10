@@ -445,7 +445,17 @@ namespace TravelCapstone.BackEnd.Application.Services
             AppActionResult result = new AppActionResult();
             try
             {
-                var facilytiServiceRepository = Resolve<IRepository<FacilityService>>();
+                var facilityServiceDb = await _repository.GetAllDataByExpression(p => p.Id == Id && p.ServiceTypeId == ServiceType.FOODANDBEVARAGE, 0 , 0, null, false,
+                    p => p.Facility!.FacilityRating!,
+                    p => p.Facility!.Communce!.District!.Province!,
+                    p => p.Facility!.ServiceProvider!
+                    , p => p.ServiceAvailability!, p =>  p.ServiceType!);
+                if (facilityServiceDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Nhà hàng với id {Id} không tìm thấy");
+                    return result;
+                }
+                result.Result = facilityServiceDb;
             }
             catch (Exception ex)
             {
