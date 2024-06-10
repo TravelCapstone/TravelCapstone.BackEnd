@@ -35,76 +35,50 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var roleRepository = Resolve<IRepository<IdentityRole>>();
                 var userRolesRepository = Resolve<IRepository<IdentityUserRole<string>>>();
                 var tourGuideScope = Resolve<IRepository<TourguideScope>>();
+                var tourGuideSalaryHistoryRepository = Resolve<IRepository<TourGuideSalaryHistory>>();
                 var tourGuideList = new List<Account>();
-                var provinceDb = await provinceRepository!.GetById(provinceId);
-                if (provinceDb == null)
+
+                //get tourguide hoạt động trong province đó
+                // get hoạt động assign của các tour guide đó
+                // trả mấy ní rảnh
+                var tourGuideScopeDb = await tourGuideScope!.GetAllDataByExpression(t => t.District.ProvinceId == provinceId, 0, 0, null, false, t => t.Account);
+                var tourGuides = tourGuideScopeDb.Items!.DistinctBy(t => t.AccountId).Select(t => t.Account);
+                var tourAssignmentRepository = Resolve<IRepository<TourguideAssignment>>(); //a < d && b > c
+                var tourAssignmentDb = await tourAssignmentRepository!.GetAllDataByExpression(t => t.Tour.StartDate.Date <= endDate.Date && t.Tour.EndDate.Date >= startDate.Date, 0, 0, null, false, null);
+                if(tourAssignmentDb.Items != null && tourAssignmentDb.Items.Count > 0)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy thông tin địa điểm bắt đầu với id {provinceId}");
-                    return result;
+                    var busyTourGuide = tourAssignmentDb.Items.DistinctBy(a => a.AccountId).Select(a  => a.AccountId);
+                    tourGuides = tourGuides.Where(t => !busyTourGuide.Contains(t.Id));
                 }
-                var provinceList = await provinceRepository.GetAllDataByExpression(null, 0, 0, null, false, null);
-                if (provinceList.Items != null && provinceList.Items.Count > 0)
+
+                List<TourGuideSalaryHistory> tourGuideSalaryHistories = new List<TourGuideSalaryHistory>();
+                foreach(var tourGuide in tourGuides)
                 {
-                    double shortestDistance = double.MaxValue;
-                    List<Province> closestProvinces = new List<Province>();
-
-                    foreach (var item in provinceList.Items)
+                    var tourGuideSalaryHistoryDb = await tourGuideSalaryHistoryRepository!.GetAllDataByExpression(t => t.AccountId == tourGuide!.Id, 0,0, null, false, t => t.Account!);
+                    if(tourGuideSalaryHistoryDb.Items != null && tourGuideSalaryHistoryDb.Items.Count > 0)
                     {
-                        double distance = CalculateDistance(provinceDb.lat, provinceDb.lng, item.lat, item.lng);
-                        if (distance < shortestDistance)
-                        {
-                            shortestDistance = distance;
-                            closestProvinces.Add(item);
-                        }
-                    }
-                    var closestProvinceIds = closestProvinces.Select(p => p.Id).ToList();
-                    closestProvinceIds.Add(provinceId);
-                    var tourtourGuideAssignmentRepository = Resolve<IRepository<TourguideAssignment>>();
-
-                    foreach (var id in closestProvinceIds)
-                    {
-                        var tourguideAssignmentList = await tourtourGuideAssignmentRepository!.GetAllDataByExpression(
-                            p => p.ProvinceId == provinceId && (p.Tour!.EndDate >= startDate || p.Tour.StartDate <= endDate),
-                            0, 0, null, true, p => p.Account!, p => p.Province!
-                        );
-
-                        if (tourguideAssignmentList.Items != null && tourguideAssignmentList.Items.Count > 0)
-                        {
-                            var assignedTourguide = tourguideAssignmentList!.Items!.Select(p => p.AccountId).ToList();
-                            var anotherTourguideInProvince = await tourGuideScope!.GetAllDataByExpression(p => !assignedTourguide.Contains(p.AccountId) && p.District!.ProvinceId == id, 0, 0, null, false, null);
-
-                            var anotherTourguideInProvinceIds = anotherTourguideInProvince!.Items!.Select(p => p.AccountId).ToList();
-
-                            // Get tour guide role ID
-                            var tourGuideRole = await roleRepository!.GetAllDataByExpression(r => r.Name == "TOUR GUIDE", 0, 0, null, true, null);
-                            var tourGuideRoleId = tourGuideRole!.Items!.FirstOrDefault()?.Id;
-                            // Get all user roles
-                            var userRoles = await userRolesRepository!.GetAllDataByExpression(ur => ur.RoleId == tourGuideRoleId && anotherTourguideInProvinceIds.Contains(ur.UserId), 0, 0, null, true, null);
-                            var availableTourGuideIds = userRoles.Items!.Select(ur => ur.UserId).ToList();
-
-                            var tourguideDb = await accountRepository!.GetByExpression(
-                                p => availableTourGuideIds.Contains(p.Id)
-                            );
-                            if (tourguideDb != null)
-                            {
-                                tourGuideList.Add(tourguideDb);
-                            }
-                            // Assuming you need to process or return tourguideDb, do it here.
-
-                            result.Result = new PagedResult<Account>
-                            {
-                                Items = tourGuideList,
-                                TotalPages = anotherTourguideInProvince.TotalPages,
-                            };
-                        }
+                        tourGuideSalaryHistories.Add(tourGuideSalaryHistoryDb.Items.OrderByDescending(t => t.Date).FirstOrDefault()!);
                     }
                 }
+                    result.Result = new PagedResult<TourGuideSalaryHistory>
+                    {
+                        Items = tourGuideSalaryHistories.ToList()!,
+                        TotalPages = (tourGuideSalaryHistories.Count() % pageSize == 0) ? tourGuideSalaryHistories.Count() / pageSize : tourGuideSalaryHistories.Count() / pageSize + 1
+                    };
+
+
             }
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
             }
             return result;
+        }
+
+        private bool CheckVar(DateTime a, DateTime b, DateTime c, DateTime d)
+        {
+            bool res = a <= d && b >= c;
+            return res;
         }
 
         private double CalculateDistance(double? lat1, double? lon1, double? lat2, double? lon2)

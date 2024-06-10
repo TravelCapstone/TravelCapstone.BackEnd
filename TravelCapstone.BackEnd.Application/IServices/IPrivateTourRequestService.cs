@@ -12,8 +12,8 @@ public interface IPrivateTourRequestService
 
     Task<AppActionResult> GetAllPrivateTourRequest(int pageNumber, int pageSize);
 
-    Task<AppActionResult> GetPrivateTourRequestById(Guid id); 
-    Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(Guid id);
+    Task<AppActionResult> GetPrivateTourRequestById(Guid id);
+    Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(string id, int pageNumber, int pageSize);
 
     Task<AppActionResult> CreateOptionsPrivateTour(CreateOptionsPrivateTourDto dto);
 
@@ -23,5 +23,6 @@ public interface IPrivateTourRequestService
    Task<IActionResult> GetExcelQuotation(Guid privateTourRequestId);
 
     Task<AppActionResult> GetRoomSuggestion(RoomSuggestionRequest dto);
+    Task<AppActionResult> GetProvinceOfOption(Guid optionId);
 
 }

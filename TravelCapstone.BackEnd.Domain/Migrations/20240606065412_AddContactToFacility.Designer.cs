@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240606065412_AddContactToFacility")]
+    partial class AddContactToFacility
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -543,6 +545,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1081,11 +1087,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         {
                             Id = 3,
                             Name = "REJECTED"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "PLANCREATED"
                         });
                 });
 
@@ -2469,6 +2470,9 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
@@ -2674,14 +2678,8 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<Guid>("ProvinceId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<double>("TourGuideSalary")
                         .HasColumnType("float");
@@ -2927,16 +2925,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<Guid?>("EndPointDistrictId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("EndPointId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("EndPortId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("MaxPrice")
@@ -2954,16 +2946,10 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<Guid>("OptionQuotationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<Guid?>("StartPointDistrictId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("StartPointId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("StartPortId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("VehicleType")
@@ -2975,15 +2961,11 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
 
                     b.HasIndex("EndPointId");
 
-                    b.HasIndex("EndPortId");
-
                     b.HasIndex("OptionQuotationId");
 
                     b.HasIndex("StartPointDistrictId");
 
                     b.HasIndex("StartPointId");
-
-                    b.HasIndex("StartPortId");
 
                     b.ToTable("VehicleQuotationDetails");
                 });
@@ -4060,10 +4042,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .WithMany()
                         .HasForeignKey("EndPointId");
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Port", "EndPort")
-                        .WithMany()
-                        .HasForeignKey("EndPortId");
-
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.OptionQuotation", "OptionQuotation")
                         .WithMany()
                         .HasForeignKey("OptionQuotationId")
@@ -4080,23 +4058,15 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Port", "StartPort")
-                        .WithMany()
-                        .HasForeignKey("StartPortId");
-
                     b.Navigation("EndPoint");
 
                     b.Navigation("EndPointDistrict");
-
-                    b.Navigation("EndPort");
 
                     b.Navigation("OptionQuotation");
 
                     b.Navigation("StartPoint");
 
                     b.Navigation("StartPointDistrict");
-
-                    b.Navigation("StartPort");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.VehicleRoute", b =>

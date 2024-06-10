@@ -25,7 +25,6 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
     public class DayPlanRoute
     {
         public DateTime Date { get; set; }
-        public string? Name { get; set; }
         public string? Description { get; set; }
         public List<DetailDayPlanRoute> DetailDayPlanRoutes { get; set; } = new List<DetailDayPlanRoute>();
     }
@@ -34,12 +33,9 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
     {
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public string Name { get; set; } = null!;
         public string? Note {  get; set; }
-        public Guid? StartFacilityId { get; set; }
-        public Guid? StartPortId { get; set; }
-        public Guid? EndFacilityId { get; set; }
-        public Guid? EndPortId { get; set; }
+        public Guid? StartId { get; set; }
+        public Guid? EndId { get; set; }
     }
 
     public class Tourguide
@@ -47,6 +43,8 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public string TourguideId { get; set; } = null!;
         public Guid ProvinceId { get; set; }
         public Guid? DistrictId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }   
     }
 
     public class PlanLocation
@@ -54,7 +52,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public Guid SellPriceHistoryId { get; set; }
         //public Domain.Enum.ServiceType ServiceType { get; set; }
         public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public int NumOfServiceUse { get; set; }
     }
 
@@ -66,7 +64,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
         public Guid? EndPoint { get; set; }
         public Guid? PortStartPoint { get; set; }
         public Guid? PortEndPoint { get; set; }
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public Guid? DriverId { get; set; }
         public Guid? SellPriceHistoryId { get; set; }
