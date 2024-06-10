@@ -23,7 +23,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var apiResponsse = MessageResource.Create(
                    body: $"{message}",
                    from: new Twilio.Types.PhoneNumber("+1 443 333 1958"),
-                   to: new Twilio.Types.PhoneNumber("+84366967957") 
+                   to: new Twilio.Types.PhoneNumber($"+84{phoneNumber}") 
                );
 
                 result.Result = apiResponsse.Status;

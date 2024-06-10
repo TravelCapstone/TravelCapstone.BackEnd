@@ -542,4 +542,35 @@ public class TourService : GenericBackendService, ITourService
         return result;
     }
 
+    public async Task<AppActionResult> UpdateOptionQuotationStatus(Guid optionId)
+    {
+        AppActionResult result = new AppActionResult();
+        try
+        {
+            var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
+            var optionQuotationDb = await optionQuotationRepository!.GetByExpression(p => p.Id == optionId);
+            if (optionQuotationDb == null)
+            {
+                result = BuildAppActionResultError(result, $"Option với Id {optionId} không tồn tại");
+            }
+            else
+            {
+                if (optionQuotationDb.OptionQuotationStatusId == OptionQuotationStatus.NEW)
+                {
+                    optionQuotationDb.OptionQuotationStatusId = OptionQuotationStatus.ACTIVE;
+                }
+                else
+                {
+                    optionQuotationDb.OptionQuotationStatusId = OptionQuotationStatus.IN_ACTIVE;
+                }
+                await _unitOfWork.SaveChangesAsync();
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, $"Co loi xay ra {ex.Message}");
+        }
+        return result;
+    }
 }
