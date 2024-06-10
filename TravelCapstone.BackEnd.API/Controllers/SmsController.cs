@@ -15,9 +15,9 @@ namespace TravelCapstone.BackEnd.API.Controllers
             _service = service;
         }
         [HttpPost]
-        public async Task<AppActionResult> Post([FromBody] string body)
+        public async Task<AppActionResult> Post([FromBody] string body, string phoneNumber)
         {
-            return await _service.SendMessage(body);
+            return await _service.SendMessage(body,phoneNumber);
         }
     }
 }
