@@ -30,7 +30,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AppActionResult> GetServicePriceRangeByDistrictIdAndRequestId(Guid Id, Guid requestId, int pageNumber, int pageSize)
+        public async Task<AppActionResult> GetServicePriceRangeByDistrictIdAndRequestId(Guid Id, Guid requestId, int pageNumber, int pageSize, bool hotel = true, bool restaurant = true, bool entertainment = true)
         {
             AppActionResult result = new AppActionResult();
             try
@@ -70,12 +70,21 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                 if (serviceDb.Items != null && serviceDb.Items.Count > 0)
                 {
-                    var hotelPrice = await GetTypePriceReference(Domain.Enum.ServiceType.RESTING, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    var restaurantPrice = await GetMenuTypePriceReference(tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    var entertainmentPrice = await GetTypePriceReference(Domain.Enum.ServiceType.ENTERTAIMENT, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    data.HotelPrice = hotelPrice;
-                    data.RestaurantPrice = restaurantPrice;
-                    data.EntertainmentPrice = entertainmentPrice;
+                    if (hotel)
+                    {
+                        var hotelPrice = await GetTypePriceReference(Domain.Enum.ServiceType.RESTING, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+                        data.HotelPrice = hotelPrice;
+                    }
+                    if (restaurant)
+                    {
+                        var restaurantPrice = await GetMenuTypePriceReference(tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+                        data.RestaurantPrice = restaurantPrice;
+                    }
+                    if (entertainment)
+                    {
+                        var entertainmentPrice = await GetTypePriceReference(Domain.Enum.ServiceType.ENTERTAIMENT, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+                        data.EntertainmentPrice = entertainmentPrice;
+                    }
                 }
 
                 result.Result = data;
