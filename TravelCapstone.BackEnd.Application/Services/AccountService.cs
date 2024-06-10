@@ -982,4 +982,28 @@ public class AccountService : GenericBackendService, IAccountService
 
         return result;
     }
+    public async Task<AppActionResult> GenerateOTP(string phoneNumber)
+    {
+        AppActionResult result = new AppActionResult();
+         var    code = Guid.NewGuid().ToString("N").Substring(0, 6);
+        var smsService = Resolve<ISmsService>();
+        var response = await smsService!.SendMessage($"Mã xác thực tại hệ thống Cóc Travel của bạn là {smsService}",
+            phoneNumber);
+
+        if (response.IsSuccess)
+        {
+            result.Result = code;
+        }
+        else
+        {
+            foreach (var error in response.Messages)
+            {
+                result.Messages.Add(error);
+            }
+        }
+
+
+        return result;
+    }
+
 }
