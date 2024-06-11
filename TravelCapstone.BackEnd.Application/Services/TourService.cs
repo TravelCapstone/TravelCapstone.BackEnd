@@ -427,6 +427,7 @@ public class TourService : GenericBackendService, ITourService
                 tour.PricePerChild = !dto.PricePerChildren.HasValue ? 0 : (double)dto.PricePerChildren;
                 await privateTourRequestRepository.Update(privateTourRequestDb);
                 await _repository.Insert(tour);
+                await planDetailRepository!.InsertRange(planServiceCostDetails);
                 await dayPlanRepository!.InsertRange(dayPlans);
                 await routeRepository!.InsertRange(routes);
                 await vehicleRouteRepository!.InsertRange(vehicleRoutes);
