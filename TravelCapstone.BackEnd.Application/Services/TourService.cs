@@ -470,8 +470,7 @@ public class TourService : GenericBackendService, ITourService
                 p => p.ReferenceTransportPrice!.ReferencePriceRating!,
                 p => p.SellPriceHistory!.FacilityService!.Facility!.FacilityRating!,
                 p => p.SellPriceHistory!.Menu!.FacilityService!.Facility!.FacilityRating!,
-                p => p.SellPriceHistory!.TransportServiceDetail!.FacilityService!.Facility!.FacilityRating!,
-                p => p.MaterialPriceHistory!.Material!
+                p => p.SellPriceHistory!.TransportServiceDetail!.FacilityService!.Facility!.FacilityRating!
             );
             if (planCostDetailsDb.Items == null || planCostDetailsDb.Items!.Count <= 0)
             {
