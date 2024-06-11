@@ -1,5 +1,6 @@
 using AutoMapper;
 using Hangfire.Logging.LogProviders;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Transactions;
 using TravelCapstone.BackEnd.Application.IRepositories;
@@ -9,6 +10,7 @@ using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Common.Utils;
 using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace TravelCapstone.BackEnd.Application.Services;
 
@@ -415,6 +417,13 @@ public class TourService : GenericBackendService, ITourService
                     }
                 }
                 privateTourRequestDb.PrivateTourStatusId = PrivateTourStatus.PLANCREATED;
+                tour.ContingencyFee = optionDb.ContingencyFee;
+                tour.OperatingFee = optionDb.OperatingFee;
+                tour.OrganizationCost = optionDb.OrganizationCost;
+                tour.EscortFee = optionDb.EscortFee;
+                tour.TotalPrice = (double)dto.Total;
+                tour.PricePerAdult = (double)dto.PricePerAdult;
+                tour.PricePerChild = (double)dto.PricePerChildren;
                 await privateTourRequestRepository.Update(privateTourRequestDb);
                 await _repository.Insert(tour);
                 await dayPlanRepository!.InsertRange(dayPlans);
@@ -573,8 +582,133 @@ public class TourService : GenericBackendService, ITourService
         return result;
     }
 
-    public Task<AppActionResult> CalculatePlanCost(Guid optionId)
+    public async Task<AppActionResult> CalculatePlanCost(CreatePlanDetailDto dto)
     {
-        throw new NotImplementedException();
+        var result = new AppActionResult();
+
+        try
+        {
+            var data = new PlanCostResponse();
+
+            // Resolve repositories
+            var privateTourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
+            var tourGuideSalaryHistoryRepository = Resolve<IRepository<TourGuideSalaryHistory>>();
+            var optionRepository = Resolve<IRepository<OptionQuotation>>();
+            var assurancePriceRepository = Resolve<IRepository<AssurancePriceHistory>>();
+            var optionEventRepository = Resolve<IRepository<OptionEvent>>();
+            var sellPriceHistoyRepository = Resolve<IRepository<SellPriceHistory>>();
+            var referencePriceRepository = Resolve<IRepository<ReferenceTransportPrice>>();
+            var driverSalaryHistoryRepository = Resolve<IRepository<DriverSalaryHistory>>();
+            var materialService = Resolve<IMaterialService>();
+
+            // Get private tour request
+            var privateTourRequestDb = await privateTourRequestRepository.GetById(dto.privateTourRequestId);
+            if (privateTourRequestDb == null)
+            {
+                return BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour với {dto.privateTourRequestId}");
+            }
+
+            // Get active option quotation
+            var optionDb = await optionRepository.GetByExpression(o => o.PrivateTourRequestId == dto.privateTourRequestId && o.OptionQuotationStatusId == Domain.Enum.OptionQuotationStatus.ACTIVE);
+            if (optionDb == null)
+            {
+                return BuildAppActionResultError(result, "Không tìm thấy lựa chọn đã được duyệt từ yêu cầu tạo tour");
+            }
+
+            // Populate data from option quotation
+            data.EscortFee = optionDb.EscortFee;
+            data.OperatingFee = optionDb.OperatingFee;
+            data.OrganizationCost = optionDb.OrganizationCost;
+            data.ContingencyFee = optionDb.ContingencyFee;
+
+            // Get assurance price history
+            var assurancePriceDb = await assurancePriceRepository.GetById(optionDb.AssurancePriceHistoryId);
+            if (assurancePriceDb != null)
+            {
+                data.AssuranceCost = assurancePriceDb.Price * (privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren);
+            }
+
+            // Get events for the option
+            var events = await optionEventRepository.GetAllDataByExpression(o => o.OptionId == optionDb.Id, 0, 0, null, false, null);
+            if (events.Items != null && events.Items.Count > 0)
+            {
+                foreach (var item in events.Items)
+                {
+                    if (!item.CustomEvent.Equals("string"))
+                    {
+                        var latestCost = JsonConvert.DeserializeObject<CustomEventStringResponse>(item.CustomEvent);
+                        if (latestCost != null)
+                        {
+                            data.EventCost += latestCost.Total;
+                        }
+                    }
+                }
+            }
+
+            // Calculate tour guide costs
+            foreach (var item in dto.Tourguides)
+            {
+                var tourguideDb = await tourGuideSalaryHistoryRepository.GetByExpression(t => t.AccountId == item.TourguideId, null);
+                if (tourguideDb != null)
+                {
+                    int numOfDays = (int)Math.Ceiling((item.EndDate - item.StartDate).TotalDays);
+                    numOfDays = numOfDays == 0 ? 1 : numOfDays;
+                    data.TourguideCost += tourguideDb.Salary * numOfDays;
+                }
+            }
+
+            // Calculate material cost
+            var materialCost = await materialService.GetMaterialCost(dto.Material);
+            data.MaterialCost = (double)materialCost.Result;
+
+            // Calculate facility costs
+            foreach (var item in dto.Locations)
+            {
+                int numOfDay = (item.EndDate.HasValue) ? (item.EndDate.Value.Date - item.StartDate.Date).Days : 0;
+                numOfDay = (numOfDay > 0) ? numOfDay : 1;
+                var sellpriceDb = await sellPriceHistoyRepository.GetById(item.SellPriceHistoryId);
+                data.FacilityCost += sellpriceDb.Price * item.NumOfServiceUse * numOfDay;
+            }
+
+            // Calculate vehicle costs
+            foreach (var item in dto.Vehicles)
+            {
+                int numOfDay = (item.EndDate - item.StartDate).Value.Days;
+                numOfDay = numOfDay == 0 ? 1 : numOfDay;
+                if (item.VehicleType == Domain.Enum.VehicleType.PLANE || item.VehicleType == Domain.Enum.VehicleType.BOAT)
+                {
+                    var referencePriceDb = await referencePriceRepository.GetById(item.ReferencePriceId);
+                    data.VehicleCost += referencePriceDb.AdultPrice * privateTourRequestDb.NumOfAdult + referencePriceDb.ChildPrice * privateTourRequestDb.NumOfChildren;
+                }
+                else
+                {
+                    var sellpriceDb = await sellPriceHistoyRepository.GetByExpression(s => s.Id == item.SellPriceHistoryId, s => s.TransportServiceDetail.FacilityService);
+                    int numOfVehicle = (privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren) / sellpriceDb.TransportServiceDetail.FacilityService.ServingQuantity
+                        + (privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren) % sellpriceDb.TransportServiceDetail.FacilityService.ServingQuantity == 0 ? 0 : 1;
+                    data.VehicleCost += sellpriceDb.Price * numOfVehicle * numOfDay;
+                    var driverSalaryDb = await driverSalaryHistoryRepository.GetAllDataByExpression(d => d.DriverId == item.DriverId, 0, 0, d => d.Date, false, null);
+                    if (driverSalaryDb.Items.Count > 0)
+                    {
+                        data.DriverCost += driverSalaryDb.Items.First().Salary * numOfDay;
+                    }
+                }
+            }
+            data.Total = data.VehicleCost + data.DriverCost + data.FacilityCost +
+                         data.TourguideCost + data.AssuranceCost + data.MaterialCost +
+                         data.EventCost + data.EscortFee + data.OperatingFee +
+                         data.OrganizationCost + data.ContingencyFee;
+            data.PricePerAdult = data.Total / (privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren);
+            data.PricePerChildren = data.Total / (privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren);
+            // Set result data
+            result.Result = data;
+        }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+
+        return result;
     }
+
+
 }

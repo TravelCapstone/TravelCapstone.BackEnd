@@ -12,6 +12,9 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
     public class CreatePlanDetailDto
     {
         public Guid privateTourRequestId { get; set; }
+        public double? Total {  get; set; }
+        public double? PricePerAdult { get; set; }
+        public double? PricePerChildren { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public List<PlanLocation> Locations { get; set; } = new List<PlanLocation>();
@@ -50,7 +53,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
     public class PlanLocation
     {
         public Guid SellPriceHistoryId { get; set; }
-        //public Domain.Enum.ServiceType ServiceType { get; set; }
+        public Domain.Enum.ServiceType ServiceType { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int NumOfServiceUse { get; set; }

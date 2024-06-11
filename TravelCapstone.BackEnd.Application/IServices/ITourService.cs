@@ -13,5 +13,5 @@ public interface ITourService
     Task<AppActionResult> CreateTour(CreatePlanDetailDto dto);
     Task<AppActionResult> GetPlanByTour(Guid tourId);
     Task<AppActionResult> UpdateOptionQuotationStatus(Guid optionId);    
-    Task<AppActionResult> CalculatePlanCost(Guid optionId);
+    Task<AppActionResult> CalculatePlanCost(CreatePlanDetailDto dto);
 }
