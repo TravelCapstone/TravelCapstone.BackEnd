@@ -154,6 +154,7 @@ public class AccountService : GenericBackendService, IAccountService
 
                 var resultCreateRole = await _userManager.AddToRoleAsync(user, "CUSTOMER");
                 if (!resultCreateRole.Succeeded) result = BuildAppActionResultError(result, $"Cấp quyền khách hàng không thành công");
+                var customerAdded = await AddCustomerInformation(user);
             }
         }
         catch (Exception ex)
@@ -162,6 +163,38 @@ public class AccountService : GenericBackendService, IAccountService
         }
 
         return result;
+    }
+
+    private async Task<bool> AddCustomerInformation(Account user)
+    {
+        bool isSuccessful = false;
+        try
+        {
+            var customer = new Customer
+            {
+                Id = Guid.NewGuid(),
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Address = "",
+                Dob = DateTime.MinValue,
+                AccountId = user.Id,
+                IsAdult = true,
+                IsVerfiedPhoneNumber = true,
+                IsVerifiedEmail = true,
+                Gender = user.Gender,
+                Money = 0
+
+            };
+            var customerRepository = Resolve<IRepository<Customer>>();
+            await customerRepository!.Insert(customer);
+            await _unitOfWork.SaveChangesAsync();
+        } catch (Exception ex)
+        {
+            isSuccessful = false;
+        }
+        return isSuccessful;
     }
 
     public async Task<AppActionResult> UpdateAccount(UpdateAccountRequestDto accountRequest)
