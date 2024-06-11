@@ -190,7 +190,8 @@ public class TourService : GenericBackendService, ITourService
 
                 };
 
-
+                await _repository.Insert(tour);
+                await _unitOfWork.SaveChangesAsync();
 
                 //Add tour guide
                 var tourguideAssignmentRepository = Resolve<IRepository<TourguideAssignment>>();
@@ -426,7 +427,7 @@ public class TourService : GenericBackendService, ITourService
                 tour.PricePerAdult = !dto.PricePerAdult.HasValue ? 0 : (double)dto.PricePerAdult;
                 tour.PricePerChild = !dto.PricePerChildren.HasValue ? 0 : (double)dto.PricePerChildren;
                 await privateTourRequestRepository.Update(privateTourRequestDb);
-                await _repository.Insert(tour);
+                await _repository.Update(tour);
                 await planDetailRepository!.InsertRange(planServiceCostDetails);
                 await dayPlanRepository!.InsertRange(dayPlans);
                 await routeRepository!.InsertRange(routes);
