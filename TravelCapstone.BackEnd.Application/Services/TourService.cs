@@ -572,4 +572,9 @@ public class TourService : GenericBackendService, ITourService
         }
         return result;
     }
+
+    public Task<AppActionResult> CalculatePlanCost(Guid optionId)
+    {
+        throw new NotImplementedException();
+    }
 }
