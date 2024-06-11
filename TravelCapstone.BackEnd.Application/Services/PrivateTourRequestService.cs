@@ -1357,6 +1357,10 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             {
                                 int totalVehicle = (int)Math.Ceiling((decimal)((decimal)(privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren) / price.Items[0].TransportServiceDetail.FacilityService!.ServingQuantity));
                                 int totalDays = (vehicle.EndDate - vehicle.StartDate).Days;
+                                if (totalDays <= 0) 
+                                {
+                                totalDays = 1;
+                                }
                                 if (vehicle.OptionClass1 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
                                 {
                                     vehicleQuotationDetails.Add(new VehicleQuotationDetail
