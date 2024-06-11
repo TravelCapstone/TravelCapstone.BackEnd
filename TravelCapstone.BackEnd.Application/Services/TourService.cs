@@ -417,13 +417,14 @@ public class TourService : GenericBackendService, ITourService
                     }
                 }
                 privateTourRequestDb.PrivateTourStatusId = PrivateTourStatus.PLANCREATED;
+                privateTourRequestDb.GeneratedTourId = tour.Id;
                 tour.ContingencyFee = optionDb.ContingencyFee;
                 tour.OperatingFee = optionDb.OperatingFee;
                 tour.OrganizationCost = optionDb.OrganizationCost;
                 tour.EscortFee = optionDb.EscortFee;
-                tour.TotalPrice = (double)dto.Total;
-                tour.PricePerAdult = (double)dto.PricePerAdult;
-                tour.PricePerChild = (double)dto.PricePerChildren;
+                tour.TotalPrice = !dto.Total.HasValue ? 0 : (double)dto.Total;
+                tour.PricePerAdult = !dto.PricePerAdult.HasValue ? 0 : (double)dto.PricePerAdult;
+                tour.PricePerChild = !dto.PricePerChildren.HasValue ? 0 : (double)dto.PricePerChildren;
                 await privateTourRequestRepository.Update(privateTourRequestDb);
                 await _repository.Insert(tour);
                 await dayPlanRepository!.InsertRange(dayPlans);
@@ -599,6 +600,7 @@ public class TourService : GenericBackendService, ITourService
             var sellPriceHistoyRepository = Resolve<IRepository<SellPriceHistory>>();
             var referencePriceRepository = Resolve<IRepository<ReferenceTransportPrice>>();
             var driverSalaryHistoryRepository = Resolve<IRepository<DriverSalaryHistory>>();
+            var eventDetailPriceHistoryRepository = Resolve<IRepository<EventDetailPriceHistory>>();
             var materialService = Resolve<IMaterialService>();
 
             // Get private tour request
@@ -634,12 +636,20 @@ public class TourService : GenericBackendService, ITourService
             {
                 foreach (var item in events.Items)
                 {
-                    if (!item.CustomEvent.Equals("string"))
+                    if (!item.CustomEvent.Equals("string") && !string.IsNullOrEmpty(item.CustomEvent))
                     {
                         var latestCost = JsonConvert.DeserializeObject<CustomEventStringResponse>(item.CustomEvent);
                         if (latestCost != null)
                         {
                             data.EventCost += latestCost.Total;
+                        }
+                    } else
+                    {
+                        var eventSellPriceDb = await eventDetailPriceHistoryRepository.GetAllDataByExpression(e => e.EventDetail.EventId == item.EventId, 0, 0, null, false, e => e.EventDetail);
+                        if(eventSellPriceDb.Items != null && eventSellPriceDb.Items.Count() > 0)
+                        {
+                            var latestPrice = eventSellPriceDb.Items.GroupBy(e => e.EventDetailId).Select(e => e.OrderByDescending(s => s.Date).FirstOrDefault()).ToList();
+                            latestPrice.ForEach(e => data.EventCost += e.Price * ((e.EventDetail.PerPerson) ? (privateTourRequestDb.NumOfAdult + privateTourRequestDb.NumOfChildren) : 1));
                         }
                     }
                 }

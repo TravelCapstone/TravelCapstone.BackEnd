@@ -18,8 +18,10 @@ public class PrivateTourRequest: BaseEntity
     public int NumOfFamily { get; set; }
     public int NumOfSingleMale { get; set; }
     public int NumOfSingleFemale { get; set; }
+    public Guid? GeneratedTourId { get; set; }
+    [ForeignKey(nameof(GeneratedTourId))] public Tour? GeneratedTour{ get; set; }
     public Guid TourId { get; set; }
-    [ForeignKey(nameof(TourId))] public Tour Tour { get; set; } = null!;
+    [ForeignKey(nameof(TourId))] public Tour? Tour { get; set; }
 
     public Enum.PrivateTourStatus PrivateTourStatusId { get; set; }
     [ForeignKey(nameof(PrivateTourStatusId))]
