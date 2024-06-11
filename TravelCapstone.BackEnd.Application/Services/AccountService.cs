@@ -154,7 +154,11 @@ public class AccountService : GenericBackendService, IAccountService
 
                 var resultCreateRole = await _userManager.AddToRoleAsync(user, "CUSTOMER");
                 if (!resultCreateRole.Succeeded) result = BuildAppActionResultError(result, $"Cấp quyền khách hàng không thành công");
-                var customerAdded = await AddCustomerInformation(user);
+                bool customerAdded = await AddCustomerInformation(user);
+                if(!customerAdded)
+                {
+                    result = BuildAppActionResultError(result, $"Tạo thông tin khách hàng không thành công");
+                }
             }
         }
         catch (Exception ex)
