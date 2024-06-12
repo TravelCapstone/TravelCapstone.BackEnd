@@ -154,6 +154,11 @@ public class AccountService : GenericBackendService, IAccountService
 
                 var resultCreateRole = await _userManager.AddToRoleAsync(user, "CUSTOMER");
                 if (!resultCreateRole.Succeeded) result = BuildAppActionResultError(result, $"Cấp quyền khách hàng không thành công");
+                bool customerAdded = await AddCustomerInformation(user);
+                if(!customerAdded)
+                {
+                    result = BuildAppActionResultError(result, $"Tạo thông tin khách hàng không thành công");
+                }
             }
         }
         catch (Exception ex)
@@ -162,6 +167,38 @@ public class AccountService : GenericBackendService, IAccountService
         }
 
         return result;
+    }
+
+    private async Task<bool> AddCustomerInformation(Account user)
+    {
+        bool isSuccessful = false;
+        try
+        {
+            var customer = new Customer
+            {
+                Id = Guid.NewGuid(),
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Address = "",
+                Dob = DateTime.MinValue,
+                AccountId = user.Id,
+                IsAdult = true,
+                IsVerfiedPhoneNumber = true,
+                IsVerifiedEmail = true,
+                Gender = user.Gender,
+                Money = 0
+
+            };
+            var customerRepository = Resolve<IRepository<Customer>>();
+            await customerRepository!.Insert(customer);
+            await _unitOfWork.SaveChangesAsync();
+        } catch (Exception ex)
+        {
+            isSuccessful = false;
+        }
+        return isSuccessful;
     }
 
     public async Task<AppActionResult> UpdateAccount(UpdateAccountRequestDto accountRequest)
@@ -982,4 +1019,28 @@ public class AccountService : GenericBackendService, IAccountService
 
         return result;
     }
+    public async Task<AppActionResult> GenerateOTP(string phoneNumber)
+    {
+        AppActionResult result = new AppActionResult();
+         var    code = Guid.NewGuid().ToString("N").Substring(0, 6);
+        var smsService = Resolve<ISmsService>();
+        var response = await smsService!.SendMessage($"Mã xác thực tại hệ thống Cóc Travel của bạn là {smsService}",
+            phoneNumber);
+
+        if (response.IsSuccess)
+        {
+            result.Result = code;
+        }
+        else
+        {
+            foreach (var error in response.Messages)
+            {
+                result.Messages.Add(error);
+            }
+        }
+
+
+        return result;
+    }
+
 }

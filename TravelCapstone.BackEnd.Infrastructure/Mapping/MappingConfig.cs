@@ -54,6 +54,8 @@ public class MappingConfig
                 .ForMember(desc => desc.NumOfDay, act => act.MapFrom(src => src.NumOfDay))
                 .ForMember(desc => desc.NumOfNight, act => act.MapFrom(src => src.NumOfNight))
                 .ForMember(desc => desc.TourId, act => act.MapFrom(src => src.TourId))
+                .ForMember(desc => desc.GeneratedTourId, act => act.MapFrom(src => src.GeneratedTourId))
+                .ForMember(desc => desc.GeneratedTour, act => act.MapFrom(src => src.GeneratedTour))
                 .ForMember(desc => desc.IsEnterprise, act => act.MapFrom(src => src.IsEnterprise))
                 .ForMember(desc => desc.Note, act => act.MapFrom(src => src.Note))
                 .ForMember(desc => desc.RecommnendedTourUrl, act => act.MapFrom(src => src.RecommendedTourUrl))

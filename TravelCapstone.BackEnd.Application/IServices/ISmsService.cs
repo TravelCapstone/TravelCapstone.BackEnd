@@ -4,6 +4,6 @@ namespace TravelCapstone.BackEnd.Application.IServices
 {
     public interface ISmsService
     {
-        Task<AppActionResult> SendMessage(string message);
+        Task<AppActionResult> SendMessage(string message, string phoneNumber);
     }
 }

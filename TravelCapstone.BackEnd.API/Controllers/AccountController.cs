@@ -113,5 +113,10 @@ public class AccountController : ControllerBase
     {
         return await _accountService.ImportTourGuideFromExcel(file);
     }
+    [HttpPost("generate-otp")]
+    public async Task<AppActionResult> GenerateOTP([FromBody]string phoneNumber)
+    {
+        return await _accountService.GenerateOTP(phoneNumber);
+    }
 
 }

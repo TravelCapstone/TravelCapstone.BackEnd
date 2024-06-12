@@ -103,5 +103,29 @@ namespace TravelCapstone.BackEnd.Application.Services
             }
             return result;
         }
+
+        public async Task<AppActionResult> GetMaterialCost(AddMaterialRequest request)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                double total = 0;
+                var materialPriceRepository = Resolve<IRepository<MaterialPriceHistory>>();
+                foreach (var item in request.MaterialRequests)
+                {
+                    var materialPriceDb = await materialPriceRepository!.GetById(item.MaterialSellPriceId);
+                    if(materialPriceDb != null)
+                    {
+                        total += materialPriceDb.Price * item.Quantity;
+                    }
+                }
+                result.Result = total;
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
     }
 }
