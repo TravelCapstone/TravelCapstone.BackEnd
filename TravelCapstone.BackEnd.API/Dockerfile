@@ -25,4 +25,4 @@ RUN dotnet publish "./TravelCapstone.BackEnd.API.csproj" -c $BUILD_CONFIGURATION
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "TravelCapstone.BackEnd.API.dll"]
+ENTRYPOINT ["dotnet", "TravelCapstone.BackEnd.API.dll", "--urls=https://+:443;http://+:80"]
