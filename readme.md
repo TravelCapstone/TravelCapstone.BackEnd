@@ -1,4 +1,5 @@
-# Travel Project
+# Cóc Travel Capstone - CAPSTONE PROJECT FPT UNIVERSITY - FALL24
+[![Build and deploy CI/CD container app to Azure Web App - coc-travel](https://github.com/duong-hong-quan/TravelCapstone.BackEnd/actions/workflows/dev_coc-travel.yml/badge.svg)](https://github.com/duong-hong-quan/TravelCapstone.BackEnd/actions/workflows/dev_coc-travel.yml)
 
 ## Introduction
 The Travel Project is a tour management system that provides essential functionalities such as creating tours, checking in customers, processing booking payments, creating private tours, and combining tours. The project is developed using .NET Core API.
@@ -29,12 +30,19 @@ The Travel Project is a tour management system that provides essential functiona
 3. Install dependencies: Ctrl + Shift + B.
 4. Run migrations to set up the database: db migration with entity framework. (Nuget Console: update-database)
 5. Refer to the documentation for detailed instructions on using specific features.
-## Contributing
-**Back End**:
-- [duong-hong-quan](https://github.com/duong-hong-quan)
-- [KhangPhamBM](https://github.com/KhangPhamBM)
 
-**Front End**:
+## Run App with Docker
+1. docker build -t travelcapstone-api .
+2. docker run -d -p 8080:80 --name travelcapstone-api-container travelcapstone-api
+3. docker ps
+Or using docker compose only with command: docker-compose up -d
+
+### Contributing
+**Back End**: **NET CORE API** V6.0
+- [duong-hong-quan](https://github.com/duong-hong-quan) (Leader)
+- [KhangPhamBM](https://github.com/KhangPhamBM)
+- [ha-minh-quan](https://github.com/ha-minh-quan)
+**Front End**: **ReactJS + ViteJS**
 - [duong-hong-quan](https://github.com/duong-hong-quan)
 - [bich-phuong](https://github.com/phuong1304)
 ## Contact
@@ -42,4 +50,4 @@ For any questions or contributions, please contact:
 - Name: Hong Quan
 - Email: hongquan.contact@gmail.com
 
-#### Copyright &#169; 2024 - Dương Hồng Quân & Phạm Bùi Minh Khang
+#### Copyright &#169; 2024 - Dương Hồng Quân & Phạm Bùi Minh Khang & Hà Minh Quân

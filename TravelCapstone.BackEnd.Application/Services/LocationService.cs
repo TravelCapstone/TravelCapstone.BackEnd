@@ -1,3 +1,5 @@
+using NPOI.Util.ArrayExtensions;
+using System.Text;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Response;
@@ -113,7 +115,12 @@ public class LocationService : GenericBackendService, ILocationService
         AppActionResult result = new();
         try
         {
-            result.Result = await _provinceRepository.GetByExpression(a => a!.Name.ToLower().Contains(provinceName.ToLower()));
+            if(!provinceName.Contains("Bà"))
+                result.Result = await _provinceRepository.GetByExpression(a => a!.Name.ToLower().Contains(provinceName.ToLower()));
+            else
+            {
+                result.Result = await _provinceRepository.GetByExpression(a => a!.Name.ToLower().Contains("Bà"));
+            }
         }
         catch (Exception e)
         {

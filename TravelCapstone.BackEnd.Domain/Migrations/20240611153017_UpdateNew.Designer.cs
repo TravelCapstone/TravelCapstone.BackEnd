@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240611153017_UpdateNew")]
+    partial class UpdateNew
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2206,9 +2208,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("GeneratedTourId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsEnterprise")
                         .HasColumnType("bit");
 
@@ -2280,8 +2279,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasIndex("CreateBy");
 
                     b.HasIndex("DietaryPreferenceId");
-
-                    b.HasIndex("GeneratedTourId");
 
                     b.HasIndex("MainDestinationId");
 
@@ -2598,36 +2595,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ServiceProviders");
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.StaticFile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("FacilityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("FacilityServiceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("TourId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FacilityId");
-
-                    b.HasIndex("FacilityServiceId");
-
-                    b.HasIndex("TourId");
-
-                    b.ToTable("StaticFiles");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Tour", b =>
@@ -3662,10 +3629,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "GeneratedTour")
-                        .WithMany()
-                        .HasForeignKey("GeneratedTourId");
-
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Province", "Province")
                         .WithMany()
                         .HasForeignKey("MainDestinationId")
@@ -3709,8 +3672,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("CreateByAccount");
 
                     b.Navigation("DietaryPreference");
-
-                    b.Navigation("GeneratedTour");
 
                     b.Navigation("HotelFacilityRating");
 
@@ -3893,27 +3854,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("Menu");
 
                     b.Navigation("Transport");
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.StaticFile", b =>
-                {
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Facility", "Facility")
-                        .WithMany()
-                        .HasForeignKey("FacilityId");
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.FacilityService", "FacilityService")
-                        .WithMany()
-                        .HasForeignKey("FacilityServiceId");
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
-                        .WithMany()
-                        .HasForeignKey("TourId");
-
-                    b.Navigation("Facility");
-
-                    b.Navigation("FacilityService");
-
-                    b.Navigation("Tour");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Tour", b =>

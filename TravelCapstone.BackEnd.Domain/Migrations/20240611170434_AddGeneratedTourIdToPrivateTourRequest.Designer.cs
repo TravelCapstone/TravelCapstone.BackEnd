@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240611170434_AddGeneratedTourIdToPrivateTourRequest")]
+    partial class AddGeneratedTourIdToPrivateTourRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2600,36 +2602,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.ToTable("ServiceProviders");
                 });
 
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.StaticFile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("FacilityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("FacilityServiceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("TourId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FacilityId");
-
-                    b.HasIndex("FacilityServiceId");
-
-                    b.HasIndex("TourId");
-
-                    b.ToTable("StaticFiles");
-                });
-
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Tour", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3893,27 +3865,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("Menu");
 
                     b.Navigation("Transport");
-                });
-
-            modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.StaticFile", b =>
-                {
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Facility", "Facility")
-                        .WithMany()
-                        .HasForeignKey("FacilityId");
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.FacilityService", "FacilityService")
-                        .WithMany()
-                        .HasForeignKey("FacilityServiceId");
-
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "Tour")
-                        .WithMany()
-                        .HasForeignKey("TourId");
-
-                    b.Navigation("Facility");
-
-                    b.Navigation("FacilityService");
-
-                    b.Navigation("Tour");
                 });
 
             modelBuilder.Entity("TravelCapstone.BackEnd.Domain.Models.Tour", b =>

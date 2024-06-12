@@ -849,7 +849,25 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             MaxPrice = materialCostHistoryDb.Price * item.Quantity,
                             Quantity = item.Quantity
                         });
-                    }
+                    quotationDetails.Add(new QuotationDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        MaterialPriceHistoryId = materialCostHistoryDb.Id,
+                        OptionQuotationId = option2.Id,
+                        MinPrice = materialCostHistoryDb.Price * item.Quantity,
+                        MaxPrice = materialCostHistoryDb.Price * item.Quantity,
+                        Quantity = item.Quantity
+                    });
+                    quotationDetails.Add(new QuotationDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        MaterialPriceHistoryId = materialCostHistoryDb.Id,
+                        OptionQuotationId = option3.Id,
+                        MinPrice = materialCostHistoryDb.Price * item.Quantity,
+                        MaxPrice = materialCostHistoryDb.Price * item.Quantity,
+                        Quantity = item.Quantity
+                    });
+                }
 
                     var eventService = Resolve<IEventService>();
                     if (dto.EventGalas != null && dto.EventGalas.Count > 0)
@@ -857,43 +875,48 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         List<OptionEvent> optionEvents = new List<OptionEvent>();
                         foreach (var location in dto.EventGalas)
                         {
-                            var eventDb = await eventRepository!.GetByExpression(e => e.Id == location.EventId, null);
-                            if (eventDb != null)
-                            {
-                                var optionEvent1 = new OptionEvent
-                                {
-                                    Id = Guid.NewGuid(),
-                                    EventId = eventDb.Id,
-                                    OptionId = option1.Id,
-                                    CustomEvent = location.CustomEvent,
-                                    Date = location.Date
-                                };
-                                var optionEvent2 = new OptionEvent
-                                {
-                                    Id = Guid.NewGuid(),
-                                    EventId = eventDb.Id,
-                                    OptionId = option2.Id,
-                                    CustomEvent = location.CustomEvent,
-                                    Date = location.Date
-                                };
-                                var optionEvent3 = new OptionEvent
-                                {
-                                    Id = Guid.NewGuid(),
-                                    EventId = eventDb.Id,
-                                    OptionId = option3.Id,
-                                    CustomEvent = location.CustomEvent,
-                                    Date = location.Date
-                                };
-                                optionEvents.Add(optionEvent1);
-                                optionEvents.Add(optionEvent2);
-                                optionEvents.Add(optionEvent3);
 
+                        var eventDb = await eventRepository!.GetByExpression(e => e.Id == location.EventId, null);
+                        if (eventDb != null)
+                        {
+                            var optionEvent1 = new OptionEvent
+                            {
+                                Id = Guid.NewGuid(),
+                                EventId = eventDb.Id,
+                                OptionId = option1.Id,
+                                CustomEvent = location.CustomEvent == null ? "" : location.CustomEvent,
+                                Date = location.Date
+                            };
+                            var optionEvent2 = new OptionEvent
+                            {
+                                Id = Guid.NewGuid(),
+                                EventId = eventDb.Id,
+                                OptionId = option2.Id,
+                                CustomEvent = location.CustomEvent == null ? "" : location.CustomEvent,
+                                Date = location.Date
+                            };
+                            var optionEvent3 = new OptionEvent
+                            {
+                                Id = Guid.NewGuid(),
+                                EventId = eventDb.Id,
+                                OptionId = option3.Id,
+                                CustomEvent = location.CustomEvent == null ? "" : location.CustomEvent,
+                                Date = location.Date
+                            };
+                            optionEvents.Add(optionEvent1);
+                            optionEvents.Add(optionEvent2);
+                            optionEvents.Add(optionEvent3);
+                            if (location.CustomEvent != null && string.IsNullOrEmpty(location.CustomEvent) && !location.CustomEvent.Equals("string"))
+                            {
                                 var latestCost = JsonConvert.DeserializeObject<CustomEventStringResponse>(location.CustomEvent);
                                 if (latestCost != null)
                                 {
                                     eventTotal += (latestCost as CustomEventStringResponse).Total;
                                 }
                             }
+
+                        }
+
                         }
                         await eventOptionRepository!.InsertRange(optionEvents);
                     }
@@ -1356,7 +1379,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             if (price.Items!.Any())
                             {
                                 int totalVehicle = (int)Math.Ceiling((decimal)((decimal)(privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren) / price.Items[0].TransportServiceDetail.FacilityService!.ServingQuantity));
-                                int totalDays = (vehicle.EndDate - vehicle.StartDate).Days;
+                                int totalDays = (int)Math.Ceiling((double)((vehicle.EndDate - vehicle.StartDate).Days));
+                                if (totalDays <= 0) 
+                                {
+                                totalDays = 1;
+                                }
                                 if (vehicle.OptionClass1 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
                                 {
                                     vehicleQuotationDetails.Add(new VehicleQuotationDetail
@@ -2166,7 +2193,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 return result;
             }
 
-            var privateTourRequestDb = await _repository.GetAllDataByExpression(p => p.CreateBy == id, 0, 0, null, false, p => p.Tour, p => p.CreateByAccount!, p => p.Province!, p => p.HotelFacilityRating, p => p.RestaurantFacilityRating, p => p.Tour, p => p.Commune.District.Province);
+            var privateTourRequestDb = await _repository.GetAllDataByExpression(p => p.CreateBy == id, 0, 0, p => p.CreateDate, false, p => p.Tour, p => p.CreateByAccount!, p => p.Province!, p => p.HotelFacilityRating, p => p.RestaurantFacilityRating, p => p.Tour, p => p.Commune.District.Province);
             //data.PrivateTourResponse = _mapper.Map<PrivateTourResponseDto>(privateTourRequestDb);
             //var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
             //var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
