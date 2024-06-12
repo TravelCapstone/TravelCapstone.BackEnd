@@ -10,6 +10,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Response
     public class TourResponse
     {
         public Tour Tour { get; set; } = null!;
-        public List<StaticFile> StaticFiles = null!;
+        public List<StaticFile> StaticFiles { get; set; } = null!;
     }
+
 }
