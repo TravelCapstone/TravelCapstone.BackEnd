@@ -40,7 +40,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: hongquan0312/coc-travel::latest
+        tags: hongquan0312/coc-travel:latest
         file: ./Dockerfile
 
   deploy:
