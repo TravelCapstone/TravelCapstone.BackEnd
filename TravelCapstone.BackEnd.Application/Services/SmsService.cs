@@ -11,19 +11,19 @@ namespace TravelCapstone.BackEnd.Application.Services
         {
         }
 
-        public async Task<AppActionResult> SendMessage(string message)
+        public async Task<AppActionResult> SendMessage(string message, string phoneNumber)
         {
             AppActionResult result = new AppActionResult();
             try
             {
-                string accountSid = "AC38b11d7ee74f1a987f6ad678556ea98d";
-                string authToken = "50f849812d522983fcf64a99c9210421";
+                string accountSid = "AC16c01656bd500a1aa1ea9fe9040360d7";
+                string authToken = "788dab3dcd68e060682311d3141b7299";
                 TwilioClient.Init(accountSid, authToken);
 
                 var apiResponsse = MessageResource.Create(
                    body: $"{message}",
-                   from: new Twilio.Types.PhoneNumber("+13106516534"),
-                   to: new Twilio.Types.PhoneNumber("+84366967957") //add receiver's phone number
+                   from: new Twilio.Types.PhoneNumber("+1 443 333 1958"),
+                   to: new Twilio.Types.PhoneNumber($"+84{phoneNumber}") 
                );
 
                 result.Result = apiResponsse.Status;

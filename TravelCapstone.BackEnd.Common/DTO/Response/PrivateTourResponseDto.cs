@@ -32,6 +32,8 @@ public class PrivateTourResponseDto
     public DietaryPreference DietaryPreference { get; set; }
     public List<RequestedLocation>? OtherLocation { get; set; }
     public List<FamilyDetailRequest>? RoomDetails { get; set; }
+    public Guid GeneratedTourId { get; set; }
+    public Tour? GeneratedTour { get; set; }
     public Guid TourId { get; set; }
     public Tour? Tour { get; set; }
     public string? AccountId { get; set; }

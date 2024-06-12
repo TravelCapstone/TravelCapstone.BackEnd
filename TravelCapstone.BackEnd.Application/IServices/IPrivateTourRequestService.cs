@@ -24,5 +24,6 @@ public interface IPrivateTourRequestService
 
     Task<AppActionResult> GetRoomSuggestion(RoomSuggestionRequest dto);
     Task<AppActionResult> GetProvinceOfOption(Guid optionId);
+    Task<AppActionResult> CalculateOptionsCost(CreateOptionsPrivateTourDto dto);
 
 }

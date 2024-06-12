@@ -849,7 +849,25 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             MaxPrice = materialCostHistoryDb.Price * item.Quantity,
                             Quantity = item.Quantity
                         });
-                    }
+                    quotationDetails.Add(new QuotationDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        MaterialPriceHistoryId = materialCostHistoryDb.Id,
+                        OptionQuotationId = option2.Id,
+                        MinPrice = materialCostHistoryDb.Price * item.Quantity,
+                        MaxPrice = materialCostHistoryDb.Price * item.Quantity,
+                        Quantity = item.Quantity
+                    });
+                    quotationDetails.Add(new QuotationDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        MaterialPriceHistoryId = materialCostHistoryDb.Id,
+                        OptionQuotationId = option3.Id,
+                        MinPrice = materialCostHistoryDb.Price * item.Quantity,
+                        MaxPrice = materialCostHistoryDb.Price * item.Quantity,
+                        Quantity = item.Quantity
+                    });
+                }
 
                     var eventService = Resolve<IEventService>();
                     if (dto.EventGalas != null && dto.EventGalas.Count > 0)
@@ -857,43 +875,48 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         List<OptionEvent> optionEvents = new List<OptionEvent>();
                         foreach (var location in dto.EventGalas)
                         {
-                            var eventDb = await eventRepository!.GetByExpression(e => e.Id == location.EventId, null);
-                            if (eventDb != null)
-                            {
-                                var optionEvent1 = new OptionEvent
-                                {
-                                    Id = Guid.NewGuid(),
-                                    EventId = eventDb.Id,
-                                    OptionId = option1.Id,
-                                    CustomEvent = location.CustomEvent,
-                                    Date = location.Date
-                                };
-                                var optionEvent2 = new OptionEvent
-                                {
-                                    Id = Guid.NewGuid(),
-                                    EventId = eventDb.Id,
-                                    OptionId = option2.Id,
-                                    CustomEvent = location.CustomEvent,
-                                    Date = location.Date
-                                };
-                                var optionEvent3 = new OptionEvent
-                                {
-                                    Id = Guid.NewGuid(),
-                                    EventId = eventDb.Id,
-                                    OptionId = option3.Id,
-                                    CustomEvent = location.CustomEvent,
-                                    Date = location.Date
-                                };
-                                optionEvents.Add(optionEvent1);
-                                optionEvents.Add(optionEvent2);
-                                optionEvents.Add(optionEvent3);
 
+                        var eventDb = await eventRepository!.GetByExpression(e => e.Id == location.EventId, null);
+                        if (eventDb != null)
+                        {
+                            var optionEvent1 = new OptionEvent
+                            {
+                                Id = Guid.NewGuid(),
+                                EventId = eventDb.Id,
+                                OptionId = option1.Id,
+                                CustomEvent = location.CustomEvent == null ? "" : location.CustomEvent,
+                                Date = location.Date
+                            };
+                            var optionEvent2 = new OptionEvent
+                            {
+                                Id = Guid.NewGuid(),
+                                EventId = eventDb.Id,
+                                OptionId = option2.Id,
+                                CustomEvent = location.CustomEvent == null ? "" : location.CustomEvent,
+                                Date = location.Date
+                            };
+                            var optionEvent3 = new OptionEvent
+                            {
+                                Id = Guid.NewGuid(),
+                                EventId = eventDb.Id,
+                                OptionId = option3.Id,
+                                CustomEvent = location.CustomEvent == null ? "" : location.CustomEvent,
+                                Date = location.Date
+                            };
+                            optionEvents.Add(optionEvent1);
+                            optionEvents.Add(optionEvent2);
+                            optionEvents.Add(optionEvent3);
+                            if (location.CustomEvent != null && string.IsNullOrEmpty(location.CustomEvent) && !location.CustomEvent.Equals("string"))
+                            {
                                 var latestCost = JsonConvert.DeserializeObject<CustomEventStringResponse>(location.CustomEvent);
                                 if (latestCost != null)
                                 {
                                     eventTotal += (latestCost as CustomEventStringResponse).Total;
                                 }
                             }
+
+                        }
+
                         }
                         await eventOptionRepository!.InsertRange(optionEvents);
                     }
@@ -901,7 +924,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                     {
                         foreach (var location in item.Hotels)
                         {
-                            var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId, 0, 0);
+                            var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId, 0, 0, true, false, false);
                             var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
                             if (location.HotelOptionRatingOption1 != null)
                             {
@@ -1170,8 +1193,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                             QuantityOfChild = privateTourRequest.NumOfChildren,
                                             ServingQuantity = menu.FacilityService.ServingQuantity,
                                             Quantity = totalService,
-                                            MinPrice = menuPrice.Price,
-                                            MaxPrice = menuPrice.Price,
+                                            MinPrice = menuPrice.Price * totalService,
+                                            MaxPrice = menuPrice.Price * totalService,
                                             FacilityRatingId = menuPrice.Menu.FacilityService.Facility.FacilityRatingId,
                                             StartDate = dayMenu.Date,
                                             EndDate = dayMenu.Date,
@@ -1185,7 +1208,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         }
                         foreach (var location in item.Entertainments)
                         {
-                            var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId, 0, 0);
+                            var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId, 0, 0, false, false, true);
                             var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
                             if (estimate.EntertainmentPrice.DetailedPriceReferences.Count > 0)
                             {
@@ -1216,7 +1239,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                         ServingQuantity = 1,
                                         Quantity = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren,
                                         MinPrice = (double)(minQuotationEntertaiment * location.QuantityLocationOption1),
-                                        MaxPrice = maxQuotationEntertaiment,
+                                        MaxPrice = (double)(maxQuotationEntertaiment * location.QuantityLocationOption1),
                                         FacilityRatingId = entertaimentRating!.Id,
                                         StartDate = null,
                                         EndDate = null,
@@ -1236,7 +1259,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                         ServingQuantity = 1,
                                         Quantity = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren,
                                         MinPrice = (double)(minQuotationEntertaiment * location.QuantityLocationOption2),
-                                        MaxPrice = maxQuotationEntertaiment,
+                                        MaxPrice = (double)(maxQuotationEntertaiment * location.QuantityLocationOption2),
                                         FacilityRatingId = entertaimentRating!.Id,
                                         StartDate = null,
                                         EndDate = null,
@@ -1256,7 +1279,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                         ServingQuantity = 1,
                                         Quantity = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren,
                                         MinPrice = (double)(minQuotationEntertaiment * location.QuantityLocationOption3),
-                                        MaxPrice = maxQuotationEntertaiment,
+                                        MaxPrice = (double)(maxQuotationEntertaiment * location.QuantityLocationOption3),
                                         FacilityRatingId = entertaimentRating!.Id,
                                         StartDate = null,
                                         EndDate = null,
@@ -1356,7 +1379,11 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             if (price.Items!.Any())
                             {
                                 int totalVehicle = (int)Math.Ceiling((decimal)((decimal)(privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren) / price.Items[0].TransportServiceDetail.FacilityService!.ServingQuantity));
-                                int totalDays = (vehicle.EndDate - vehicle.StartDate).Days;
+                                int totalDays = (int)Math.Ceiling((double)((vehicle.EndDate - vehicle.StartDate).Days));
+                                if (totalDays <= 0) 
+                                {
+                                totalDays = 1;
+                                }
                                 if (vehicle.OptionClass1 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
                                 {
                                     vehicleQuotationDetails.Add(new VehicleQuotationDetail
@@ -1553,6 +1580,487 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         
     }
 
+    public async Task<AppActionResult> CalculateOptionsCost(CreateOptionsPrivateTourDto dto)
+    {
+        var result = new AppActionResult();
+        var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
+        var referenceTransportPriceRepository = Resolve<IRepository<ReferenceTransportPrice>>();
+        var materialPriceHistoryRepository = Resolve<IRepository<MaterialPriceHistory>>();
+        var menuRepository = Resolve<IRepository<Menu>>();
+        var facilityService = Resolve<IFacilityServiceService>();
+        var humanResourceFeeService = Resolve<IHumanResourceFeeService>();
+        List<OptionCostReponse> data = new List<OptionCostReponse>();
+        try
+        {
+            var privateTourRequest = await _repository.GetById(dto.PrivateTourRequestId);
+           
+            var totalPeople = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren;
+           
+            double materialTotal = 0;
+            List<MaterialPriceHistory> materialPriceHistories = new List<MaterialPriceHistory>();
+            foreach (var material in dto.MaterialCosts)
+            {
+                var materialPrice = await materialPriceHistoryRepository!.GetById(material.MaterialPriceHistoryId);
+                if (materialPrice == null)
+                {
+                    result = BuildAppActionResultError(result, $"Không tìm thấy báo giá về vật liệu có id {material.MaterialPriceHistoryId}");
+                    return result;
+                }
+                materialPriceHistories.Add(materialPrice);
+                materialTotal += material.Quantity * materialPrice.Price;
+            }
+            int errorCount = 0;
+           
+           
+
+            if (!BuildAppActionResultIsError(result))
+            {
+
+                //Calculate based on fixed formula: Children price = 70% Adult price
+                // => NumOfAdult * Price + NumOfChildren * 0.7 * Price = Total
+                // => Price = Total / (NumOfAdult + NumOfChildren * 0.7)
+                double AdultBasedQuantity = privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren * 0.7;
+
+                OptionCostReponse option1 = new OptionCostReponse
+                {
+                    OptionClass = OptionClass.ECONOMY,
+                    MaterialCost = materialTotal
+                };
+
+                OptionCostReponse option2 = new OptionCostReponse
+                {
+                    OptionClass = OptionClass.MIDDLE,
+                    MaterialCost = materialTotal
+                };
+
+                OptionCostReponse option3 = new OptionCostReponse
+                {
+                    OptionClass = OptionClass.PREMIUM,
+                    MaterialCost = materialTotal
+                };
+
+
+                double tourguideTotal = 0;
+                double eventTotal = 0;
+
+                foreach (var item in dto.TourGuideCosts)
+                {
+                    var tourguideCost = await humanResourceFeeService!.GetSalary(dto.TourGuideCosts, true);
+                    tourguideTotal += (double)tourguideCost.Result!;
+                }
+
+                option1.MinTourguideCost = tourguideTotal;
+                option1.MaxTourguideCost = tourguideTotal;
+
+                option2.MinTourguideCost = tourguideTotal;
+                option2.MaxTourguideCost = tourguideTotal;
+
+                option3.MinTourguideCost = tourguideTotal;
+                option3.MaxTourguideCost = tourguideTotal;
+
+
+                var eventService = Resolve<IEventService>();
+                if (dto.EventGalas != null && dto.EventGalas.Count > 0)
+                {
+                    List<OptionEvent> optionEvents = new List<OptionEvent>();
+                    foreach (var location in dto.EventGalas)
+                    {
+                        if (location.CustomEvent != null && !location.CustomEvent.Equals("string"))
+                        {                          
+                                var latestCost = JsonConvert.DeserializeObject<CustomEventStringResponse>(location.CustomEvent);
+                                if (latestCost != null)
+                                {
+                                    eventTotal += (latestCost as CustomEventStringResponse).Total;
+                                }
+                        }
+                    }
+
+                    option1.MinEventCost = eventTotal;
+                    option1.MinEventCost = eventTotal;
+
+                    option2.MinEventCost = eventTotal;
+                    option2.MinEventCost = eventTotal;
+
+                    option3.MinEventCost = eventTotal;
+                    option3.MinEventCost = eventTotal;
+
+                    foreach (var item in dto.provinceServices)
+                    {
+                        foreach (var location in item.Hotels)
+                        {
+                            var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId, 0, 0, true, false, false);
+                            var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
+                            if (location.HotelOptionRatingOption1 != null)
+                            {
+                                if (location.NumOfSingleRoom > 0)
+                                {
+                                    var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                                    a => location.HotelOptionRatingOption1 == a.RatingId
+                                    && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
+                                    ).FirstOrDefault();
+                                    if (sellPriceHotel != null)
+                                    {
+                                        double min = sellPriceHotel!.MinPrice;
+
+                                        double max = sellPriceHotel!.MaxPrice;
+                                        int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                        double minQuotation = numOfDay * location.NumOfSingleRoom * min;
+                                        double maxQuotation = numOfDay * location.NumOfSingleRoom * max;
+                                        option1.MinHotelCost += minQuotation;
+                                        option1.MaxHotelCost += maxQuotation;
+                                    }
+                                    else
+                                    {
+                                        result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 2 người với phân loại {location.HotelOptionRatingOption1}");
+                                    }
+                                }
+
+                                if (location.NumOfDoubleRoom > 0)
+                                {
+                                    var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                                    a => location.HotelOptionRatingOption1 == a.RatingId
+                                    && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
+                                    ).FirstOrDefault();
+                                    if (sellPriceHotel != null)
+                                    {
+                                        double min = sellPriceHotel!.MinPrice;
+
+                                        double max = sellPriceHotel!.MaxPrice;
+                                        int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                        double minQuotation = numOfDay * location.NumOfDoubleRoom * min;
+                                        double maxQuotation = numOfDay * location.NumOfDoubleRoom * max;
+                                        option1.MinHotelCost += minQuotation;
+                                        option1.MaxHotelCost += maxQuotation;
+                                    }
+                                    else
+                                    {
+                                        result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 4 người với phân loại {location.HotelOptionRatingOption1}");
+                                    }
+                                }
+
+                            }
+
+                            if (location.HotelOptionRatingOption2 != null)
+                            {
+                                if (location.NumOfSingleRoom > 0)
+                                {
+                                    var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                                    a => location.HotelOptionRatingOption2 == a.RatingId
+                                    && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
+                                    ).FirstOrDefault();
+                                    if (sellPriceHotel != null)
+                                    {
+                                        double min = sellPriceHotel!.MinPrice;
+
+                                        double max = sellPriceHotel!.MaxPrice;
+                                        int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                        double minQuotation = numOfDay * location.NumOfSingleRoom * min;
+                                        double maxQuotation = numOfDay * location.NumOfSingleRoom * max;
+                                        option2.MinHotelCost += minQuotation;
+                                        option2.MaxHotelCost += maxQuotation;
+                                    }
+                                    else
+                                    {
+                                        result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 2 người với phân loại {location.HotelOptionRatingOption2}");
+                                    }
+                                }
+
+                                if (location.NumOfDoubleRoom > 0)
+                                {
+                                    var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                                    a => location.HotelOptionRatingOption2 == a.RatingId
+                                    && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
+                                    ).FirstOrDefault();
+                                    if (sellPriceHotel != null)
+                                    {
+                                        double min = sellPriceHotel!.MinPrice;
+
+                                        double max = sellPriceHotel!.MaxPrice;
+                                        int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                        double minQuotation = numOfDay * location.NumOfDoubleRoom * min;
+                                        double maxQuotation = numOfDay * location.NumOfDoubleRoom * max;
+                                        option2.MinHotelCost += minQuotation;
+                                        option2.MaxHotelCost += maxQuotation;
+                                    }
+                                    else
+                                    {
+                                        result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 4 người với phân loại {location.HotelOptionRatingOption2}");
+                                    }
+                                }
+
+                            }
+                            if (location.HotelOptionRatingOption3 != null)
+                            {
+                                if (location.NumOfSingleRoom > 0)
+                                {
+                                    var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                                    a => location.HotelOptionRatingOption3 == a.RatingId
+                                    && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
+                                    ).FirstOrDefault();
+                                    if (sellPriceHotel != null)
+                                    {
+                                        double min = sellPriceHotel!.MinPrice;
+
+                                        double max = sellPriceHotel!.MaxPrice;
+                                        int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                        double minQuotation = numOfDay * location.NumOfSingleRoom * min;
+                                        double maxQuotation = numOfDay * location.NumOfSingleRoom * max;
+                                        option3.MinHotelCost += minQuotation;
+                                        option3.MaxHotelCost += maxQuotation;
+                                    }
+                                    else
+                                    {
+                                        result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 2 người với phân loại {location.HotelOptionRatingOption3}");
+                                    }
+                                }
+
+                                if (location.NumOfDoubleRoom > 0)
+                                {
+                                    var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
+                                    a => location.HotelOptionRatingOption3 == a.RatingId
+                                    && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
+                                    ).FirstOrDefault();
+                                    if (sellPriceHotel != null)
+                                    {
+                                        double min = sellPriceHotel!.MinPrice;
+
+                                        double max = sellPriceHotel!.MaxPrice;
+                                        int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
+                                        double minQuotation = numOfDay * location.NumOfDoubleRoom * min;
+                                        double maxQuotation = numOfDay * location.NumOfDoubleRoom * max;
+                                        option3.MinHotelCost += minQuotation;
+                                        option3.MaxHotelCost += maxQuotation;
+                                    }
+                                    else
+                                    {
+                                        result = BuildAppActionResultError(result, $"Không tìm thấy báo giá khách sạn cho phòng 4 người với phân loại {location.HotelOptionRatingOption3}");
+                                    }
+                                }
+
+                            }
+                        }
+                        foreach (var location in item.Restaurants)
+                        {
+                            PagedResult<SellPriceHistory> menuPriceList = null;
+                            SellPriceHistory menuPrice = null;
+                            foreach (var dayMenu in location.MenuQuotations)
+                            {
+                                menuPriceList = null;
+                                menuPrice = null;
+                                int quantity = 0;
+                                int totalService = 0;
+                                foreach (var MenuId in dayMenu.MenuIds)
+                                {
+                                    var menu = await menuRepository!.GetByExpression(m => m.Id == MenuId, m => m.FacilityService);
+                                    quantity = menu.FacilityService.ServiceAvailabilityId == ServiceAvailability.BOTH ? privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren :
+                                                   menu.FacilityService.ServiceAvailabilityId == ServiceAvailability.ADULT ? privateTourRequest.NumOfAdult : privateTourRequest.NumOfChildren;
+                                    totalService = (int)Math.Ceiling((double)(quantity / menu.FacilityService.ServingQuantity));
+                                    totalService = totalService > 0 ? totalService : 1;
+                                    menuPriceList = await sellPriceRepository!.GetAllDataByExpression(s => s.MenuId == MenuId && totalService >= s.MOQ, 0, 0, null, false, m => m.Menu.FacilityService!.Facility!);
+                                    if (menuPriceList.Items != null && menuPriceList.Items.Count > 0)
+                                    {
+                                        menuPrice = menuPriceList.Items.OrderByDescending(s => s.Date).ThenByDescending(s => s.MOQ).FirstOrDefault();
+                                        if (dayMenu.option == OptionClass.ECONOMY)
+                                        {
+                                            option1.MinRestaurantCost += menuPrice.Price * totalService;
+                                            option1.MaxRestaurantCost += menuPrice.Price * totalService;
+                                        }
+                                        else if (dayMenu.option == OptionClass.MIDDLE)
+                                        {
+                                            option2.MinRestaurantCost += menuPrice.Price * totalService;
+                                            option2.MaxRestaurantCost += menuPrice.Price * totalService;
+
+                                        }
+                                        else
+                                        {
+                                            option3.MinRestaurantCost += menuPrice.Price * totalService;
+                                            option3.MaxRestaurantCost += menuPrice.Price * totalService;
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        foreach (var location in item.Entertainments)
+                        {
+                            var estimateService = await facilityService!.GetServicePriceRangeByDistrictIdAndRequestId(location.DistrictId, dto.PrivateTourRequestId, 0, 0, false, false, true);
+                            var estimate = (ReferencedPriceRangeByProvince)estimateService.Result!;
+                            if (estimate.EntertainmentPrice.DetailedPriceReferences.Count > 0)
+                            {
+
+                                var sellPriceAdultEntertainment = estimate.EntertainmentPrice.DetailedPriceReferences.Where(a => a.RatingId == Rating.TOURIST_AREA
+
+                            && a.ServingQuantity == 1 && a.ServiceAvailability == ServiceAvailability.ADULT).FirstOrDefault();
+                                var sellPriceChildrenEntertainment = estimate.EntertainmentPrice.DetailedPriceReferences.Where(a => a.RatingId == Rating.TOURIST_AREA
+
+                              && a.ServingQuantity == 1 && a.ServiceAvailability == ServiceAvailability.CHILD).FirstOrDefault();
+
+                                double minQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MinPrice);
+                                minQuotationEntertaiment += privateTourRequest.NumOfChildren * (sellPriceChildrenEntertainment == null ? 0 : sellPriceChildrenEntertainment.MinPrice);
+
+                                double maxQuotationEntertaiment = (privateTourRequest.NumOfAdult * sellPriceAdultEntertainment!.MaxPrice);
+                                maxQuotationEntertaiment += privateTourRequest.NumOfChildren * (sellPriceChildrenEntertainment == null ? 0 : sellPriceChildrenEntertainment.MaxPrice);
+
+
+                                if (location.QuantityLocationOption1 != null)
+                                {
+                                    option1.MinEntertainmentCost += (double)(minQuotationEntertaiment * location.QuantityLocationOption1);
+                                    option1.MaxEntertainmentCost += (double)(maxQuotationEntertaiment * location.QuantityLocationOption1);
+                                }
+
+                                if (location.QuantityLocationOption2 != null)
+                                {
+                                    option2.MinEntertainmentCost += (double)(minQuotationEntertaiment * location.QuantityLocationOption2);
+                                    option2.MaxEntertainmentCost += (double)(maxQuotationEntertaiment * location.QuantityLocationOption2);
+                                }
+
+                                if (location.QuantityLocationOption3 != null)
+                                {
+                                    option3.MinEntertainmentCost += (double)(minQuotationEntertaiment * location.QuantityLocationOption3);
+                                    option3.MaxEntertainmentCost += (double)(maxQuotationEntertaiment * location.QuantityLocationOption3);
+
+                                }
+
+
+                            }
+
+
+                        }
+
+                    }
+                    List<HumanResourceCost> driverCostOption1 = new List<HumanResourceCost>();
+                    List<HumanResourceCost> driverCostOption2 = new List<HumanResourceCost>();
+                    List<HumanResourceCost> driverCostOption3 = new List<HumanResourceCost>();
+
+                    foreach (var vehicle in dto.Vehicles)
+                    {
+                        if (vehicle.VehicleType == VehicleType.PLANE || vehicle.VehicleType == VehicleType.BOAT)
+                        {
+                            var price = await referenceTransportPriceRepository!.GetAllDataByExpression(a => a.Departure!.Commune!.District!.ProvinceId == vehicle.StartPoint && a.Arrival!.Commune!.District!.ProvinceId == vehicle.EndPoint
+                        || a.Departure.Commune.District.ProvinceId == vehicle.EndPoint && a.Arrival!.Commune!.District!.ProvinceId == vehicle.StartPoint
+                        , 0, 0, null, false, null
+                        );
+                            if (price.Items!.Any())
+                            {
+                                if (vehicle.OptionClass1 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
+                                {
+                                    option1.MinVehicleCost += totalPeople * price.Items!.Min(a => a.AdultPrice);
+                                    option1.MaxVehicleCost += totalPeople * price.Items!.Max(a => a.AdultPrice);
+                                }
+
+                                if (vehicle.OptionClass2 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
+                                {
+                                    option2.MinVehicleCost += totalPeople * price.Items!.Min(a => a.AdultPrice);
+                                    option2.MaxVehicleCost += totalPeople * price.Items!.Max(a => a.AdultPrice);
+
+                                }
+
+                                if (vehicle.OptionClass3 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
+                                {
+                                    option3.MinVehicleCost += totalPeople * price.Items!.Min(a => a.AdultPrice);
+                                    option3.MaxVehicleCost += totalPeople * price.Items!.Max(a => a.AdultPrice);
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            var price = await sellPriceRepository!.GetAllDataByExpression(s => s.TransportServiceDetail.FacilityService.Facility.Communce.District!.ProvinceId == vehicle.StartPoint
+                            && s.TransportServiceDetail.VehicleTypeId == vehicle.VehicleType, 0, 0, null, false, s => s.TransportServiceDetail.FacilityService!);
+                            if (price.Items!.Any())
+                            {
+                                int totalVehicle = (int)Math.Ceiling((decimal)((decimal)(privateTourRequest.NumOfAdult + privateTourRequest.NumOfChildren) / price.Items[0].TransportServiceDetail.FacilityService!.ServingQuantity));
+                                int totalDays = (vehicle.EndDate - vehicle.StartDate).Days;
+                                if (vehicle.OptionClass1 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
+                                {
+                                    option1.MinVehicleCost += vehicle.NumOfVehicle * totalDays * price.Items!.Min(a => a.Price);
+                                    option1.MaxVehicleCost += vehicle.NumOfVehicle * totalDays * price.Items!.Max(a => a.Price);
+                                    driverCostOption1.Add(new HumanResourceCost
+                                    {
+                                        Quantity = vehicle.NumOfVehicle,
+                                        NumOfDay = totalDays
+                                    });
+                                }
+
+                                if (vehicle.OptionClass2 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
+                                {
+                                    option2.MinVehicleCost += vehicle.NumOfVehicle * totalDays * price.Items!.Min(a => a.Price);
+                                    option2.MaxVehicleCost += vehicle.NumOfVehicle * totalDays * price.Items!.Max(a => a.Price);
+                                    driverCostOption2.Add(new HumanResourceCost
+                                    {
+                                        Quantity = vehicle.NumOfVehicle,
+                                        NumOfDay = totalDays
+                                    });
+                                }
+
+                                if (vehicle.OptionClass3 != null || vehicle.OptionClass1 == null && vehicle.OptionClass2 == null && vehicle.OptionClass3 == null)
+                                {
+                                    option3.MinVehicleCost += vehicle.NumOfVehicle * totalDays * price.Items!.Min(a => a.Price);
+                                    option3.MaxVehicleCost += vehicle.NumOfVehicle * totalDays * price.Items!.Max(a => a.Price);
+                                    driverCostOption3.Add(new HumanResourceCost
+                                    {
+                                        Quantity = vehicle.NumOfVehicle,
+                                        NumOfDay = totalDays
+                                    });
+                                }
+                            }
+                        }
+
+
+                    }
+
+                    var totalDriverCostOption1 = await humanResourceFeeService.GetSalary(driverCostOption1, false);
+                    var totalDriverCostOption2 = await humanResourceFeeService.GetSalary(driverCostOption2, false);
+                    var totalDriverCostOption3 = await humanResourceFeeService.GetSalary(driverCostOption3, false);
+
+                    option1.MinDriverCost = (double)totalDriverCostOption1.Result;
+                    option1.MaxDriverCost = (double)totalDriverCostOption1.Result;
+                    option2.MinDriverCost = (double)totalDriverCostOption2.Result;
+                    option2.MaxDriverCost = (double)totalDriverCostOption2.Result;
+                    option3.MinDriverCost = (double)totalDriverCostOption3.Result;
+                    option3.MaxDriverCost = (double)totalDriverCostOption3.Result;
+
+                    option1.AssuranceCost = dto.AssurancePricePerPerson * totalPeople;
+                    option2.AssuranceCost = dto.AssurancePricePerPerson * totalPeople;
+                    option3.AssuranceCost = dto.AssurancePricePerPerson * totalPeople;
+
+                    option1.EscortFee = dto.EscortFee;
+                    option2.EscortFee = dto.EscortFee;
+                    option3.EscortFee = dto.EscortFee;
+
+                    option1.ContingencyFee = dto.ContingencyFee * totalPeople;
+                    option2.ContingencyFee = dto.ContingencyFee * totalPeople;
+                    option3.ContingencyFee = dto.ContingencyFee * totalPeople;
+
+                    option1.OperatingFee = dto.OperatingFee;
+                    option2.OperatingFee = dto.OperatingFee;
+                    option3.OperatingFee = dto.OperatingFee;
+
+                    option1.OrganizationCost = dto.OrganizationCost;
+                    option2.OrganizationCost = dto.OrganizationCost;
+                    option3.OrganizationCost = dto.OrganizationCost;
+
+                    option1.MinEventCost = eventTotal;
+                    option1.MaxEventCost = eventTotal;
+                    option2.MinEventCost = eventTotal;
+                    option2.MaxEventCost = eventTotal;
+                    option3.MinEventCost = eventTotal;
+                    option3.MaxEventCost = eventTotal;
+
+                }
+                data.Add(option1);
+                data.Add(option2);
+                data.Add(option3);
+            }
+            result.Result = data;
+        }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, ex.Message);
+        }
+        return result;
+        }
+
     public async Task<AppActionResult> ConfirmOptionPrivateTour(Guid optionId, string accountId)
     {
         var result = new AppActionResult();
@@ -1675,6 +2183,8 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         //var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
         try
         {
+            var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
+            var roomQuantityDetailRepository = Resolve<IRepository<FamilyDetailRequest>>();
             var accountRepository = Resolve<IRepository<Account>>();
             var accounttDb = await accountRepository!.GetByExpression(a => a.Id == id, null);
             if (accounttDb == null)
@@ -1683,7 +2193,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                 return result;
             }
 
-            var privateTourRequestDb = await _repository.GetAllDataByExpression(p => p.CreateBy == id, 0, 0, null, false, p => p.CreateByAccount);
+            var privateTourRequestDb = await _repository.GetAllDataByExpression(p => p.CreateBy == id, 0, 0, p => p.CreateDate, false, p => p.Tour, p => p.CreateByAccount!, p => p.Province!, p => p.HotelFacilityRating, p => p.RestaurantFacilityRating, p => p.Tour, p => p.Commune.District.Province);
             //data.PrivateTourResponse = _mapper.Map<PrivateTourResponseDto>(privateTourRequestDb);
             //var optionQuotationRepository = Resolve<IRepository<OptionQuotation>>();
             //var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
@@ -1721,7 +2231,17 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
             //{
             //    data.PrivateTourResponse.OtherLocation = list.Items;
             //}
-            result.Result = privateTourRequestDb;
+            var responseList = _mapper.Map<PagedResult<PrivateTourResponseDto>>(privateTourRequestDb);
+            foreach (var item in responseList.Items!)
+            {
+                var requestLocationDb = await requestLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, null, false, r => r.Province!);
+                item.OtherLocation = requestLocationDb.Items;
+
+                var roomQuantityDetailDb = await roomQuantityDetailRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, null, false, null);
+                item.RoomDetails = roomQuantityDetailDb.Items;
+            }
+            result.Result = responseList;
+
         }
         catch (Exception e)
         {

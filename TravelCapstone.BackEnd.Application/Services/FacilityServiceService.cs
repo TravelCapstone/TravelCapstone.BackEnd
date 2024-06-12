@@ -30,7 +30,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AppActionResult> GetServicePriceRangeByDistrictIdAndRequestId(Guid Id, Guid requestId, int pageNumber, int pageSize)
+        public async Task<AppActionResult> GetServicePriceRangeByDistrictIdAndRequestId(Guid Id, Guid requestId, int pageNumber, int pageSize, bool hotel = true, bool restaurant = true, bool entertainment = true)
         {
             AppActionResult result = new AppActionResult();
             try
@@ -70,12 +70,21 @@ namespace TravelCapstone.BackEnd.Application.Services
 
                 if (serviceDb.Items != null && serviceDb.Items.Count > 0)
                 {
-                    var hotelPrice = await GetTypePriceReference(Domain.Enum.ServiceType.RESTING, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    var restaurantPrice = await GetMenuTypePriceReference(tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    var entertainmentPrice = await GetTypePriceReference(Domain.Enum.ServiceType.ENTERTAIMENT, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
-                    data.HotelPrice = hotelPrice;
-                    data.RestaurantPrice = restaurantPrice;
-                    data.EntertainmentPrice = entertainmentPrice;
+                    if (hotel)
+                    {
+                        var hotelPrice = await GetTypePriceReference(Domain.Enum.ServiceType.RESTING, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+                        data.HotelPrice = hotelPrice;
+                    }
+                    if (restaurant)
+                    {
+                        var restaurantPrice = await GetMenuTypePriceReference(tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+                        data.RestaurantPrice = restaurantPrice;
+                    }
+                    if (entertainment)
+                    {
+                        var entertainmentPrice = await GetTypePriceReference(Domain.Enum.ServiceType.ENTERTAIMENT, tourRequestDb.NumOfAdult, tourRequestDb.NumOfChildren, serviceDb.Items);
+                        data.EntertainmentPrice = entertainmentPrice;
+                    }
                 }
 
                 result.Result = data;
@@ -436,6 +445,30 @@ namespace TravelCapstone.BackEnd.Application.Services
             catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<AppActionResult> GetRestaurantRating(Guid Id)
+        {
+            AppActionResult result = new AppActionResult();
+            try
+            {
+                var facilityServiceDb = await _repository.GetAllDataByExpression(p => p.Id == Id && p.ServiceTypeId == ServiceType.FOODANDBEVARAGE, 0 , 0, null, false,
+                    p => p.Facility!.FacilityRating!,
+                    p => p.Facility!.Communce!.District!.Province!,
+                    p => p.Facility!.ServiceProvider!
+                    , p => p.ServiceAvailability!, p =>  p.ServiceType!);
+                if (facilityServiceDb == null)
+                {
+                    result = BuildAppActionResultError(result, $"Nhà hàng với id {Id} không tìm thấy");
+                    return result;
+                }
+                result.Result = facilityServiceDb;
+            }
+            catch (Exception ex)
+            {
+                result = BuildAppActionResultError(result, $"Co loi xay ra {ex.Message}");
             }
             return result;
         }
