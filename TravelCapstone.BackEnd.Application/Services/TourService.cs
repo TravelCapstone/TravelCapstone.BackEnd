@@ -78,22 +78,64 @@ public class TourService : GenericBackendService, ITourService
     public async Task<AppActionResult> GetAll(string? keyWord, int pageNumber, int pageSize)
     {
         var result = new AppActionResult();
+        var staticFileRepository = Resolve<IRepository<StaticFile>>();
         try
         {
+            var tourResponseList = new List<TourResponse>();
+
             if (string.IsNullOrEmpty(keyWord))
-                result.Result = await _repository.GetAllDataByExpression(
-                    null,
+            {
+                var tourListDb = await _repository.GetAllDataByExpression(
+                    a => a.TourTypeId != TourType.ENTERPRISE,
                     pageNumber,
                     pageSize, null, false,
                     null
                 );
+                foreach (var tour in tourListDb.Items!)
+                {
+                    var tourResponse = new TourResponse();
+                    var staticFileListDb = await staticFileRepository!.GetAllDataByExpression(p => p.TourId == tour.Id, 0, 0, null, false, null);
+                    if (staticFileListDb.Items == null && staticFileListDb.Items!.Count() <= 0)
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy ảnh cho tour với id {tour.Id}");
+                    }
+                    tourResponse.Tour = tour;
+                    tourResponse.StaticFiles = staticFileListDb.Items!;
+                    tourResponseList.Add(tourResponse);
+                }
+                result.Result = new PagedResult<TourResponse>
+                {
+                    Items = tourResponseList,
+                    TotalPages = tourListDb.TotalPages,
+                };
+            }
             else
-                result.Result = await _repository.GetAllDataByExpression(
-                    a => a.Name.ToLower().Trim().Contains(keyWord.ToLower().Trim()),
+            {
+                var tourListDb = await _repository.GetAllDataByExpression(
+                    a => a.Name.ToLower().Trim().Contains(keyWord.ToLower().Trim()) && a.TourTypeId != TourType.ENTERPRISE,
                     pageNumber,
                     pageSize, null, false,
                     null
                 );
+                foreach (var tour in tourListDb.Items!)
+                {
+                    var tourResponse = new TourResponse();
+                    var staticFileListDb = await staticFileRepository!.GetAllDataByExpression(p => p.TourId == tour.Id, 0, 0, null, false, null);
+                    if (staticFileListDb.Items == null && staticFileListDb.Items!.Count() <= 0)
+                    {
+                        result = BuildAppActionResultError(result, $"Không tìm thấy ảnh cho tour với id {tour.Id}");
+                    }
+                    tourResponse.Tour = tour;
+                    tourResponse.StaticFiles = staticFileListDb.Items!;
+                    tourResponseList.Add(tourResponse);
+                }
+                result.Result = new PagedResult<TourResponse>
+                {
+                    Items = tourResponseList,
+                    TotalPages = tourListDb.TotalPages,
+                };
+            }
+
         }
         catch (Exception e)
         {
@@ -126,7 +168,7 @@ public class TourService : GenericBackendService, ITourService
                     var travelCompanion = _mapper.Map<Customer>(dto);
                     travelCompanion.Id = id;
                     await customerRepository.Insert(travelCompanion);
-                    await smsService!.SendMessage(code,dto.PhoneNumber);
+                    await smsService!.SendMessage(code, dto.PhoneNumber);
                     await _unitOfWork.SaveChangesAsync();
                 }
                 else
@@ -564,7 +606,7 @@ public class TourService : GenericBackendService, ITourService
                 }
                 await _unitOfWork.SaveChangesAsync();
             }
-            
+
         }
         catch (Exception ex)
         {
