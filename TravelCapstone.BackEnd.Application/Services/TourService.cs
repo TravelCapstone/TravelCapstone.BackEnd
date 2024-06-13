@@ -494,13 +494,11 @@ public class TourService : GenericBackendService, ITourService
             if (tourDb == null)
             {
                 result = BuildAppActionResultError(result, $"Tour với id {tourId} không tồn tại");
-                return result;
             }
             var dayPlanDb = await dayPlanRepository!.GetAllDataByExpression(p => p.TourId == tourId, 0, 0, null, false, null);
             if (dayPlanDb.Items == null || dayPlanDb.Items!.Count <= 0)
             {
                 result = BuildAppActionResultError(result, $"Kế hoạch cho tour với id {tourId} không tồn tại");
-                return result;
             }
 
             var dayPlanSorted = dayPlanDb.Items.OrderBy(p => p.Date);
