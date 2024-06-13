@@ -223,13 +223,12 @@ public class TourService : GenericBackendService, ITourService
                 Tour tour = new Tour()
                 {
                     Id = Guid.NewGuid(),
-                    Name = privateTourRequestDb.Description!,//Check lại
-                    Description = privateTourRequestDb.Description!,
+                    Name = privateTourRequestDb.Description != null ? privateTourRequestDb.Description : "",//Check lại
+                    Description = privateTourRequestDb.Description != null ? privateTourRequestDb.Description : "",
                     BasedOnTourId = privateTourRequestDb.TourId,
                     StartDate = dto.StartDate,
                     EndDate = dto.EndDate,
                     TourStatusId = Domain.Enum.TourStatus.NEW
-
                 };
 
                 await _repository.Insert(tour);
@@ -351,7 +350,7 @@ public class TourService : GenericBackendService, ITourService
                 List<VehicleRoute> vehicleRoutes = new List<VehicleRoute>();
                 foreach (var item in dto.DetailPlanRoutes)
                 {
-                    if (item.Date > dto.EndDate || item.Date < dto.StartDate)
+                    if (item.Date > dto.EndDate.Date || item.Date < dto.StartDate.Date)
                     {
                         result = BuildAppActionResultError(result, $"Thời gian cho kế hoạch ngày {item.Date.Date.ToString()} không nằm trong thời gian của kế hoạch");
                         return result;
