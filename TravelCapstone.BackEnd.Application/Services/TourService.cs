@@ -529,20 +529,17 @@ public class TourService : GenericBackendService, ITourService
             if (planCostDetailsDb.Items == null || planCostDetailsDb.Items!.Count <= 0)
             {
                 result = BuildAppActionResultError(result, $"Giá của kế hoạch chi tiết cho tour với id {tourId} không tồn tại");
-                return result;
             }
             var tourguideAssignmentDb = await tourguideAssignmentRepository!.GetAllDataByExpression(p => p.TourId == tourId, 0, 0, null, false, p => p.Account!, p => p.Province!);
             if (tourguideAssignmentDb.Items == null || tourguideAssignmentDb.Items!.Count <= 0)
             {
                 result = BuildAppActionResultError(result, $"Hướng dẫn viên cho tour với ${tourId} không tìm thấy");
-                return result;
             }
 
             var materialDb = await materialAssignmentRepository!.GetAllDataByExpression(p => p.TourId == tourId, 0, 0, null, false, p => p.Tour!, p => p.MaterialPriceHistory!.Material!);
             if (materialDb.Items == null || materialDb.Items!.Count <= 0)
             {
                 result = BuildAppActionResultError(result, $"Các vật phẩm đi cùng tour với id {tourId} không tìm thấy");
-                return result;
             }
 
             foreach (var item in dayPlanSorted)
@@ -557,7 +554,6 @@ public class TourService : GenericBackendService, ITourService
                 if (routeDb.Items == null || routeDb.Items!.Count <= 0)
                 {
                     result = BuildAppActionResultError(result, $"Lộ trình cho tour với id {tourId} không tìm thấy");
-                    return result;
                 }
 
                 var routeIds = routeDb.Items.Select(r => r.Id).ToList();
