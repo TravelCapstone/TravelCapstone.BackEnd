@@ -219,7 +219,6 @@ public class TourService : GenericBackendService, ITourService
                     result = BuildAppActionResultError(result, $"Không tìm thấy lựa chọn đã được duyệt từ yêu cầu tạo tour");
                     return result;
                 }
-
                 Tour tour = new Tour()
                 {
                     Id = Guid.NewGuid(),
@@ -231,8 +230,6 @@ public class TourService : GenericBackendService, ITourService
                     TourStatusId = Domain.Enum.TourStatus.NEW
                 };
 
-                await _repository.Insert(tour);
-                await _unitOfWork.SaveChangesAsync();
 
                 //Add tour guide
                 var tourguideAssignmentRepository = Resolve<IRepository<TourguideAssignment>>();
@@ -249,10 +246,20 @@ public class TourService : GenericBackendService, ITourService
                     });
                 }
 
-                //Add material
-                dto.Material.TourId = tour.Id;
-                var materialService = Resolve<IMaterialService>();
-                await materialService!.AddMaterialtoTour(dto.Material);
+                var _assignmentRepository = Resolve<IRepository<MaterialAssignment>>();
+                List<MaterialAssignment> materialAssignments = new List<MaterialAssignment>();
+                foreach (var item in dto.Material.MaterialRequests)
+                {
+                    materialAssignments.Add(new MaterialAssignment()
+                    {
+                        Id = Guid.NewGuid(),
+                        MaterialPriceHistoryId = item.MaterialSellPriceId,
+                        Quantity = item.Quantity,
+                        TourId = tour.Id
+                    });
+                }
+                await _assignmentRepository!.InsertRange(materialAssignments);
+
                 HashSet<Guid> sellPriceIdCheckList = new HashSet<Guid>();
                 HashSet<Guid> referencePriceIdCheckList = new HashSet<Guid>();
                 var portRepository = Resolve<IRepository<Port>>();
@@ -468,7 +475,7 @@ public class TourService : GenericBackendService, ITourService
                 tour.PricePerAdult = !dto.PricePerAdult.HasValue ? 0 : (double)dto.PricePerAdult;
                 tour.PricePerChild = !dto.PricePerChildren.HasValue ? 0 : (double)dto.PricePerChildren;
                 await privateTourRequestRepository.Update(privateTourRequestDb);
-                await _repository.Update(tour);
+                await _repository.Insert(tour);
                 await planDetailRepository!.InsertRange(planServiceCostDetails);
                 await dayPlanRepository!.InsertRange(dayPlans);
                 await routeRepository!.InsertRange(routes);
