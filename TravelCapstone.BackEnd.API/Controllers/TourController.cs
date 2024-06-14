@@ -42,6 +42,13 @@ public class TourController : ControllerBase
     {
         return await _service.GetPlanByTour(tourId);    
     }
+
+    [HttpGet("get-grouped-plan-by-tour/{tourId}")]
+    public async Task<AppActionResult> GetGroupPlanByTour(Guid tourId)
+    {
+        return await _service.GetGroupPlanByTour(tourId);
+    }
+
     [HttpPut("update-option-quotation-status")]
     public async Task<AppActionResult> UpdateOptionQuotationStatus(Guid optionId)
     {
