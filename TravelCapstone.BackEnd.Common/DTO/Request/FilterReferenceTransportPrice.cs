@@ -18,7 +18,7 @@ namespace TravelCapstone.BackEnd.Common.DTO.Request
 
     public class FilterLocation
     {
-        public Guid ProvinceId { get; set; }
+        public Guid? ProvinceId { get; set; }
         public Guid? DistrictId { get; set; }
         public Guid? CommuneId { get; set; }
     }
