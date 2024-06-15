@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelCapstone.BackEnd.Domain.Data;
 
@@ -11,9 +12,10 @@ using TravelCapstone.BackEnd.Domain.Data;
 namespace TravelCapstone.BackEnd.Domain.Migrations
 {
     [DbContext(typeof(TravelCapstoneDbContext))]
-    partial class TravelCapstoneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240612165419_AddStaticFile")]
+    partial class AddStaticFile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2206,9 +2208,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("GeneratedTourId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsEnterprise")
                         .HasColumnType("bit");
 
@@ -2280,8 +2279,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.HasIndex("CreateBy");
 
                     b.HasIndex("DietaryPreferenceId");
-
-                    b.HasIndex("GeneratedTourId");
 
                     b.HasIndex("MainDestinationId");
 
@@ -3662,10 +3659,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelCapstone.BackEnd.Domain.Models.Tour", "GeneratedTour")
-                        .WithMany()
-                        .HasForeignKey("GeneratedTourId");
-
                     b.HasOne("TravelCapstone.BackEnd.Domain.Models.Province", "Province")
                         .WithMany()
                         .HasForeignKey("MainDestinationId")
@@ -3709,8 +3702,6 @@ namespace TravelCapstone.BackEnd.Domain.Migrations
                     b.Navigation("CreateByAccount");
 
                     b.Navigation("DietaryPreference");
-
-                    b.Navigation("GeneratedTour");
 
                     b.Navigation("HotelFacilityRating");
 

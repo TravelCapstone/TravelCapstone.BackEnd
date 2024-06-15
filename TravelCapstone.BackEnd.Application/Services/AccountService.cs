@@ -1024,7 +1024,7 @@ public class AccountService : GenericBackendService, IAccountService
         AppActionResult result = new AppActionResult();
          var    code = Guid.NewGuid().ToString("N").Substring(0, 6);
         var smsService = Resolve<ISmsService>();
-        var response = await smsService!.SendMessage($"Mã xác thực tại hệ thống Cóc Travel của bạn là {smsService}",
+        var response = await smsService!.SendMessage($"Mã xác thực tại hệ thống Cóc Travel của bạn là {code}",
             phoneNumber);
 
         if (response.IsSuccess)
