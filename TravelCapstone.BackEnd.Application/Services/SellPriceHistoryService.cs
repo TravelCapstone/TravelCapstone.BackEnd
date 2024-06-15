@@ -48,14 +48,16 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var districtDb = await districtRepository!.GetById(districtId);
                 if (districtDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {districtId}");
+                    result.Messages.Add($"Không tìm thấy huyện với id {districtId}");
+                    result.IsSuccess = true;
                     return result;
                 }
                 var privateTourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
                 var privateTourDb = await privateTourRequestRepository!.GetByExpression(p => p!.Id == privatetourRequestId);
                 if (privateTourDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy tour với id {privatetourRequestId}");
+                    result.Messages.Add($"Không tìm thấy tour với id {privatetourRequestId}");
+                    result.IsSuccess = true;
                     return result;
                 }
                 var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
@@ -150,7 +152,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var districtDb = await districtRepository!.GetById(districtId);
                 if (districtDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {districtId}");
+                    result.Messages.Add($"Không tìm thấy huyện với id {districtId}");
+                    result.IsSuccess = true;
                     return result;
                 }
                 var privateTourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
@@ -158,7 +161,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var privateTourRequestDb = await privateTourRequestRepository!.GetById(privatetourRequestId);
                 if (privateTourRequestDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour với id {privatetourRequestId}");
+                    result.Messages.Add($"Không tìm thấy yêu cầu tạo tour với id {privatetourRequestId}");
+                    result.IsSuccess = true;    
                     return result;
                 }
 
@@ -258,7 +262,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var provinceDb = await provinceRepository!.GetById(provinceId);
                 if (provinceDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy tỉnh với id {provinceId}");
+                    result.Messages.Add($"Không tìm thấy tỉnh với id {provinceId}");
+                    result.IsSuccess = true;
                     return result;
                 }
                 var privateTourRequestRepository = Resolve<IRepository<PrivateTourRequest>>();
@@ -266,7 +271,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var privateTourRequestDb = await privateTourRequestRepository!.GetById(privatetourRequestId);
                 if (privateTourRequestDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour với id {privatetourRequestId}");
+                    result.Messages.Add($"Không tìm thấy yêu cầu tạo tour với id {privatetourRequestId}");
+                    result.IsSuccess = true;
                     return result;
                 }
                 var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
@@ -697,7 +703,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var districtDb = await districtRespository!.GetById(districId);
                 if (districtDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {districId}");
+                    result.Messages.Add($"Không tìm thấy huyện với id {districId}");
+                    result.IsSuccess = true;
                     return result;
                 }
 
@@ -705,7 +712,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var privateTourRequestDb = await privateTourRequestRepository!.GetById(privatetourRequestId);
                 if (privateTourRequestDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour với id {privatetourRequestId}");
+                    result.Messages.Add($"Không tìm thấy yêu cầu tạo tour với id {privatetourRequestId}");
+                    result.IsSuccess = true;
                     return result;
                 }
 
@@ -765,7 +773,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var districtDb = await districtRespository!.GetById(districId);
                 if (districtDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy huyện với id {districId}");
+                    result.Messages.Add($"Không tìm thấy huyện với id {districId}");
+                    result.IsSuccess = true;
                     return result;
                 }
 
@@ -773,7 +782,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var privateTourRequestDb = await privateTourRequestRepository!.GetById(privatetourRequestId);
                 if (privateTourRequestDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy yêu cầu tạo tour với id {privatetourRequestId}");
+                    result.Messages.Add($"Không tìm thấy yêu cầu tạo tour với id {privatetourRequestId}");
+                    result.IsSuccess = true;
                     return result;
                 }
 
