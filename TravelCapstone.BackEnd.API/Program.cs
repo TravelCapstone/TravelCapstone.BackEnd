@@ -41,7 +41,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<NotificationHub>(nameof(NotificationHub));
-//ApplyMigration();
+ApplyMigration();
 app.Run();
 
 void ApplyMigration()
