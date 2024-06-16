@@ -42,6 +42,7 @@ Or using docker compose only with command: docker-compose up -d
 - [duong-hong-quan](https://github.com/duong-hong-quan) (Leader)
 - [KhangPhamBM](https://github.com/KhangPhamBM)
 - [ha-minh-quan](https://github.com/ha-minh-quan)
+  
 **Front End**: **ReactJS + ViteJS**
 - [duong-hong-quan](https://github.com/duong-hong-quan)
 - [bich-phuong](https://github.com/phuong1304)
