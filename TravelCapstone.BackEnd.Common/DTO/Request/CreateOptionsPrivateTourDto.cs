@@ -59,9 +59,9 @@ public class Hotel
     public DateTime EndDate { get; set; }
     public int NumOfSingleRoom { get; set; }
     public int NumOfDoubleRoom { get; set; }
-    public Rating? HotelOptionRatingOption1 {  get; set; }
-    public Rating? HotelOptionRatingOption2 {  get; set; }
-    public Rating? HotelOptionRatingOption3 {  get; set; }
+    public Guid? HotelOptionRatingOption1 {  get; set; }
+    public Guid? HotelOptionRatingOption2 {  get; set; }
+    public Guid? HotelOptionRatingOption3 {  get; set; }
 }
 
 public class Restaurant

@@ -29,7 +29,8 @@ namespace TravelCapstone.BackEnd.Common.DTO.Response
     public class DetailedPriceReference
     {
         public Rating RatingId { get; set; }
-        public ServiceType ServiceTypeId { get; set; }
+        public Guid FacilityRatingId { get; set; }
+		public ServiceType ServiceTypeId { get; set; }
         public ServiceAvailability ServiceAvailability { get; set; }
         public Unit Unit { get; set; }
         public int ServingQuantity { get; set; }
