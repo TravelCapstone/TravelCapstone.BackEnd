@@ -4,6 +4,7 @@ using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
 using TravelCapstone.BackEnd.Common.Validator;
+using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.API.Controllers;
 
@@ -33,6 +34,12 @@ public class PrivateTourRequestController : Controller
     public async Task<AppActionResult> GetAllPrivateTourRequest(int pageNumber = 1, int pageSize = 10)
     {
         return await _service.GetAllPrivateTourRequest(pageNumber, pageSize);
+    }
+
+    [HttpGet("get-all-private-tour-request-by-status/{status}/{pageNumber:int}/{pageSize:int}")]
+    public async Task<AppActionResult> GetAllPrivateTourRequestByStatus(PrivateTourStatus status, int pageNumber = 1, int pageSize = 10)
+    {
+        return await _service.GetAllPrivateTourRequestByStatus(status, pageNumber, pageSize);
     }
 
     [HttpGet("get-private-tour-request-by-id/{id}")]

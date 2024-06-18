@@ -2,6 +2,7 @@
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Domain.Enum;
 using TravelCapstone.BackEnd.Domain.Models;
 
 namespace TravelCapstone.BackEnd.Application.IServices;
@@ -11,6 +12,7 @@ public interface IPrivateTourRequestService
     Task<AppActionResult> CreatePrivateTourRequest(PrivateTourRequestDTO privateTourequestDto);
 
     Task<AppActionResult> GetAllPrivateTourRequest(int pageNumber, int pageSize);
+    Task<AppActionResult> GetAllPrivateTourRequestByStatus(PrivateTourStatus status ,int pageNumber, int pageSize);
 
     Task<AppActionResult> GetPrivateTourRequestById(Guid id);
     Task<AppActionResult> GetPrivateTourRequestByIdForCustomer(string id, int pageNumber, int pageSize);

@@ -2919,6 +2919,37 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         return result;
     }
 
+    public async Task<AppActionResult> GetAllPrivateTourRequestByStatus(PrivateTourStatus status, int pageNumber, int pageSize)
+    {
+        var result = new AppActionResult();
+        var accountRepository = Resolve<IRepository<Account>>();
+        var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
+        var roomQuantityDetailRepository = Resolve<IRepository<FamilyDetailRequest>>();
+        try
+        {
+            var data = await _repository.GetAllDataByExpression
+            (p => p.PrivateTourStatusId == status, pageNumber,
+                pageSize, a => a.CreateDate, false,
+                p => p.Tour, p => p.CreateByAccount!, p => p.Province!, p => p.HotelFacilityRating, p => p.RestaurantFacilityRating, p => p.Tour, p => p.Commune.District.Province);
+            var responseList = _mapper.Map<PagedResult<PrivateTourResponseDto>>(data);
+            foreach (var item in responseList.Items!)
+            {
+                var requestLocationDb = await requestLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, null, false, r => r.Province!);
+                item.OtherLocation = requestLocationDb.Items;
+
+                var roomQuantityDetailDb = await roomQuantityDetailRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, null, false, null);
+                item.RoomDetails = roomQuantityDetailDb.Items;
+            }
+            result.Result = responseList;
+        }
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+        }
+
+        return result;
+    }
+
 
 
 
