@@ -404,11 +404,11 @@ public class TourService : GenericBackendService, ITourService
                         {
                             if ((await portRepository!.GetById(detailRoute.EndId)) != null)
                             {
-                                StartPortId = detailRoute.EndId;
+                                EndPortId = detailRoute.EndId;
                             }
                             else if ((await facilityRepository!.GetById(detailRoute.EndId)) != null)
                             {
-                                StartFacilityId = detailRoute.EndId;
+                                EndFacilityId = detailRoute.EndId;
                             }
                             else
                             {
@@ -433,7 +433,7 @@ public class TourService : GenericBackendService, ITourService
                         });
                         parentRoute = routes[routes.Count - 1];
                         parentRouteId = parentRoute.Id;
-                        var vehicle = dto.Vehicles.Where(v => v.StartDate <= parentRoute.StartTime && parentRoute.EndTime <= v.EndDate)
+                        var vehicle = dto.Vehicles.Where(v => v.StartDate >= parentRoute.StartTime && parentRoute.EndTime <= v.EndDate)
                                                   .OrderByDescending(v => (parentRoute.StartTime - v.StartDate) + (v.EndDate - parentRoute.EndTime))
                                                   .FirstOrDefault();
                         if (vehicle != null)

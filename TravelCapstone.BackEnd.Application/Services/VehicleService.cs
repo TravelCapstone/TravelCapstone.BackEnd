@@ -478,7 +478,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                 } else 
                 {
                     var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
-                    var facilityServiceDb = await facilityServiceRepository!.GetAllDataByExpression(p => p.Facility!.Communce!.District!.ProvinceId == filter.FirstLocation.ProvinceId || p.Facility.Communce!.DistrictId == filter.FirstLocation.DistrictId && p.ServiceTypeId == ServiceType.VEHICLE
+                    var facilityServiceDb = await facilityServiceRepository!.GetAllDataByExpression(p => (p.Facility!.Communce!.District!.ProvinceId == filter.FirstLocation.ProvinceId || p.Facility.Communce!.DistrictId == filter.FirstLocation.DistrictId) && p.ServiceTypeId == ServiceType.VEHICLE
                     , 0, 0, null, false, null);
                     if (facilityServiceDb.Items != null && facilityServiceDb.Items.Count > 0)
                     {
@@ -486,7 +486,7 @@ namespace TravelCapstone.BackEnd.Application.Services
                         var sellPriceRepository = Resolve<IRepository<SellPriceHistory>>();
                         var sellPriceDb = await sellPriceRepository!.GetAllDataByExpression(p => facilityServiceIds.Contains(p.TransportServiceDetail!.FacilityServiceId) && p.MOQ <= filter.NumOfServiceUse && p.TransportServiceDetail.VehicleTypeId == filter.VehicleType, 0, 0, p => p.Date, false, p => p.FacilityService!, p => p.TransportServiceDetail!);
                         var latestPrice = sellPriceDb.Items.GroupBy(s => s.MOQ).Select(s => s.OrderByDescending(s => s.Date).FirstOrDefault()).OrderByDescending(s => s.MOQ).FirstOrDefault();
-                        latestPrice.Price *= filter.NumOfServiceUse * Math.Ceiling((filter.EndDate.Value.Date - filter.StartDate.Value.Date).TotalDays);
+                        latestPrice.Price *= filter.NumOfServiceUse * Math.Ceiling((filter.EndDate.Value.Date - filter.StartDate.Value.Date).TotalDays + 0.2);
                         result.Result = latestPrice;
                     }
                 }
