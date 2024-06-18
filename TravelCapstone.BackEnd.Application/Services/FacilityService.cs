@@ -167,17 +167,20 @@ namespace TravelCapstone.BackEnd.Application.Services
                 //    var facilityDb = await _repository.GetAllDataByExpression(f => communeIds.Contains(f.CommunceId), pageNumber, pageSize, null, false, a=> a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
                 //    result.Result = facilityDb;
                 //}
-                result.Result = await _repository.GetAllDataByExpression(a => a.Communce!.District!.ProvinceId == filter.ProvinceId, pageNumber, pageSize, null, false, a => a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
-                if(filter.DistrictId != null && filter.CommuneId == null)
+                if (filter.DistrictId != null && filter.CommuneId == null)
                 {
-                    result.Result = await _repository.GetAllDataByExpression(a => a.Communce!.DistrictId == filter.DistrictId, pageNumber, pageSize, null, false, a => a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
+                    result.Result = await _repository.GetAllDataByExpression(a => a.Communce!.DistrictId == filter.DistrictId, pageNumber, pageSize, null, false, a => a.Communce!.District!.Province!, a => a.FacilityRating!.Rating!, a => a.FacilityRating!.FacilityType!);
                 }
-                else if(filter.DistrictId !=null && filter.CommuneId != null) 
+                else if (filter.DistrictId != null && filter.CommuneId != null)
                 {
-                    result.Result = await _repository.GetAllDataByExpression(a => a.CommunceId == filter.CommuneId, pageNumber, pageSize, null, false, a => a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
-
+                    result.Result = await _repository.GetAllDataByExpression(a => a.CommunceId == filter.CommuneId, pageNumber, pageSize, null, false, a => a.Communce!.District!.Province!, a => a.FacilityRating!.Rating!, a => a.FacilityRating!.FacilityType!);
                 }
-            } catch (Exception ex)
+                else
+                {
+                    result.Result = await _repository.GetAllDataByExpression(a => a.Communce!.District!.ProvinceId == filter.ProvinceId, pageNumber, pageSize, null, false, a => a.Communce!.District!.Province!, a => a.FacilityRating!.Rating!, a => a.FacilityRating!.FacilityType!);
+                }
+            }
+            catch (Exception ex)
             {
                 result = BuildAppActionResultError(result, ex.Message);
             }

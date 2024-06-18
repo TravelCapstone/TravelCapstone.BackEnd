@@ -21,6 +21,6 @@ services:
       travelcapstone.backend.api.database:
         condition: service_started
     ports:
-      - "5000:80"
-      - "5001:443"
+      - "3000:80"
+      - "3001:443"
 

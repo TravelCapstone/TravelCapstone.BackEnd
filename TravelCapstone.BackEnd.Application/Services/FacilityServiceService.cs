@@ -413,14 +413,16 @@ namespace TravelCapstone.BackEnd.Application.Services
                 var privateTourRequestDb = await privateTourRequestRepository!.GetById(privateTourRequestId);
                 if (privateTourRequestDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy tour yêu cầu với id {privateTourRequestId}");
+                    result.Messages.Add($"Không tìm thấy tour yêu cầu với id {privateTourRequestId}");
+                    result.IsSuccess = true;
                     return result;
                 }
                 var quotationDetailRepository = Resolve<IRepository<QuotationDetail>>();
                 var quotationDetailDb = await quotationDetailRepository!.GetById(quotationDetailId);
                 if (quotationDetailDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Không tìm thấy bản giá yêu cầu với id {quotationDetailId}");
+                    result.Messages.Add($"Không tìm thấy bản giá yêu cầu với id {quotationDetailId}");
+                    result.IsSuccess = true;    
                     return result;
                 }
                 if (privateTourRequestDb.NumOfAdult > quotationDetailDb.QuantityOfAdult && privateTourRequestDb.NumOfChildren > quotationDetailDb.QuantityOfChild)
@@ -461,7 +463,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                     , p => p.ServiceAvailability!, p =>  p.ServiceType!);
                 if (facilityServiceDb == null)
                 {
-                    result = BuildAppActionResultError(result, $"Nhà hàng với id {Id} không tìm thấy");
+                    result.Messages.Add($"Nhà hàng với id {Id} không tìm thấy");
+                    result.IsSuccess = true;
                     return result;
                 }
                 result.Result = facilityServiceDb;
