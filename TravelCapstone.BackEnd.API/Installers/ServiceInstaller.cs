@@ -49,6 +49,7 @@ public class ServiceInstaller : IInstaller
         services.AddScoped<IDriverService, DriverService>(); 
         services.AddScoped<IAssuranceService, AssuranceService>();
         services.AddScoped<IManageFeeReferenceService, ManageFeeReferenceService>();
-        services.AddScoped<IConfigurationService, ConfigurationService>();
+        services.AddScoped<IFacilityRatingService, FacilityRatingService>();
+		services.AddScoped<IConfigurationService, ConfigurationService>();
     }
 }

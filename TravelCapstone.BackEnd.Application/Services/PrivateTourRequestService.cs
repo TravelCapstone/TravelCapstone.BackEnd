@@ -517,7 +517,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         {
                             var listHotel = await facilityRepository!.GetAllDataByExpression(
                                a => a.Communce!.DistrictId == location.DistrictId
-                              && location.HotelOptionRatingOption1 == a.FacilityRating!.RatingId &&
+                              && location.HotelOptionRatingOption1 == a.FacilityRatingId &&
                               a.FacilityRating.FacilityTypeId == FacilityType.HOTEL,
                                0,
                                0, null, false,
@@ -525,7 +525,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             var sellHotel = await sellPriceRepository!.GetAllDataByExpression(
                                 a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
                                 && a.FacilityService.ServiceTypeId == Domain.Enum.ServiceType.RESTING
-                                && location.HotelOptionRatingOption1 == a.FacilityService.Facility.FacilityRating!.RatingId
+                                && location.HotelOptionRatingOption1 == a.FacilityService.Facility.FacilityRatingId
                                 ,
                                 0, 0, null, false, null
                                 );
@@ -547,7 +547,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         {
                             var listHotel = await facilityRepository!.GetAllDataByExpression(
                                a => a.Communce!.DistrictId == location.DistrictId
-                              && location.HotelOptionRatingOption2 == a.FacilityRating!.RatingId &&
+                              && location.HotelOptionRatingOption2 == a.FacilityRatingId &&
                               a.FacilityRating.FacilityTypeId == Domain.Enum.FacilityType.HOTEL,
                                0,
                                0, null, false,
@@ -555,7 +555,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             var sellHotel = await sellPriceRepository!.GetAllDataByExpression(
                                 a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
                                 && a.FacilityService.ServiceTypeId == ServiceType.RESTING
-                                && location.HotelOptionRatingOption2 == a.FacilityService.Facility.FacilityRating!.RatingId
+                                && location.HotelOptionRatingOption2 == a.FacilityService.Facility.FacilityRatingId
                                 ,
                                 0, 0, null, false, null
                                 );
@@ -577,7 +577,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                         {
                             var listHotel = await facilityRepository!.GetAllDataByExpression(
                                a => a.Communce!.DistrictId == location.DistrictId
-                              && location.HotelOptionRatingOption3 == a.FacilityRating!.RatingId &&
+                              && location.HotelOptionRatingOption3 == a.FacilityRatingId &&
                               a.FacilityRating.FacilityTypeId == FacilityType.HOTEL,
                                0,
                                0, null, false,
@@ -585,7 +585,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                             var sellHotel = await sellPriceRepository!.GetAllDataByExpression(
                                 a => a.FacilityService!.Facility!.Communce!.DistrictId == location.DistrictId
                                 && a.FacilityService.ServiceTypeId == ServiceType.RESTING
-                                && location.HotelOptionRatingOption3 == a.FacilityService.Facility.FacilityRating!.RatingId
+                                && location.HotelOptionRatingOption3 == a.FacilityService.Facility.FacilityRatingId
                                 ,
                                 0, 0, null, false, null
                                 );
@@ -931,7 +931,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfSingleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption1 == a.RatingId
+                                    a => location.HotelOptionRatingOption1 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -942,7 +942,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                         int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
                                         double minQuotation = numOfDay * location.NumOfSingleRoom * min;
                                         double maxQuotation = numOfDay * location.NumOfSingleRoom * max;
-                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption1 == a.RatingId);
+                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption1 == a.Id);
                                         quotationDetails.Add(new QuotationDetail
                                         {
                                             Id = Guid.NewGuid(),
@@ -969,7 +969,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfDoubleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption1 == a.RatingId
+                                    a => location.HotelOptionRatingOption1 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -980,7 +980,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                         int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
                                         double minQuotation = numOfDay * location.NumOfDoubleRoom * min;
                                         double maxQuotation = numOfDay * location.NumOfDoubleRoom * max;
-                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption1 == a.RatingId);
+                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption1 == a.Id);
                                         quotationDetails.Add(new QuotationDetail
                                         {
                                             Id = Guid.NewGuid(),
@@ -1011,7 +1011,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfSingleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption2 == a.RatingId
+                                    a => location.HotelOptionRatingOption2 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -1022,7 +1022,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                         int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
                                         double minQuotation = numOfDay * location.NumOfSingleRoom * min;
                                         double maxQuotation = numOfDay * location.NumOfSingleRoom * max;
-                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption2 == a.RatingId);
+                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption2 == a.Id);
                                         quotationDetails.Add(new QuotationDetail
                                         {
                                             Id = Guid.NewGuid(),
@@ -1049,7 +1049,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfDoubleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption2 == a.RatingId
+                                    a => location.HotelOptionRatingOption2 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -1060,7 +1060,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                         int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
                                         double minQuotation = numOfDay * location.NumOfDoubleRoom * min;
                                         double maxQuotation = numOfDay * location.NumOfDoubleRoom * max;
-                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption2 == a.RatingId);
+                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption2 == a.Id);
                                         quotationDetails.Add(new QuotationDetail
                                         {
                                             Id = Guid.NewGuid(),
@@ -1090,7 +1090,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfSingleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption3 == a.RatingId
+                                    a => location.HotelOptionRatingOption3 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -1101,7 +1101,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                         int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
                                         double minQuotation = numOfDay * location.NumOfSingleRoom * min;
                                         double maxQuotation = numOfDay * location.NumOfSingleRoom * max;
-                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption3 == a.RatingId);
+                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption3 == a.Id);
                                         quotationDetails.Add(new QuotationDetail
                                         {
                                             Id = Guid.NewGuid(),
@@ -1128,7 +1128,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfDoubleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption3 == a.RatingId
+                                    a => location.HotelOptionRatingOption3 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -1139,7 +1139,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                         int numOfDay = (int)(location.EndDate - location.StartDate).TotalDays;
                                         double minQuotation = numOfDay * location.NumOfDoubleRoom * min;
                                         double maxQuotation = numOfDay * location.NumOfDoubleRoom * max;
-                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption3 == a.RatingId);
+                                        var hotelRating = await facilityRatingRepository!.GetByExpression(a => a.FacilityTypeId == FacilityType.HOTEL && location.HotelOptionRatingOption3 == a.Id);
                                         quotationDetails.Add(new QuotationDetail
                                         {
                                             Id = Guid.NewGuid(),
@@ -1695,7 +1695,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfSingleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption1 == a.RatingId
+                                    a => location.HotelOptionRatingOption1 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -1718,7 +1718,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfDoubleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption1 == a.RatingId
+                                    a => location.HotelOptionRatingOption1 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -1745,7 +1745,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfSingleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption2 == a.RatingId
+                                    a => location.HotelOptionRatingOption2 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -1768,7 +1768,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfDoubleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption2 == a.RatingId
+                                    a => location.HotelOptionRatingOption2 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -1794,7 +1794,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfSingleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption3 == a.RatingId
+                                    a => location.HotelOptionRatingOption3 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 2
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -1817,7 +1817,7 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
                                 if (location.NumOfDoubleRoom > 0)
                                 {
                                     var sellPriceHotel = estimate.HotelPrice.DetailedPriceReferences.Where(
-                                    a => location.HotelOptionRatingOption3 == a.RatingId
+                                    a => location.HotelOptionRatingOption3 == a.FacilityRatingId
                                     && a.ServiceAvailability == ServiceAvailability.BOTH && a.ServingQuantity == 4
                                     ).FirstOrDefault();
                                     if (sellPriceHotel != null)
@@ -2916,6 +2916,37 @@ public class PrivateTourRequestService : GenericBackendService, IPrivateTourRequ
         {
             result = BuildAppActionResultError(result, ex.Message);
         }
+        return result;
+    }
+
+    public async Task<AppActionResult> GetAllPrivateTourRequestByStatus(PrivateTourStatus status, int pageNumber, int pageSize)
+    {
+        var result = new AppActionResult();
+        var accountRepository = Resolve<IRepository<Account>>();
+        var requestLocationRepository = Resolve<IRepository<RequestedLocation>>();
+        var roomQuantityDetailRepository = Resolve<IRepository<FamilyDetailRequest>>();
+        try
+        {
+            var data = await _repository.GetAllDataByExpression
+            (p => p.PrivateTourStatusId == status, pageNumber,
+                pageSize, a => a.CreateDate, false,
+                p => p.Tour, p => p.CreateByAccount!, p => p.Province!, p => p.HotelFacilityRating, p => p.RestaurantFacilityRating, p => p.Tour, p => p.Commune.District.Province);
+            var responseList = _mapper.Map<PagedResult<PrivateTourResponseDto>>(data);
+            foreach (var item in responseList.Items!)
+            {
+                var requestLocationDb = await requestLocationRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, null, false, r => r.Province!);
+                item.OtherLocation = requestLocationDb.Items;
+
+                var roomQuantityDetailDb = await roomQuantityDetailRepository!.GetAllDataByExpression(r => r.PrivateTourRequestId == item.Id, 0, 0, null, false, null);
+                item.RoomDetails = roomQuantityDetailDb.Items;
+            }
+            result.Result = responseList;
+        }
+        catch (Exception e)
+        {
+            result = BuildAppActionResultError(result, $"Có lỗi xảy ra {e.Message}");
+        }
+
         return result;
     }
 

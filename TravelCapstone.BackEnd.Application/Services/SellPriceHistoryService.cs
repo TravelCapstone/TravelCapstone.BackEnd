@@ -92,7 +92,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                             {
                                 detailedPriceReference.ServiceTypeId = item.ServiceTypeId;
                                 detailedPriceReference.RatingId = item.Facility!.FacilityRating!.RatingId;
-                                detailedPriceReference.ServingQuantity = item.ServingQuantity;
+                                detailedPriceReference.FacilityRatingId = item.Facility!.FacilityRatingId;
+								detailedPriceReference.ServingQuantity = item.ServingQuantity;
                                 detailedPriceReference.ServiceAvailability = item.ServiceAvailabilityId;
                                 detailedPriceReference.Unit = item.UnitId;
                                 i++;

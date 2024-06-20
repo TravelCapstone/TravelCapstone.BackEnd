@@ -143,7 +143,8 @@ namespace TravelCapstone.BackEnd.Application.Services
                     {
                         detailedPriceReference.ServiceTypeId = kvp.Value[0].ServiceTypeId;
                         detailedPriceReference.RatingId = kvp.Value[0].Facility!.FacilityRating!.RatingId;
-                        detailedPriceReference.ServiceAvailability = kvp.Value[0].ServiceAvailabilityId;
+                        detailedPriceReference.FacilityRatingId = kvp.Value[0].Facility!.FacilityRatingId;
+						detailedPriceReference.ServiceAvailability = kvp.Value[0].ServiceAvailabilityId;
                         detailedPriceReference.ServingQuantity = kvp.Value[0].ServingQuantity;
                         detailedPriceReference.Unit = kvp.Value[0].UnitId;
                         total = detailedPriceReference.ServiceAvailability == Domain.Enum.ServiceAvailability.BOTH ? NumOfAdult + NumOfChild :

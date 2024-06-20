@@ -154,7 +154,7 @@ namespace TravelCapstone.BackEnd.Application.Services
             return result;
         }
 
-        public async Task<AppActionResult> GetFacilityByProvinceId(FilterLocation filter, int pageNumber, int pageSize)
+        public async Task<AppActionResult> GetFacilityByProvinceId(FilterLocation filter, int pageNumber, int pageSize, ServiceType serviceType)
         {
             AppActionResult result = new AppActionResult();
             try
@@ -167,17 +167,29 @@ namespace TravelCapstone.BackEnd.Application.Services
                 //    var facilityDb = await _repository.GetAllDataByExpression(f => communeIds.Contains(f.CommunceId), pageNumber, pageSize, null, false, a=> a.FacilityRating!.Rating!, a => a.Communce!.District!.Province!);
                 //    result.Result = facilityDb;
                 //}
+                var facilityServiceRepository = Resolve<IRepository<Domain.Models.FacilityService>>();
+                PagedResult<Domain.Models.FacilityService> data = null;
                 if (filter.DistrictId != null && filter.CommuneId == null)
                 {
-                    result.Result = await _repository.GetAllDataByExpression(a => a.Communce!.DistrictId == filter.DistrictId, pageNumber, pageSize, null, false, a => a.Communce!.District!.Province!, a => a.FacilityRating!.Rating!, a => a.FacilityRating!.FacilityType!);
+                    data = await facilityServiceRepository.GetAllDataByExpression(a => a.Facility.Communce!.DistrictId == filter.DistrictId && a.ServiceTypeId == serviceType, pageNumber, pageSize, null, false, a => a.Facility.Communce!.District!.Province!, a => a.Facility.FacilityRating!.Rating!, a => a.Facility.FacilityRating!.FacilityType!);
                 }
                 else if (filter.DistrictId != null && filter.CommuneId != null)
                 {
-                    result.Result = await _repository.GetAllDataByExpression(a => a.CommunceId == filter.CommuneId, pageNumber, pageSize, null, false, a => a.Communce!.District!.Province!, a => a.FacilityRating!.Rating!, a => a.FacilityRating!.FacilityType!);
-                }
+                    data = await facilityServiceRepository.GetAllDataByExpression(a => a.Facility.CommunceId == filter.CommuneId && a.ServiceTypeId == serviceType, pageNumber, pageSize, null, false, a => a.Facility.Communce!.District!.Province!, a => a.Facility.FacilityRating!.Rating!, a => a.Facility.FacilityRating!.FacilityType!);
+				}
                 else
                 {
-                    result.Result = await _repository.GetAllDataByExpression(a => a.Communce!.District!.ProvinceId == filter.ProvinceId, pageNumber, pageSize, null, false, a => a.Communce!.District!.Province!, a => a.FacilityRating!.Rating!, a => a.FacilityRating!.FacilityType!);
+                    data = await facilityServiceRepository.GetAllDataByExpression(a => a.Facility.Communce!.District!.ProvinceId == filter.ProvinceId && a.ServiceTypeId == serviceType, pageNumber, pageSize, null, false, a => a.Facility.Communce!.District!.Province!, a => a.Facility.FacilityRating!.Rating!, a => a.Facility.FacilityRating!.FacilityType!);
+				}
+
+                if(data.Items.Count > 0)
+                {
+                    var facilities = data.Items.DistinctBy(f => f.FacilityId).Select(f => f.Facility).ToList();
+                    result.Result = new PagedResult<Facility>
+                    {
+                        Items = facilities.Skip(pageNumber - 1).Take(pageNumber).ToList(),
+                        TotalPages = facilities.Count % pageSize == 0 ? facilities.Count / pageSize : facilities.Count / pageSize + 1
+                    };
                 }
             }
             catch (Exception ex)

@@ -22,5 +22,8 @@ namespace TravelCapstone.BackEnd.Domain.Models
         public Guid? TourId { get; set; }
         [ForeignKey(nameof(TourId))]
         public Tour? Tour { get; set;  }
-    }
+		public Guid? TourRatingId { get; set; }
+		[ForeignKey(nameof(TourRatingId))]
+		public TourRating? TourRating { get; set; }
+	}
 }

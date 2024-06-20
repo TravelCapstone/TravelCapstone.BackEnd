@@ -74,11 +74,12 @@ public class TravelCapstoneDbContext : IdentityDbContext<Account>, IDbContext
     public DbSet<ManagementFeeReference> ManagementFeeReferences { get; set; }
     public DbSet<FamilyDetailRequest> FamilyDetailRequests { get; set; }
     public DbSet<StaticFile> StaticFiles { get; set; }
+    public DbSet<TourRating> TourRatings { get; set; }
 
-    #endregion
+	#endregion
 
-    #region Enum
-    public DbSet<Models.EnumModels.AttendanceRouteType> AttendanceRouteTypes { get; set; }
+	#region Enum
+	public DbSet<Models.EnumModels.AttendanceRouteType> AttendanceRouteTypes { get; set; }
     public DbSet<Models.EnumModels.MealType> MealTypes { get; set; }
     public DbSet<Models.EnumModels.ServiceType> ServiceTypes { get; set; }
     public DbSet<Models.EnumModels.AttendanceType> AttendanceTypes { get; set; }
