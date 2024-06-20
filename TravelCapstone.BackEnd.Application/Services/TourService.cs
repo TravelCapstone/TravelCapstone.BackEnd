@@ -99,8 +99,24 @@ public class TourService : GenericBackendService, ITourService
                     });
                 }
 			}
+
+			var tourRatingRepository = Resolve<IRepository<TourRating>>();
+			var tourRatingDb = await tourRatingRepository!.GetAllDataByExpression(s => s.TourId == id, 0, 0, null, false, null);
+			if (staticFileDb.Items.Count > 0)
+			{
+				foreach(var tourRating in tourRatingDb.Items)
+                {
+                    var imgs = await staticFileRepository.GetAllDataByExpression(s => s.TourRatingId == tourRating.Id, 0, 0, null, false, null);
+                    detail.Ratings.Add(new TourRatingDto
+                    {
+                        TourRating = tourRating,
+                        Imgs = imgs.Items.Select(i => i.Url).ToList()
+                    });
+                }
+			}
 			result.Result = detail;
-        }
+
+		}
         catch (Exception e)
         {
             result = BuildAppActionResultError(result, $"Lỗi đã xảy ra: {e.Message}");

@@ -9,6 +9,7 @@ public class TourDetail
     public List<MaterialAssignment> Materials { get; set; } = new List<MaterialAssignment>();
     public List<string> Imgs { get; set; } = new List<string>();
     public List<TourLocationDto> Locations { get; set; } = new List<TourLocationDto>();
+    public List<TourRatingDto> Ratings { get; set; } = new List<TourRatingDto>();
 }
 
 public class DayPlanDto
@@ -22,4 +23,10 @@ public class TourLocationDto
     public Guid ProvinceId { get; set; }
     public Guid DistrictId { get; set; }
     public string Address { get; set; }
+}
+
+public class TourRatingDto
+{
+    public TourRating TourRating { get; set; }
+    public List<string> Imgs { get; set; }
 }
