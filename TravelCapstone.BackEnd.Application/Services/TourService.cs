@@ -2,6 +2,7 @@ using AutoMapper;
 using Hangfire.Logging.LogProviders;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Transactions;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
@@ -913,5 +914,48 @@ public class TourService : GenericBackendService, ITourService
             result = BuildAppActionResultError(result, $"Co loi xay ra {ex.Message}");
         }
         return result;
+    }
+
+    public async Task<AppActionResult> GetTourInSameProvince(List<Guid> provinces , int pageNumber, int pageSize)
+    {
+        AppActionResult result = new AppActionResult();
+        try
+        {
+            var dayPlanRepository = Resolve<IRepository<DayPlan>>();
+            var routeRepository = Resolve<IRepository<Route>>();
+            var materialRepository = Resolve<IRepository<MaterialAssignment>>();
+            var routeDb = await routeRepository!.GetAllDataByExpression(
+                r => provinces.Contains(r.PortStartPoint!.Commune!.District!.ProvinceId)
+                     || provinces.Contains(r.StartPoint!.Communce!.District!.ProvinceId)
+                     || provinces.Contains(r.EndPoint!.Communce!.District!.ProvinceId)
+                     || provinces.Contains(r.PortEndPoint!.Commune!.District!.ProvinceId),
+                0, 0, null, false,
+                p => p.DayPlan!.Tour!
+            );
+            var routes = routeDb.Items!.ToList();
+
+            var rankedRoutes = routes
+          .Select(r => new
+          {
+              Route = r,
+              MatchCount = provinces.Count(p =>
+                  p == (r.PortStartPoint?.Commune?.District?.ProvinceId ?? Guid.Empty)
+                  || p == (r.StartPoint?.Communce?.District?.ProvinceId ?? Guid.Empty)
+                  || p == (r.EndPoint?.Communce?.District?.ProvinceId ?? Guid.Empty)
+                  || p == (r.PortEndPoint?.Commune?.District?.ProvinceId ?? Guid.Empty))
+          })
+          .OrderByDescending(x => x.MatchCount)
+          .Select(x => x.Route)
+          .ToList();
+
+            // Map to result or desired DTO
+            var tours = rankedRoutes.Select(r => r.DayPlan!.Tour).Distinct().Skip(pageNumber - 1).Take(pageSize).ToList();
+            result.Result = tours;  
+        }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, $"Co loi xay ra {ex.Message}");
+        }
+        return result;  
     }
 }
