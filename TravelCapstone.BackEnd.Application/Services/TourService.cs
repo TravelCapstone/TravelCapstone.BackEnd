@@ -72,7 +72,34 @@ public class TourService : GenericBackendService, ITourService
             {
                 detail.Imgs = staticFileDb.Items.Select(s => s.Url).ToList();
             }
-            result.Result = detail;
+
+			var routeDb = await routeRepository!.GetAllDataByExpression(s => s.DayPlan.TourId == id, 0, 0, null, false, 
+                                                                        s => s.StartPoint.Communce.District.Province, s => s.EndPoint.Communce.District.Province,
+																		s => s.PortStartPoint.Commune.District.Province, s => s.PortEndPoint.Commune.District.Province);
+			if (routeDb.Items.Count > 0)
+			{
+				var districtList = routeDb.Items
+			.SelectMany(r => new[]
+			{
+				r.StartPoint?.Communce?.District,
+				r.EndPoint?.Communce?.District,
+				r.PortStartPoint?.Commune?.District,
+				r.PortEndPoint?.Commune?.District
+			})
+			.Where(district => district != null)
+			.Distinct()
+			.ToList();
+				foreach ( var district in districtList)
+                {
+                    detail.Locations.Add(new TourLocationDto
+                    {
+                        ProvinceId = district.ProvinceId,
+                        DistrictId = district.Id,
+                        Address = $"{district.Name}, {district.Province.Name}"
+                    });
+                }
+			}
+			result.Result = detail;
         }
         catch (Exception e)
         {
