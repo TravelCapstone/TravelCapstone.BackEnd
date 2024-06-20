@@ -66,7 +66,12 @@ public class TourService : GenericBackendService, ITourService
                     Routes = route.Items!,
                 });
             }
-
+            var staticFileRepository = Resolve<IRepository<StaticFile>>();
+            var staticFileDb = await staticFileRepository!.GetAllDataByExpression(s => s.TourId == id, 0, 0, null, false, null);
+            if(staticFileDb.Items.Count > 0)
+            {
+                detail.Imgs = staticFileDb.Items.Select(s => s.Url).ToList();
+            }
             result.Result = detail;
         }
         catch (Exception e)
