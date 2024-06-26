@@ -2,6 +2,7 @@ using AutoMapper;
 using Hangfire.Logging.LogProviders;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Transactions;
 using TravelCapstone.BackEnd.Application.IRepositories;
 using TravelCapstone.BackEnd.Application.IServices;
@@ -66,9 +67,57 @@ public class TourService : GenericBackendService, ITourService
                     Routes = route.Items!,
                 });
             }
+            var staticFileRepository = Resolve<IRepository<StaticFile>>();
+            var staticFileDb = await staticFileRepository!.GetAllDataByExpression(s => s.TourId == id, 0, 0, null, false, null);
+            if(staticFileDb.Items.Count > 0)
+            {
+                detail.Imgs = staticFileDb.Items.Select(s => s.Url).ToList();
+            }
 
-            result.Result = detail;
-        }
+			var routeDb = await routeRepository!.GetAllDataByExpression(s => s.DayPlan.TourId == id, 0, 0, null, false, 
+                                                                        s => s.StartPoint.Communce.District.Province, s => s.EndPoint.Communce.District.Province,
+																		s => s.PortStartPoint.Commune.District.Province, s => s.PortEndPoint.Commune.District.Province);
+			if (routeDb.Items.Count > 0)
+			{
+				var districtList = routeDb.Items
+			.SelectMany(r => new[]
+			{
+				r.StartPoint?.Communce?.District,
+				r.EndPoint?.Communce?.District,
+				r.PortStartPoint?.Commune?.District,
+				r.PortEndPoint?.Commune?.District
+			})
+			.Where(district => district != null)
+			.Distinct()
+			.ToList();
+				foreach ( var district in districtList)
+                {
+                    detail.Locations.Add(new TourLocationDto
+                    {
+                        ProvinceId = district.ProvinceId,
+                        DistrictId = district.Id,
+                        Address = $"{district.Name}, {district.Province.Name}"
+                    });
+                }
+			}
+
+			var tourRatingRepository = Resolve<IRepository<TourRating>>();
+			var tourRatingDb = await tourRatingRepository!.GetAllDataByExpression(s => s.TourId == id, 0, 0, null, false, null);
+			if (staticFileDb.Items.Count > 0)
+			{
+				foreach(var tourRating in tourRatingDb.Items)
+                {
+                    var imgs = await staticFileRepository.GetAllDataByExpression(s => s.TourRatingId == tourRating.Id, 0, 0, null, false, null);
+                    detail.Ratings.Add(new TourRatingDto
+                    {
+                        TourRating = tourRating,
+                        Imgs = imgs.Items.Select(i => i.Url).ToList()
+                    });
+                }
+			}
+			result.Result = detail;
+
+		}
         catch (Exception e)
         {
             result = BuildAppActionResultError(result, $"Lỗi đã xảy ra: {e.Message}");
@@ -404,11 +453,11 @@ public class TourService : GenericBackendService, ITourService
                         {
                             if ((await portRepository!.GetById(detailRoute.EndId)) != null)
                             {
-                                StartPortId = detailRoute.EndId;
+                                EndPortId = detailRoute.EndId;
                             }
                             else if ((await facilityRepository!.GetById(detailRoute.EndId)) != null)
                             {
-                                StartFacilityId = detailRoute.EndId;
+                                EndFacilityId = detailRoute.EndId;
                             }
                             else
                             {
@@ -433,7 +482,7 @@ public class TourService : GenericBackendService, ITourService
                         });
                         parentRoute = routes[routes.Count - 1];
                         parentRouteId = parentRoute.Id;
-                        var vehicle = dto.Vehicles.Where(v => v.StartDate <= parentRoute.StartTime && parentRoute.EndTime <= v.EndDate)
+                        var vehicle = dto.Vehicles.Where(v => v.StartDate >= parentRoute.StartTime && parentRoute.EndTime <= v.EndDate)
                                                   .OrderByDescending(v => (parentRoute.StartTime - v.StartDate) + (v.EndDate - parentRoute.EndTime))
                                                   .FirstOrDefault();
                         if (vehicle != null)
@@ -913,5 +962,48 @@ public class TourService : GenericBackendService, ITourService
             result = BuildAppActionResultError(result, $"Co loi xay ra {ex.Message}");
         }
         return result;
+    }
+
+    public async Task<AppActionResult> GetTourInSameProvince(List<Guid> provinces , int pageNumber, int pageSize)
+    {
+        AppActionResult result = new AppActionResult();
+        try
+        {
+            var dayPlanRepository = Resolve<IRepository<DayPlan>>();
+            var routeRepository = Resolve<IRepository<Route>>();
+            var materialRepository = Resolve<IRepository<MaterialAssignment>>();
+            var routeDb = await routeRepository!.GetAllDataByExpression(
+                r => provinces.Contains(r.PortStartPoint!.Commune!.District!.ProvinceId)
+                     || provinces.Contains(r.StartPoint!.Communce!.District!.ProvinceId)
+                     || provinces.Contains(r.EndPoint!.Communce!.District!.ProvinceId)
+                     || provinces.Contains(r.PortEndPoint!.Commune!.District!.ProvinceId),
+                0, 0, null, false,
+                p => p.DayPlan!.Tour!
+            );
+            var routes = routeDb.Items!.ToList();
+
+            var rankedRoutes = routes
+          .Select(r => new
+          {
+              Route = r,
+              MatchCount = provinces.Count(p =>
+                  p == (r.PortStartPoint?.Commune?.District?.ProvinceId ?? Guid.Empty)
+                  || p == (r.StartPoint?.Communce?.District?.ProvinceId ?? Guid.Empty)
+                  || p == (r.EndPoint?.Communce?.District?.ProvinceId ?? Guid.Empty)
+                  || p == (r.PortEndPoint?.Commune?.District?.ProvinceId ?? Guid.Empty))
+          })
+          .OrderByDescending(x => x.MatchCount)
+          .Select(x => x.Route)
+          .ToList();
+
+            // Map to result or desired DTO
+            var tours = rankedRoutes.Select(r => r.DayPlan!.Tour).Distinct().Skip(pageNumber - 1).Take(pageSize).ToList();
+            result.Result = tours;  
+        }
+        catch (Exception ex)
+        {
+            result = BuildAppActionResultError(result, $"Co loi xay ra {ex.Message}");
+        }
+        return result;  
     }
 }

@@ -60,4 +60,10 @@ public class TourController : ControllerBase
     {
         return await _service.CalculatePlanCost(dto);
     }
+
+    [HttpPost("get-tour-in-same-province/{pageNumber}/{pageSize}")]
+    public async Task<AppActionResult> GetTourInSameProvince(List<Guid> provinces, int pageNumber = 1, int pageSize = 10)
+    {
+        return await _service.GetTourInSameProvince(provinces, pageNumber, pageSize);
+    }
 }

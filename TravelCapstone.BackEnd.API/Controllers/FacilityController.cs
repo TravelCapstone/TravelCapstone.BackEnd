@@ -3,6 +3,7 @@ using TravelCapstone.BackEnd.Application.IServices;
 using TravelCapstone.BackEnd.Application.Services;
 using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.API.Controllers
 {
@@ -16,9 +17,9 @@ namespace TravelCapstone.BackEnd.API.Controllers
         }
 
         [HttpPost("get-all-facility-by-filter")]
-        public async Task<AppActionResult> GetFacilityByProvinceId([FromBody]FilterLocation filter, int pageNumber=1, int pageSize = 10)
+        public async Task<AppActionResult> GetFacilityByProvinceId([FromBody]FilterLocation filter, ServiceType serviceType, int pageNumber=1, int pageSize = 10)
         {
-            return await _service.GetFacilityByProvinceId(filter,pageNumber,pageSize);
+            return await _service.GetFacilityByProvinceId(filter,pageNumber,pageSize, serviceType);
         }
         [HttpGet("get-all-facility")]
         public async Task<AppActionResult> GetAllFacility( int pageNumber = 1, int pageSize = 10)

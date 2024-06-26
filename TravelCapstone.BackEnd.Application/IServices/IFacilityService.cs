@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using TravelCapstone.BackEnd.Common.DTO.Request;
 using TravelCapstone.BackEnd.Common.DTO.Response;
+using TravelCapstone.BackEnd.Domain.Enum;
 
 namespace TravelCapstone.BackEnd.Application.IServices
 {
     public interface IFacilityService
     {
-        public Task<AppActionResult> GetFacilityByProvinceId(FilterLocation filter, int pageNumber, int pageSize);
+        public Task<AppActionResult> GetFacilityByProvinceId(FilterLocation filter, int pageNumber, int pageSize, ServiceType serviceType);
         public Task<AppActionResult> GetAllFacility( int pageNumber, int pageSize);
         public Task<AppActionResult> GetAllFacilityByRatingId( FilterLocation filter,TravelCapstone.BackEnd.Domain.Enum.Rating ratingId,int pageNumber, int pageSize);
 
